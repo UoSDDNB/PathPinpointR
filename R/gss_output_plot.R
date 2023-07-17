@@ -10,7 +10,7 @@
 #' @return nice plot highlighting the probable position of your sample on your trajectory.
 #' @export
 #'
-gss_output_plot <- function(sample.gss, col = "red", overlay = FALSE, label = "sample name", genes_of_interest = c("ENSG00000248605","ENSG00000272168")){
+gss_output_plot <- function(sample.gss, col = "red", overlay = FALSE, label = "sample name", genes_of_interest = NULL){
 
  if (!overlay) {
   plot(x = 1:100,
