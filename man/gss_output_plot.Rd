@@ -2,16 +2,26 @@
 % Please edit documentation in R/gss_output_plot.R
 \name{gss_output_plot}
 \alias{gss_output_plot}
-\title{Title}
+\title{GSS OUTPUT PLOT}
 \usage{
-gss_output_plot(fibroblast_flat)
+gss_output_plot(
+  sample.gss,
+  col = "red",
+  overlay = FALSE,
+  label = "sample name",
+  genes_of_interest = NULL
+)
 }
 \arguments{
-\item{fibroblast_flat}{flattend sample data}
+\item{sample.gss}{A GSS_OBJECT of the sample you wish to plot}
+
+\item{col}{The colour that you'd like}
+
+\item{overlay}{set to TRUE if you would like this plot to overlay a previous plot.}
 }
 \value{
-nice plot highlighting the probable position of your sample on your trajectory
+nice plot highlighting the probable position of your sample on your trajectory.
 }
 \description{
-Title
+Plots the predicted positon of your sample.
 }

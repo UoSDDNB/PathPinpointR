@@ -2,18 +2,18 @@
 % Please edit documentation in R/accuracy_test.R
 \name{score_gss_accuracy}
 \alias{score_gss_accuracy}
-\title{Title}
+\title{Title Accuracy Tester}
 \usage{
-score_gss_accuracy(gss_obj)
+score_gss_accuracy(gss_obj, reference.sce)
 }
 \arguments{
-\item{fib_flat}{flattened sample data}
+\item{gss_obj}{A "GSS_OBJECT" as outputted by create_racing_lines}
 
-\item{gss_genes}{}
+\item{reference.sce}{The SCE object which has had slingshot run on it already.}
 }
 \value{
-A score for how accurate the reults are.
+A score for how accurate the results are as a data frame.
 }
 \description{
-Use this with "sample" cells taken from the reference. It will check how close the predicted position of the cells is to the real positon.
+Use this with "sample" cells taken from the reference. It will check how close the predicted position of the cells is to the real position.
 }
