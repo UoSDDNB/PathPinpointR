@@ -15,7 +15,10 @@ knitr::opts_chunk$set(
 ```
 
 
-### Load neccecary packages
+# Data Pre-procesing
+
+
+#### Load neccecary packages
 ```{r eval=FALSE}
 library(Seurat)
 library(ggplot2)
@@ -26,36 +29,36 @@ library(GeneSwitchesScorer)
 library(SingleCellExperiment)
 ```
 
+## SEURAT
 
-# Data
-## Here we use this Reprogramming dataset as the reference 
+### Here we use this Reprogramming dataset as the reference 
 ```{r eval=FALSE}
 big_reference.seu <- readRDS("~/R Packages/mini_data/readySeu_hrpi.rds")
 ```
-### Downsample if neccecary
+#### Downsample if neccecary
 ```{r eval=FALSE}
 reference.seu <- subset(x = big_reference.seu, downsample = 100)
 ```
 
-#View the reference
+#### View the reference UMAP
 ```{r eval=FALSE}
 DimPlot(object = reference.seu, reduction = "umap", group.by = "identity" ,label = T) +
   ggtitle("Reference")
 ```
 
-# Subset the reference to be a single biological trajectory
-# in this case fibroblast to primed.
+### Subset the reference to be a single biologically relevent trajectory
+#### In this case the trajectory of fibroblasts being reprogrammed to primed cell.
 ```{r eval=FALSE}
 reference.seu <- subset(x = reference.seu, subset = identity %in% grep("^n", reference.seu@meta.data$identity, value = TRUE), invert = TRUE)
 ```
 
-#View the reduced reference
+#### View the reduced reference UMAP
 ```{r eval=FALSE}
 DimPlot(object = reference.seu, reduction = "umap", group.by = "identity" ,label = T) +
-  ggtitle("Reference")
+  ggtitle("Reference Subset")
 ```
 
-## We use subsets of the Reprogramming dataset as queries.
+### We use subsets of the Reprogramming dataset as queries.
 ```{r eval=FALSE}
 fibroblast.seu <- subset(x = reference.seu, subset = identity %in% "fibroblast")
 mixed.seu <- subset(x = reference.seu, subset = identity %in% "mixed")
@@ -64,13 +67,15 @@ primed.seu <- subset(x = reference.seu, subset = identity %in% "primed")
 ```
 
 
-## label transfer
-#### **(not neccecary here)**
+### Label transfer & Re-integration
+####### *When doing this analysis with your own data you would more than likely need to label transfer and re-integrate with your referenece datatset.*
+####### *As we are using subsets of our reference data as "samples" this wont be necessary.*
 
-## re integration
-#### **(not neccecary here)**
 
-## Convert objects to single cell experiment objects
+## SingeCellExperiment
+
+
+### Convert objects to SingleCellExperiment objects
 ```{r eval=FALSE}
 reference.sce    <- as.SingleCellExperiment(reference.seu)
 fibroblast.sce   <- as.SingleCellExperiment(fibroblast.seu)
@@ -80,7 +85,9 @@ primed.sce       <- as.SingleCellExperiment(primed.seu)
 ```
 
 
-## Run slingshot on the reference data to produce a reprogramming trajectory.
+## Slingshot
+
+### Run slingshot on the reference data to produce a reprogramming trajectory.
 ```{r eval=FALSE}
 reference.sce  <- slingshot(reference.sce,
                             clusterLabels = "identity",
@@ -89,7 +96,7 @@ reference.sce  <- slingshot(reference.sce,
                             reducedDim = "UMAP")
 ```
 
-## Plot the slingshot trajectory.
+### Plot the slingshot trajectory.
 ```{r eval=FALSE}
 colors <- colorRampPalette(brewer.pal(11,'Spectral')[-6])(100)
 plotcol <- colors[cut(reference.sce$slingPseudotime_1, breaks=100)]
@@ -97,7 +104,10 @@ plot(reducedDims(reference.sce)$UMAP, col = plotcol, pch=16, asp = 1)
 lines(SlingshotDataSet(reference.sce), lwd=2, col='black')
 ```
 
-## Convert SCE obj to GS obj
+
+## GeneSwitches
+
+### Set up the SingleCellExperiment objects for GeneSwitches to use. 
 ```{r eval=FALSE}
 reference.gs    <- SingleCellExperiment(assays = List(expdata = logcounts(reference.sce)))
   colData(reference.gs)$Pseudotime <- reference.sce$slingPseudotime_1
@@ -109,9 +119,9 @@ early_primed.gs <- SingleCellExperiment(assays = List(expdata = logcounts(early_
 primed.gs       <- SingleCellExperiment(assays = List(expdata = logcounts(primed.sce)))
 ```
 
-##  Choose a Binerization cutoff
-##### **this would be good to automate, 
-##### or learn how to use the other method of binarizing
+###  Choose a Binerization cutoff
+###### **this would be good to automate, 
+###### or learn how to use the other method of binarizing
 ```{r eval=FALSE}
  h <- hist(as.matrix(assays(primed.gs)$expdata),
            breaks = 800,
@@ -127,7 +137,7 @@ primed.gs       <- SingleCellExperiment(assays = List(expdata = logcounts(primed
  abline(v = 0.46, col = "blue")
 ```
 
-## Binarize
+### Binarize
 ```{r eval=FALSE}
 reference.gs    <- binarize_exp(reference.gs, fix_cutoff = TRUE, binarize_cutoff = 0.65)
 fibroblast.gs   <- binarize_exp(fibroblast.gs, fix_cutoff = TRUE, binarize_cutoff = 0.65)
@@ -136,8 +146,8 @@ early_primed.gs <- binarize_exp(early_primed.gs, fix_cutoff = TRUE, binarize_cut
 primed.gs       <- binarize_exp(primed.gs, fix_cutoff = TRUE, binarize_cutoff = 0.4555)
 ```
 
-## CHECKPOINT
-#### **with how long binerizing takes you may want to choose to save objects for future use.
+### CHECKPOINT
+##### **with how long binerizing takes you may want to choose to save objects for future use.
 ```{r eval=FALSE}
  saveRDS(reference.gs   , "~/R Packages/mini_data/Binerized/reference.rds")
  saveRDS(fibroblast.gs  , "~/R Packages/mini_data/Binerized/fibroblast.rds")
@@ -152,84 +162,208 @@ primed.gs       <- binarize_exp(primed.gs, fix_cutoff = TRUE, binarize_cutoff = 
  primed.gs       <- readRDS("~/R Packages/mini_data/Binerized/primed.rds")
 ```
 
-
 ### fit logistic regression and find the switching pseudo-time point for each gene
 ```{r eval=FALSE}
-reference_glm.gs <- find_switch_logistic_fastglm(reference.gs, downsample = FALSE, show_warning = FALSE)
+reference.gs <- find_switch_logistic_fastglm(reference.gs, downsample = FALSE, show_warning = FALSE)
 ```
 
-### **This is another time consuming process, may want to choose to save objects for future use.**
+#### **This is another time consuming process, may want to choose to save objects for future use.**
 ```{r eval=FALSE}
 saveRDS(reference_glm.gs   , "~/R Packages/mini_data/Binerized/reference_glm.rds")
-reference_glm.gs    <- readRDS("~/R Packages/mini_data/Binerized/reference_glm.rds")
+reference.gs    <- readRDS("~/R Packages/mini_data/Binerized/reference_glm.rds")
 ```
 
-
-## Filter to only include Switching Genes
+### Filter to only include Switching Genes
 ```{r eval=FALSE}
-reference.gs <- filter_switchgenes(reference_glm.gs, allgenes = TRUE,r2cutoff = 0.03)
+reference.sg <- filter_switchgenes(reference.gs, allgenes = TRUE,r2cutoff = 0.03)
 ```
 
-## View all of the switching genes
+##### View all of the switching genes
 ```{r eval=FALSE}
-plot_timeline_ggplot(reference.gs, timedata = colData(reference_glm.gs)$Pseudotime, txtsize = 3)
+plot_timeline_ggplot(reference.sg, timedata = colData(reference_glm.gs)$Pseudotime, txtsize = 3)
 ```
 
+# Using GeneSwitchesScorer
+
+### Filter for an even distribution
+```{r eval=FALSE}
+gss.sg <- select_evenly_distributed_switching_genes(reference.sg, min_time_spacing = 5)
+```
+
+##### View the selected switching genes
+```{r eval=FALSE}
+plot_timeline_ggplot(gss.sg, timedata = colData(reference_glm.gs)$Pseudotime, txtsize = 3)
+```
+
+### Reduce the binary counts matricies of the query data to only include the selection of evenly distributed genes from the refernence.
+```{r eval=FALSE}
+fibroblast_reduced      <- filter_gene_expression_for_switching_genes(fibroblast.gs@assays@data@listData$binary   , gss.sg)
+mixed_reduced           <- filter_gene_expression_for_switching_genes(mixed.gs@assays@data@listData$binary        , gss.sg)
+early_primed_reduced    <- filter_gene_expression_for_switching_genes(early_primed.gs@assays@data@listData$binary , gss.sg)
+primed_reduced          <- filter_gene_expression_for_switching_genes(primed.gs@assays@data@listData$binary       , gss.sg)
+reference_reduced       <- filter_gene_expression_for_switching_genes(reference.gs@assays@data@listData$binary    , gss.sg)
+```
+
+### Produce an estimate for the position on trajectory of each gene in each cell of a sample.
+```{r eval=FALSE}
+fibroblast.gss   <- create_racing_lines(fibroblast_reduced  , gss.sg)
+mixed.gss        <- create_racing_lines(mixed_reduced       , gss.sg)
+early_primed.gss <- create_racing_lines(early_primed_reduced, gss.sg)
+primed.gss       <- create_racing_lines(primed_reduced      , gss.sg)
+reference.gss    <- create_racing_lines(reference_reduced   , gss.sg)
+```
+
+### Accuracy
+#### *As our samples are subsets of the reference dataset we can calculate the accuracy of GSS*
+```{r eval=FALSE}
+fibroblast_accuracy   <- score_gss_accuracy(fibroblast.gss, reference.sce)
+mixed_accuracy        <- score_gss_accuracy(mixed.gss, reference.sce)
+early_primed_accuracy <- score_gss_accuracy(early_primed.gss, reference.sce)
+primed_accuracy       <- score_gss_accuracy(primed.gss, reference.sce)
+reference_accuracy    <- score_gss_accuracy(reference.gss, reference.sce)
+```
+
+## Plotting
+
+### Plot the predicted position of each sample:
+#### *Optional: include the switching point of some genes of interest:*
+```{r eval=FALSE}
+gss_output_plot(fibroblast.gss, col = "red", overlay=FALSE, label = "fibroblast", genes_of_interest = c("ENSG00000248605","ENSG00000272168"))
+gss_output_plot(mixed.gss, col = "peachpuff4", overlay=TRUE, label = "mixed")
+gss_output_plot(early_primed.gss, col = "purple", overlay=TRUE, label = "early primed")
+gss_output_plot(primed.gss, col = "darkgreen", overlay=TRUE, label = "primed" , genes_of_interest = c("ENSG00000236924"))
+```
+
+## Further analysis of the results
+
+### Investigate the predicted position of indervidual cells:
+
+#### Plot the preducted position of all cells in a Sample
+###### *only run this on a selection of cells or a small sample*
+```{r eval=FALSE}
+for (c in 1:nrow(sc.gss$cells_flat)) {
+  plot(x = 1:100, y = sc.gss$cells_flat[c,], type = "h",
+       xlab = "Pseudotime Index", ylab = "Cell Position Likelihood",
+       main = paste("Trajectory Progress of", rownames(sc.gss$cells_flat)[c]))
+  segments(which.max(sc.gss$cells_flat[c,]),
+           0.0,
+           which.max(sc.gss$cells_flat[c,]),
+           as.numeric(sc.gss$cells_flat[c,which.max(sc.gss$cells_flat[c,])]),
+           lwd=2,
+           col ="red")
+
+}
+```
+
+#### Plot the "racing lines" for indervidual cells.
+```{r eval=FALSE}
+racinglines_timeline(reference.sg, reference_reduced, cell_idx = 1)
+```
+
+### Plot the distribution of inaccuracy of each sample:
+```{r eval=FALSE}
+hist(fibroblast_accuracy$inaccuracy  , breaks = 100)
+hist(mixed_accuracy$inaccuracy       , breaks = 100)
+hist(early_primed_accuracy$inaccuracy, breaks = 100)
+hist(primed_accuracy$inaccuracy      , breaks = 100)
+hist(reference_accuracy$inaccuracy   , breaks = 100)
+```
+
+### Investigate the predicted position of indervidual cells:
+```{r eval=FALSE}
+#
+plot(fibroblast_accuracy$true_position_of_cells_timeIDX, fibroblast_accuracy$inaccuracy,
+     xlab = "True Position", ylab = "Inaccuracy", main = "Inaccuracy by True Positions")
+
+#
+boxplot(fibroblast_accuracy$inaccuracy ~ fibroblast_accuracy$true_position_of_cells_timeIDX,
+        xlab = "True Position", ylab = "Inaccuracy", main = "Boxplots of Inaccuracy by True Positions")
+true_position_bin <- cut(fibroblast_accuracy$true_position_of_cells_timeIDX,
+                             breaks = c(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80.85,90,95,100))
+boxplot(fibroblast_accuracy$inaccuracy ~ true_position_bin,
+        xlab = "True Position", ylab = "Inaccuracy", main = "Boxplots of Inaccuracy by True Positions")
+
+#
+plot(fibroblast_accuracy$true_position_of_cells_timeIDX,fibroblast_accuracy$predicted_position_of_cells_timeIDX,
+     xlab = "True Position", ylab = "Predicted Position", main = "Predicted Positions by True Positions")
+segments(0,0,100,100, lwd=2, col ="green")
+segments(0,10,100,110, lwd=2, col ="blue")
+segments(0,-10,100,90, lwd=2, col ="blue")
+segments(0,40,100,140, lwd=2, col ="red")
+segments(0,-40,100,60, lwd=2, col ="red")
+
+#
+boxplot(fibroblast_accuracy$predicted_position_of_cells_timeIDX ~ fibroblast_accuracy$true_position_of_cells_timeIDX,
+        xlab = "True Position", ylab = "Predicted Position", main = "Boxplots of Predicted Positions by True Positions")
+segments(0,0,100,100, lwd=2, col ="green")
+segments(0,10,100,110, lwd=2, col ="blue")
+segments(0,-10,100,90, lwd=2, col ="blue")
+segments(0,40,100,140, lwd=2, col ="red")
+segments(0,-40,100,60, lwd=2, col ="red")
+```
+
+### Investigate the precision of min_time_spacing values:
+```{r eval=FALSE}
+precision <- data.frame(
+  min_time_spacing = 0:100,
+  n_genes          = NA,                                                   # Number of genes after min_time_spacing
+  accuracy_min     = NA,                                                   # Placeholder for accuracy minimum values
+  accuracy_1       = NA,
+  accuracy_median  = NA,
+  accuracy_mean    = NA,
+  accuracy_3       = NA,
+  accuracy_max     = NA
+  )
+
+
+
+for (i in 0:100){
 # Filter for an even distribution
-```{r eval=FALSE}
-gss_genes <- select_evenly_distributed_switching_genes(reference.gs, min_time_spacing = 5)
-```
+gss_genes <- select_evenly_distributed_switching_genes(reference.gs, min_time_spacing = i)
 
-#View the selected switching genes
-```{r eval=FALSE}
-plot_timeline_ggplot(gss_genes, timedata = colData(reference_glm.gs)$Pseudotime, txtsize = 3)
-```
+# Reduce the binary counts matricies of the query data to only include the selection of evenly distributed genes from the refernence.
+sample_reduced      <- filter_gene_expression_for_switching_genes(sample.gs@assays@data@listData$binary   , gss_genes)
 
-## Reduce the binary counts matricies of the query data to only include the selection of evenly distributed genes from the refernence.
-```{r eval=FALSE}
-fibroblast_reduced      <- filter_gene_expression_for_switching_genes(fibroblast.gs@assays@data@listData$binary   , gss_genes)
-mixed_reduced           <- filter_gene_expression_for_switching_genes(mixed.gs@assays@data@listData$binary        , gss_genes)
-early_primed_reduced    <- filter_gene_expression_for_switching_genes(early_primed.gs@assays@data@listData$binary , gss_genes)
-primed_reduced          <- filter_gene_expression_for_switching_genes(primed.gs@assays@data@listData$binary       , gss_genes)
-```
+#
+sample.gss <- create_racing_lines(sample_reduced, gss_genes)
 
+#
+accuracy <- score_gss_accuracy(sample.gss, reference.sce)
 
-## Produce an estimate for the position on trajectory of each gene in each cell of a sample.
-```{r eval=FALSE}
-fibroblast_lines   <- create_racing_lines(fibroblast_reduced  , gss_genes)
-mixed_lines        <- create_racing_lines(mixed_reduced       , gss_genes)
-early_primed_lines <- create_racing_lines(early_primed_reduced, gss_genes)
-primed_lines       <- create_racing_lines(primed_reduced      , gss_genes)
-```
+#
+precision$n_genes[i+1]          <- dim(gss_genes)[1]
+precision$accuracy_min[i+1]     <- summary(accuracy$accuracy)[1]
+precision$accuracy_1[i+1]       <- summary(accuracy$accuracy)[2]
+precision$accuracy_median[i+1]  <- summary(accuracy$accuracy)[3]
+precision$accuracy_mean[i+1]    <- summary(accuracy$accuracy)[4]
+precision$accuracy_3[i+1]       <- summary(accuracy$accuracy)[5]
+precision$accuracy_max[i+1]     <- summary(accuracy$accuracy)[6]
+
+#
+cat(i," done \n")
+}
 
 
-## aggregate the above to estimate the position of the query's along the trajectory.
-```{r eval=FALSE}
-fibroblast_flat   <- flatten_cell_frequencies_moi(fibroblast_lines)
-mixed_flat        <- flatten_cell_frequencies_moi(mixed_lines)
-early_primed_flat <- flatten_cell_frequencies_moi(early_primed_lines)
-primed_flat       <- flatten_cell_frequencies_moi(primed_lines)
+ggplot(data = precision, mapping = aes(x = min_time_spacing)) +
+  geom_point(aes(y = accuracy_min), color = "lightblue") +
+  geom_point(aes(y = accuracy_1), color = "lightpink") +
+  geom_point(aes(y = accuracy_median), color = "red") +
+  geom_point(aes(y = accuracy_mean), color = "blue") +
+  geom_point(aes(y = accuracy_3), color = "darkgreen") +
+  geom_point(aes(y = accuracy_max), color = "lightblue") +
+  ylab("innacuracy")
 
-plot(colSums(fibroblast_flat))
-plot(colSums(mixed_flat))
-plot(colSums(early_primed_flat))
-plot(colSums(primed_flat))
-```
-
-
-##plot something better.
-```{r eval=FALSE}
-plot(x = 1:ncol(fibroblast_flat), y = fibroblast_flat[1,], type = "l", xlab = "Pseudotime Index", ylab = "Cell Position Likelyhood", main = "Trajectory Progress of \"fibroblast\"")
-plot(x = 1:ncol(mixed_flat), y = mixed_flat[1,], type = "l", xlab = "Pseudotime Index", ylab = "Cell Position Likelyhood", main = "Trajectory Progress of mixed")
-plot(x = 1:ncol(early_primed_flat), y = early_primed_flat[1,], type = "l", xlab = "Pseudotime Index", ylab = "Cell Position Likelyhood", main = "Trajectory Progress of early_primed")
-plot(x = 1:ncol(primed_flat), y = primed_flat[1,], type = "l", xlab = "Pseudotime Index", ylab = "Cell Position Likelyhood", main = "Trajectory Progress of \"primed\"")
-```
+ggplot(data = precision, mapping = aes(x = n_genes)) +
+  geom_point(aes(y = accuracy_min), color = "lightblue") +
+  geom_point(aes(y = accuracy_1), color = "lightpink") +
+  geom_point(aes(y = accuracy_median), color = "red") +
+  geom_point(aes(y = accuracy_mean), color = "blue") +
+  geom_point(aes(y = accuracy_3), color = "darkgreen") +
+  geom_point(aes(y = accuracy_max), color = "lightblue") +
+  ylab("innacuracy") + scale_x_log10()
 
 
-## is owens method any different?
-```{r eval=FALSE}
-fibroblast_flat   <- flatten_cell_frequencies_owen(fibroblast_lines)
-mixed_flat        <- flatten_cell_frequencies_owen(mixed_lines)
-early_primed_flat <- flatten_cell_frequencies_owen(early_primed_lines)
-primed_flat       <- flatten_cell_frequencies_owen(primed_lines)
+ggplot(data = precision, mapping = aes(x = min_time_spacing)) +
+  geom_point(aes(y = n_genes), color = "red") +
+  scale_y_log10()
 ```
