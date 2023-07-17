@@ -10,8 +10,7 @@
 #' @return nice plot highlighting the probable position of your sample on your trajectory.
 #' @export
 #'
-gss_output_plot <- function(sample.gss, col = "lightblue", overlay = TRUE){
-col <- col
+gss_output_plot <- function(sample.gss, col = "red", overlay = FALSE){
 
  if (!overlay) {
   plot(x = 1:100,
@@ -29,7 +28,8 @@ col <- col
            -3.9,
            which.max(colSums(sample.gss$sample_flat)),
            (sample.gss$sample_flat[which.max(colSums(sample.gss$sample_flat))]/max(sample.gss$sample_flat)*100),
-           lwd=1,
+           lwd = 1,
+           lty = 2,
            col = col)
  } else {
    lines( x = 1:100,
@@ -44,8 +44,11 @@ col <- col
             which.max(colSums(sample.gss$sample_flat)),
             (sample.gss$sample_flat[which.max(colSums(sample.gss$sample_flat))]/max(sample.gss$sample_flat)*100),
             lwd=1,
+            lty = 2,
             col = col)
    }
 
 }
+
+
 
