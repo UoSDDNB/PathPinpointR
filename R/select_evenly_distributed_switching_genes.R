@@ -8,7 +8,7 @@
 #'
 #' @return Switching genes which are evenly distributed through pseudotime at a selected density.
 #' @export
-select_evenly_distributed_switching_genes <- function(sg_allgenes, min_time_spacing){
+select_evenly_distributed_switching_genes <- function(sg_allgenes, min_time_spacing = 1){
 
   ## Checks
   # Make sure there is a minimum of 1 gene switched on (up)
