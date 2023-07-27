@@ -20,7 +20,7 @@ gss_output_plot <- function(sample.gss, col = "red", overlay = FALSE, label = "s
        pch = 20,
        cex = 0.8,
        col = col,
-       type = "p",
+       type = "l",
        xlab = "Pseudo-Time Index",
        ylab = "GSS Score",
        main = paste("Predicted Positions"))
@@ -68,7 +68,7 @@ gss_output_plot <- function(sample.gss, col = "red", overlay = FALSE, label = "s
          pch = 20,
          cex = 0.8,
          col = col,
-         type = "p")
+         type = "l")
 
     segments(which.max(colSums(sample.gss$sample_flat)),
              -3.9,
