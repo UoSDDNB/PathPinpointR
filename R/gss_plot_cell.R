@@ -19,7 +19,7 @@ gss_cell_plot <- function(sample.gss, cell_idx = 1, col = "red", overlay = FALSE
   if (!overlay) {
     plot(x = 1:100,
          y = sample.gss$cells_flat[cell_idx,],
-         ylim = c(0,max(sample.gss$cells_flat[cell_idx,]) + 10),
+         ylim = c(0,max(sample.gss$cells_flat) + 10),
          xlim = c(0,100),
          pch = 20,
          cex = 0.8,
