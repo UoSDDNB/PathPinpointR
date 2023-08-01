@@ -7,12 +7,15 @@
 #' @param cell_idx The selected cell.
 #' @param col The colour that you'd like
 #' @param overlay set to TRUE if you would like this plot to overlay a previous plot.
+#' @param true_position do you wan to plot the "true position of your cell"
+#' @param accuracy_data dataset which contains the accuracy data
+#' @param switching_genes The data which includes all of the switching genes
+#' @param genes_of_interest The genes that you would like to plot
 #'
 #' @return nice plot highlighting the probable position of your sample on your trajectory.
 #' @export
 #'
-gss_cell_plot <- function(sample.gss, cell_idx = 1, col = "red", overlay = FALSE, genes_of_interest = NULL, switching_genes = NULL){
-
+gss_cell_plot <- function(sample.gss, cell_idx = 1, col = "red", overlay = FALSE, genes_of_interest = NULL, switching_genes = NULL, true_position = FALSE, accuracy_data = NULL) {
   if (!overlay) {
     plot(x = 1:100,
          y = sample.gss$cells_flat[cell_idx,],
@@ -24,10 +27,10 @@ gss_cell_plot <- function(sample.gss, cell_idx = 1, col = "red", overlay = FALSE
          type = "l",
          xlab = "Pseudo-Time Index",
          ylab = "GSS Score",
-         main = paste("Predicted Positions"))
+         main = paste("Cell Positions"))
 
     segments(which.max(sample.gss$cells_flat[cell_idx,]),
-             -3.9,
+             -99999,
              which.max(sample.gss$cells_flat[cell_idx,]),
              sample.gss$cells_flat[cell_idx,][which.max(sample.gss$cells_flat[cell_idx,])],
              lwd = 1,
@@ -35,11 +38,47 @@ gss_cell_plot <- function(sample.gss, cell_idx = 1, col = "red", overlay = FALSE
              col = col)
 
     text(x = which.max(sample.gss$cells_flat[cell_idx,]),
-         y = sample.gss$cells_flat[cell_idx,][which.max(sample.gss$cells_flat[cell_idx,])],
-         labels = rownames(sample.gss$cells_flat)[cell_idx],
+         y = (sample.gss$cells_flat[cell_idx,][which.max(sample.gss$cells_flat[cell_idx,])])/1.5,
+         labels = paste(rownames(sample.gss$cells_flat)[cell_idx],"(PREDICTED)"),
          col = col,
-         pos = 3,
-         cex = 0.69)
+         pos = 2,
+         cex = 0.69,
+         srt = 90)
+
+    if(true_position == TRUE) {
+      segments(accuracy_data$true_position_of_cells_timeIDX[cell_idx],
+               -99999,
+               accuracy_data$true_position_of_cells_timeIDX[cell_idx],
+               99999,
+               lwd = 1,
+               lty = 2,
+               col = col)
+
+      text(x = accuracy_data$true_position_of_cells_timeIDX[cell_idx],
+           y = (sample.gss$cells_flat[cell_idx,][which.max(sample.gss$cells_flat[cell_idx,])])/1.5,
+           labels = paste(accuracy_data$cell_names[cell_idx],"(TRUE)"),
+           col = col,
+           pos = 2,    # Set the position to 2 (Left)
+           cex = 0.69,
+           srt = 90)   # Set the string rotation to 90 degrees
+
+      segments(accuracy_data$true_position_of_cells_timeIDX[cell_idx],
+               sample.gss$cells_flat[cell_idx,][which.max(sample.gss$cells_flat[cell_idx,])],
+               which.max(sample.gss$cells_flat[cell_idx,]),
+               sample.gss$cells_flat[cell_idx,][which.max(sample.gss$cells_flat[cell_idx,])],
+               lwd = 1,
+               lty = 1,
+               col = col)
+
+      text(x = (which.max(sample.gss$cells_flat[cell_idx,]) - accuracy_data$true_position_of_cells_timeIDX[cell_idx] )/2 +accuracy_data$true_position_of_cells_timeIDX[cell_idx],
+           y = sample.gss$cells_flat[cell_idx,][which.max(sample.gss$cells_flat[cell_idx,])],
+           labels = paste(abs(which.max(sample.gss$cells_flat[cell_idx,]) - accuracy_data$true_position_of_cells_timeIDX[cell_idx]), "\nINACCURACY"),
+           col = col,
+           pos = 3,    # Set the position to 3 (TOP)
+           cex = 0.69)
+
+    }
+
 
     if (length(genes_of_interest) > 0) {
       for (gene_name in genes_of_interest) {
@@ -73,7 +112,7 @@ gss_cell_plot <- function(sample.gss, cell_idx = 1, col = "red", overlay = FALSE
           type = "l")
 
     segments(which.max(sample.gss$cells_flat[cell_idx,]),
-             -3.9,
+             -99999,
              which.max(sample.gss$cells_flat[cell_idx,]),
              sample.gss$cells_flat[cell_idx,][which.max(sample.gss$cells_flat[cell_idx,])],
              lwd = 1,
@@ -81,11 +120,46 @@ gss_cell_plot <- function(sample.gss, cell_idx = 1, col = "red", overlay = FALSE
              col = col)
 
     text(x = which.max(sample.gss$cells_flat[cell_idx,]),
-         y = sample.gss$cells_flat[cell_idx,][which.max(sample.gss$cells_flat[cell_idx,])],
-         labels = rownames(sample.gss$cells_flat)[cell_idx],
+         y = (sample.gss$cells_flat[cell_idx,][which.max(sample.gss$cells_flat[cell_idx,])])/1.5,
+         labels = paste(rownames(sample.gss$cells_flat)[cell_idx],"(PREDICTED)"),
          col = col,
-         pos = 3,
-         cex = 0.69)
+         pos = 2,
+         cex = 0.69,
+         srt = 90)
+
+    if(true_position == TRUE) {
+      segments(accuracy_data$true_position_of_cells_timeIDX[cell_idx],
+               -99999,
+               accuracy_data$true_position_of_cells_timeIDX[cell_idx],
+               99999,
+               lwd = 1,
+               lty = 2,
+               col = col)
+
+      text(x = accuracy_data$true_position_of_cells_timeIDX[cell_idx],
+           y = (sample.gss$cells_flat[cell_idx,][which.max(sample.gss$cells_flat[cell_idx,])])/1.5,
+           labels = paste(accuracy_data$cell_names[cell_idx],"(TRUE)"),
+           col = col,
+           pos = 2,    # Set the position to 2 (Left)
+           cex = 0.69,
+           srt = 90)   # Set the string rotation to 90 degrees
+
+      segments(accuracy_data$true_position_of_cells_timeIDX[cell_idx],
+               sample.gss$cells_flat[cell_idx,][which.max(sample.gss$cells_flat[cell_idx,])],
+               which.max(sample.gss$cells_flat[cell_idx,]),
+               sample.gss$cells_flat[cell_idx,][which.max(sample.gss$cells_flat[cell_idx,])],
+               lwd = 1,
+               lty = 1,
+               col = col)
+
+      text(x = (which.max(sample.gss$cells_flat[cell_idx,]) - accuracy_data$true_position_of_cells_timeIDX[cell_idx] )/2 +accuracy_data$true_position_of_cells_timeIDX[cell_idx],
+           y = sample.gss$cells_flat[cell_idx,][which.max(sample.gss$cells_flat[cell_idx,])],
+           labels = paste(abs(which.max(sample.gss$cells_flat[cell_idx,]) - accuracy_data$true_position_of_cells_timeIDX[cell_idx]), "\nINACCURACY"),
+           col = col,
+           pos = 3,    # Set the position to 3 (TOP)
+           cex = 0.69)
+
+    }
 
     if (length(genes_of_interest) > 0) {
       for (gene_name in genes_of_interest) {
