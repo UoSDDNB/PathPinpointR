@@ -10,6 +10,15 @@
     <loc>https://moi-taiga.github.io/GeneSwitchesScorer/articles/index.html</loc>
   </url>
   <url>
+    <loc>https://moi-taiga.github.io/GeneSwitchesScorer/articles/Reprogramming.html</loc>
+  </url>
+  <url>
+    <loc>https://moi-taiga.github.io/GeneSwitchesScorer/articles/reprogramming_example.html</loc>
+  </url>
+  <url>
+    <loc>https://moi-taiga.github.io/GeneSwitchesScorer/articles/wholeanalysis.html</loc>
+  </url>
+  <url>
     <loc>https://moi-taiga.github.io/GeneSwitchesScorer/authors.html</loc>
   </url>
   <url>
@@ -34,7 +43,34 @@
     <loc>https://moi-taiga.github.io/GeneSwitchesScorer/reference/flatten_cell_frequencies_owen.html</loc>
   </url>
   <url>
+    <loc>https://moi-taiga.github.io/GeneSwitchesScorer/reference/gss_cell_plot.html</loc>
+  </url>
+  <url>
+    <loc>https://moi-taiga.github.io/GeneSwitchesScorer/reference/gss_output_plot.html</loc>
+  </url>
+  <url>
+    <loc>https://moi-taiga.github.io/GeneSwitchesScorer/reference/gss_plot_cell_range.html</loc>
+  </url>
+  <url>
+    <loc>https://moi-taiga.github.io/GeneSwitchesScorer/reference/gss_precision.html</loc>
+  </url>
+  <url>
     <loc>https://moi-taiga.github.io/GeneSwitchesScorer/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://moi-taiga.github.io/GeneSwitchesScorer/reference/label_transfer.html</loc>
+  </url>
+  <url>
+    <loc>https://moi-taiga.github.io/GeneSwitchesScorer/reference/print.GSS_OBJECT.html</loc>
+  </url>
+  <url>
+    <loc>https://moi-taiga.github.io/GeneSwitchesScorer/reference/racinglines_timeline.html</loc>
+  </url>
+  <url>
+    <loc>https://moi-taiga.github.io/GeneSwitchesScorer/reference/re_integrate.html</loc>
+  </url>
+  <url>
+    <loc>https://moi-taiga.github.io/GeneSwitchesScorer/reference/score_gss_accuracy.html</loc>
   </url>
   <url>
     <loc>https://moi-taiga.github.io/GeneSwitchesScorer/reference/select_evenly_distributed_switching_genes.html</loc>
