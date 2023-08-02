@@ -4,12 +4,12 @@
 \alias{score_gss_accuracy}
 \title{Title Accuracy Tester}
 \usage{
-score_gss_accuracy(gss_obj, reference.sce)
+score_gss_accuracy(reference.gss, reference.gs)
 }
 \arguments{
-\item{gss_obj}{A "GSS_OBJECT" as outputted by create_racing_lines}
+\item{reference.gss}{A "GSS_OBJECT" as outputted by create_racing_lines}
 
-\item{reference.sce}{The SCE object which has had slingshot run on it already.}
+\item{reference.gs}{The GS object containing Pseudotime.}
 }
 \value{
 A score for how accurate the results are as a data frame.

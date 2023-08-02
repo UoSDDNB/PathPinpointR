@@ -4,7 +4,7 @@
 \alias{select_evenly_distributed_switching_genes}
 \title{Select Evenly Distributed Switching Genes}
 \usage{
-select_evenly_distributed_switching_genes(sg_allgenes, min_time_spacing)
+select_evenly_distributed_switching_genes(sg_allgenes, min_time_spacing = 1)
 }
 \arguments{
 \item{sg_allgenes}{Filtered Switching Genes from Gene Switches. (dont use \code{topnum} instead choose a Psvalue cutoff )}

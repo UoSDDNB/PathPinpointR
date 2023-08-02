@@ -9,7 +9,8 @@ gss_output_plot(
   col = "red",
   overlay = FALSE,
   label = "sample name",
-  genes_of_interest = NULL
+  genes_of_interest = NULL,
+  switching_genes = reference.sg
 )
 }
 \arguments{

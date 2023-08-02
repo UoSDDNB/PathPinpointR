@@ -7,8 +7,6 @@
 #'
 #' @return plot to show a large number of cell positions
 #' @export
-#'
-#' @examples
 gss_plot_cell_range <- function(sample.gss, cell_idxs = c(1:2,4), genes_of_interest = NULL, switching_genes = NULL) {
   for (i in cell_idxs){
     if (i > 1) {
