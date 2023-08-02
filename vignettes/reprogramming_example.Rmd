@@ -2,9 +2,6 @@
 title: "reprogramming_example"
 author: "Moi T. Nicholas"
 output: rmarkdown::html_vignette
-theme: cerulean
-toc: yes
-toc_float: yes
 vignette: >
   %\VignetteIndexEntry{reprogramming_example}
   %\VignetteEngine{knitr::rmarkdown}
