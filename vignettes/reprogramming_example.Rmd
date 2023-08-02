@@ -1,5 +1,6 @@
 ---
-title: "reprogramming_example"
+title: "Reprogramming Example"
+author: "Moi T. Nicholas"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{reprogramming_example}
@@ -14,9 +15,13 @@ knitr::opts_chunk$set(
 )
 ```
 
+This vignette will take you through running GSS. \
+The data used here is from a Reprogramming dataset, which can be found [Here](http://hrpi.ddnetbio.com/). \
+\
+\
+
 
 # Data Pre-procesing
-
 
 #### Load neccecary packages
 ```{r eval=FALSE}
