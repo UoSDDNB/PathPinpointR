@@ -4,7 +4,7 @@
 #' Use this with "sample" cells taken from the reference. It will check how close the predicted position of the cells is to the real position.
 #'
 #' @param reference.gss A "GSS_OBJECT" as outputted by create_racing_lines
-#' @param reference.gs The SCE object which has had slingshot run on it already.
+#' @param reference.gs The GS object containing Pseudotime.
 #'
 #' @return A score for how accurate the results are as a data frame.
 #' @export
