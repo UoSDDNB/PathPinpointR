@@ -8,24 +8,21 @@
 gss_precision <- function(sample.gs, range = seq(0.02,0.04,0.005)){
 
 #Build a DF to store accuracy data.
-precision2 <- data.frame(
-  r2cutoff = range,
-  n_sg          = NA,                                                   # Number of genes after min_time_spacing
-  inaccuracy_min     = NA,                                              # Placeholder for accuracy minimum values
-  inaccuracy_1       = NA,
-  inaccuracy_median  = NA,
-  inaccuracy_mean    = NA,
-  inaccuracy_3       = NA,
-  inaccuracy_max     = NA
+precision <- data.frame(
+                r2cutoff = range,                                           # R2cutoff used.
+                    n_sg = NA,                                              # Number of genes after min_time_spacing
+         inaccuracy_mean = NA                                               # Placeholder for accuracy mean values
 )
 
 precision_rownumber <- 1
 
 for (i in range){
+  ##Follow the GS and GSS steps.
 
+  # Filter the switching genes
   reference.sg <- filter_switchgenes(sample.gs, allgenes = TRUE, r2cutoff = i)
 
-  # Reduce the binary counts matricies of the query data to only include the selection of evenly distributed genes from the refernence.
+  # Reduce the binary counts matricies of the query data to only include the selection of evenly distributed genes from the reference.
   sample_reduced      <- filter_gene_expression_for_switching_genes(sample.gs@assays@data@listData$binary   , reference.sg)
 
   #
@@ -35,32 +32,16 @@ for (i in range){
   accuracy <- score_gss_accuracy(reference.gss = sample.gss, reference.gs = sample.gs)
 
   #
-  precision2$n_sg[precision_rownumber  ] <- dim(reference.sg)[1]
-  precision2$inaccuracy_min[precision_rownumber ] <- summary(accuracy$inaccuracy)[1]
-  precision2$inaccuracy_1[precision_rownumber ] <- summary(accuracy$inaccuracy)[2]
-  precision2$inaccuracy_median[precision_rownumber] <- summary(accuracy$inaccuracy)[3]
-  precision2$inaccuracy_mean[precision_rownumber] <- summary(accuracy$inaccuracy)[4]
-  precision2$inaccuracy_3[precision_rownumber ] <- summary(accuracy$inaccuracy)[5]
-  precision2$inaccuracy_max[precision_rownumber ] <- summary(accuracy$inaccuracy)[6]
+  precision$n_sg[precision_rownumber  ] <- dim(reference.sg)[1]
+  precision$inaccuracy_mean[precision_rownumber] <- summary(accuracy$inaccuracy)[4]
 
-  precision_rownumber <- precision_rownumber + 1
+  #.
+  cat(precision_rownumber," ",i," done \n")
+
   #
-  cat(i," done \n")
+  precision_rownumber <- precision_rownumber + 1
 }
-
-# ggplot(data = precision2, mapping = aes(x = r2cutoff)) +
-#   geom_point(aes(y = inaccuracy_mean), color = "blue")
-#
-# ggplot(data = precision2, mapping = aes(x = n_sg)) +
-#   geom_point(aes(y = inaccuracy_mean), color = "blue") +
-#   scale_x_log10()
-#
-# ggplot(data = precision2, mapping = aes(x = min_time_spacing)) +
-#   geom_point(aes(y = n_genes), color = "red") +
-#   scale_y_log10()
-
-
-return(precision2)
+return(precision)
 }
 
 
