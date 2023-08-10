@@ -12,8 +12,8 @@
 #'
 #'
 
-filter_gene_expression_for_switching_genes <- function(binary_counts_matrix, gss_genes) {
-  indices_of_switching_genes   <- which(rownames(binary_counts_matrix) %in% gss_genes[,1])
+filter_gene_expression_for_switching_genes <- function(binary_counts_matrix, reference.sg) {
+  indices_of_switching_genes   <- which(rownames(binary_counts_matrix) %in% reference.sg[,1])
   reduced_binary_counts_matrix <- binary_counts_matrix[indices_of_switching_genes, ,drop = FALSE]
   return(reduced_binary_counts_matrix)
 }
