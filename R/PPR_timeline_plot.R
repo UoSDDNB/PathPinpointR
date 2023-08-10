@@ -22,7 +22,7 @@ PPR_timeline_plot <- function(reference.sg, reference_reduced, cell_idx = 1, lin
   reference.sg <- as.data.frame(reference.sg)
 
   # Check if row names in reference.sg match those in reference_reduced
-  if (!setequal(rownames(reference.sg), rownames(reference_reduced))) {
+  if (!identical(rownames(reference.sg), rownames(reference_reduced))) {
     stop("Row names in reference.sg do not match those in reference_reduced")
   }
 
