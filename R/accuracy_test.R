@@ -10,6 +10,11 @@
 #' @export
 score_gss_accuracy <- function(reference.gss, reference.gs) {
 
+  #check if the row names of reference.gss matches the row names of reference.gs
+  if (!identical(rownames(reference.gss), rownames(reference.gs))) {
+    stop("Row names of reference.gss do not match reference.gs")
+  }
+
   # Create a data frame to store the accuracy results
   accuracy <- data.frame(
     cell_names = colnames(reference.gs),                                         # Cell names from reference.gs
