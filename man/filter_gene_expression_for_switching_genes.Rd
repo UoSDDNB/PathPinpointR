@@ -4,7 +4,7 @@
 \alias{filter_gene_expression_for_switching_genes}
 \title{Filter Gene Expression for Switching Genes}
 \usage{
-filter_gene_expression_for_switching_genes(binary_counts_matrix, gss_genes)
+filter_gene_expression_for_switching_genes(binary_counts_matrix, reference.sg)
 }
 \arguments{
 \item{binary_counts_matrix}{a binary expression matrix from your sample.}
