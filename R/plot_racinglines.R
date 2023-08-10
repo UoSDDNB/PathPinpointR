@@ -16,19 +16,10 @@
 #' @export
 #'
 
-PPR_timeline_plot <- function(reference.sg, reference_reduced, cell_idx = 1, lines = TRUE) {
+PPR_timeline_plot <- function(reference.sg, lines = TRUE, reference_reduced = NULL, cell_idx = 1, cell_name = NULL) {
 
   # Convert reference.sg to a data frame
   reference.sg <- as.data.frame(reference.sg)
-
-  # Check if row names in reference.sg match those in reference_reduced
-  if (!setequal(rownames(reference.sg), rownames(reference_reduced))) {
-    stop("Row names in reference.sg do not match those in reference_reduced")
-  }
-
-  ## Reorder reference.sg
-  # as the code relies on the rownames and idicies of the genes in reference_reduced and reference.sg matching.
-  reference.sg <- reference.sg[rownames(reference_reduced),]
 
   # Add a new column direction_num and set it to -1
   reference.sg$direction_num <- -1
@@ -66,6 +57,15 @@ PPR_timeline_plot <- function(reference.sg, reference_reduced, cell_idx = 1, lin
 
 
 if (lines) {
+
+  ## Reorder reference.sg
+  # as the code relies on the rownames and idicies of the genes in reference_reduced and reference.sg matching.
+  reference_reduced <- reference_reduced[rownames(reference.sg),]
+
+  # Check if row names in reference.sg match those in reference_reduced
+  if (!setequal(rownames(reference.sg), rownames(reference_reduced))) {
+    stop("Row names in reference.sg do not match those in reference_reduced")
+  }
 
   #loop through all of the genes in reference.sg.
     for (g in 1:dim(reference.sg)[1]) {
