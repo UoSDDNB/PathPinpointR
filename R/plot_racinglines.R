@@ -21,8 +21,10 @@ racinglines_timeline <- function(gss_genes, reduced_binary_counts_matrix, cell_i
   # Convert gss_genes to a data frame
   gss_genes <- as.data.frame(gss_genes)
 
-  # Order gss_genes by switch_at_timeidx column
-  #gss_genes <- gss_genes[order(gss_genes$switch_at_timeidx), ]
+  # Check if row names in gss_genes match those in reduced_binary_counts_matrix
+  if (!identical(rownames(gss_genes), rownames(reduced_binary_counts_matrix))) {
+    stop("Row names in gss_genes do not match those in reduced_binary_counts_matrix")
+  }
 
   ## Reorder gss_genes
   # as the code relies on the rownames and idicies of the genes in reduced_binary_counts_matrix and gss_genes matching.
