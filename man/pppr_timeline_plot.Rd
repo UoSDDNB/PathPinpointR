@@ -4,12 +4,17 @@
 \alias{pppr_timeline_plot}
 \title{Identify and Visualise each cells position.}
 \usage{
-pppr_timeline_plot(reference.sg, reference_reduced, cell_idx = 1, lines = TRUE)
+pppr_timeline_plot(
+  reference.sg,
+  reduced_binary_counts_matrix,
+  cell_idx = 1,
+  lines = TRUE
+)
 }
 \arguments{
 \item{reference.sg}{A selection of switching genes which are evenly distributed through pseudo-time.}
 
-\item{reference_reduced}{a matrix of your samples binary gene expression.}
+\item{reduced_binary_counts_matrix}{a matrix of your samples binary gene expression.}
 
 \item{cell_idx}{The index (should get changed to name) of the cell of interest}
 

@@ -4,7 +4,7 @@
 #' Produces a plot for each cell which helps visualize how GSS is predicting the cells position.
 #'
 #' @param reference.sg A selection of switching genes which are evenly distributed through pseudo-time.
-#' @param reference_reduced a matrix of your samples binary gene expression.
+#' @param reduced_binary_counts_matrix a matrix of your samples binary gene expression.
 #' @param lines Logical, Do you want to plot the lines which indicate the predicted position of the selected cell.
 #' @param cell_idx The index (should get changed to name) of the cell of interest
 #'
@@ -16,19 +16,19 @@
 #' @export
 #'
 
-pppr_timeline_plot <- function(reference.sg, reference_reduced, cell_idx = 1, lines = TRUE) {
+pppr_timeline_plot <- function(reference.sg, reduced_binary_counts_matrix, cell_idx = 1, lines = TRUE) {
 
   # Convert reference.sg to a data frame
   reference.sg <- as.data.frame(reference.sg)
 
-  # Check if row names in reference.sg match those in reference_reduced
-  if (!identical(rownames(reference.sg), rownames(reference_reduced))) {
-    stop("Row names in reference.sg do not match those in reference_reduced")
+  # Check if row names in reference.sg match those in reduced_binary_counts_matrix
+  if (!identical(rownames(reference.sg), rownames(reduced_binary_counts_matrix))) {
+    stop("Row names in reference.sg do not match those in reduced_binary_counts_matrix")
   }
 
   ## Reorder reference.sg
-  # as the code relies on the rownames and idicies of the genes in reference_reduced and reference.sg matching.
-  reference.sg <- reference.sg[rownames(reference_reduced),]
+  # as the code relies on the rownames and idicies of the genes in reduced_binary_counts_matrix and reference.sg matching.
+  reference.sg <- reference.sg[rownames(reduced_binary_counts_matrix),]
 
   # Add a new column direction_num and set it to -1
   reference.sg$direction_num <- -1
@@ -70,29 +70,29 @@ if (lines) {
   #loop through all of the genes in reference.sg.
     for (g in 1:dim(reference.sg)[1]) {
       # if G is NOT expressed in  C, and the switch is UP  , then draw the line to the right.
-      if ((reference_reduced[rownames(reference.sg)[g], cell_idx] == 0) && (reference.sg$direction[g] == "up")) {
+      if ((reduced_binary_counts_matrix[rownames(reference.sg)[g], cell_idx] == 0) && (reference.sg$direction[g] == "up")) {
         timeline_plot <- timeline_plot + geom_segment(aes_string(x = 0, xend = reference.sg$switch_at_timeidx[g], y = reference.sg$pseudoR2s[g], yend = reference.sg$pseudoR2s[g]),
                                                       color = "blue", size = 0.8)
       }
       # if G is expressed in      c, and the switch is UP  , then draw the line to the right.
-      if ((reference_reduced[rownames(reference.sg)[g], cell_idx] == 1) && (reference.sg$direction[g] == "up")) {
+      if ((reduced_binary_counts_matrix[rownames(reference.sg)[g], cell_idx] == 1) && (reference.sg$direction[g] == "up")) {
         timeline_plot <- timeline_plot + geom_segment(aes_string(x = reference.sg$switch_at_timeidx[g], xend = 100, y = reference.sg$pseudoR2s[g], yend = reference.sg$pseudoR2s[g]),
                                                       color = "blue", size = 0.8)
       }
       # if G is NOT expressed in  C, and the switch is Down, then draw the line to the Left.
-      if ((reference_reduced[rownames(reference.sg)[g], cell_idx] == 0) && (reference.sg$direction[g] == "down")) {
+      if ((reduced_binary_counts_matrix[rownames(reference.sg)[g], cell_idx] == 0) && (reference.sg$direction[g] == "down")) {
         timeline_plot <- timeline_plot + geom_segment(aes_string(x = reference.sg$switch_at_timeidx[g], xend = 100, y = -reference.sg$pseudoR2s[g], yend = -reference.sg$pseudoR2s[g]),
                                                       color = "blue", size = 0.8)
       }
       # if G is expressed in      C, and the switch is Down, then draw the line to the Left.
-      if ((reference_reduced[rownames(reference.sg)[g], cell_idx] == 1) && (reference.sg$direction[g] == "down")) {
+      if ((reduced_binary_counts_matrix[rownames(reference.sg)[g], cell_idx] == 1) && (reference.sg$direction[g] == "down")) {
         timeline_plot <- timeline_plot + geom_segment(aes_string(x = 0, xend = reference.sg$switch_at_timeidx[g], y = -reference.sg$pseudoR2s[g], yend = -reference.sg$pseudoR2s[g]),
                                                       color = "blue", size = 0.8)
       }
     }
 
 # Title the plot with the name of the cell
-timeline_plot <- timeline_plot + ggtitle(colnames(reference_reduced)[cell_idx])
+timeline_plot <- timeline_plot + ggtitle(colnames(reduced_binary_counts_matrix)[cell_idx])
 
 }
 

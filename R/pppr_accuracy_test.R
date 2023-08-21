@@ -8,7 +8,7 @@
 #'
 #' @return A score for how accurate the results are as a data frame.
 #' @export
-score_gss_accuracy <- function(reference.gss, reference.gs) {
+pppr_accuracy_test <- function(reference.gss, reference.gs) {
 
   #check if the row names of reference.gss matches the row names of reference.gs
   if (!identical(rownames(reference.gss), rownames(reference.gs))) {
