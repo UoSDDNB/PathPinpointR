@@ -9,8 +9,8 @@
 #' @param full_time_IDX Do you want the scale to go from Min to Max or from 0-100.
 #'
 #' @return Timeline plot of selected cell
-#' @import ggplot2
-#' @import ggrepel
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggrepel geom_text_repel
 #'
 #'
 #' @export
