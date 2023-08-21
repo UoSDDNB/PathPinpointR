@@ -1,15 +1,13 @@
-#' @title Print GSS Object.
+#' @title Print PPPR Object Summary
 #'
-#' @description
-#' Make calling the GSS_OBJECT nicer:
+#' @descripton Make calling the PPPR_OBJECT nicer by printing a summary of its contents.
 #'
+#' @param x An object of class 'PPPR_OBJECT' to be summarized.
 #'
-#' @param x
-#'
-#' @return The titles (TODO: and some basic info) of the contents of your GSS_OBJECT
+#' @return A summary of the contents of the 'PPPR_OBJECT'.
 #' @export
-print.GSS_OBJECT <- function(x) {
-  cat("This is an object of class 'GSS_OBJECT'\n")
+print.PPPR_OBJECT <- function(x) {
+  cat("This is an object of class 'PPPR_OBJECT'\n")
   cat("It contains", length(x), "elements:\n\n")
 
   for (e in seq_along(x)) {
