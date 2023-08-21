@@ -3,10 +3,10 @@
 #' @description
 #' Produces a plot for each cell which helps visualize how GSS is predicting the cells position.
 #'
-#' @param reference_reduced a matrix of your samples binary gene expression.
 #' @param reference.sg A selection of switching genes which are evenly distributed through pseudo-time.
+#' @param reference_reduced a matrix of your samples binary gene expression.
+#' @param lines Logical, Do you want to plot the lines which indicate the predicted position of the selected cell.
 #' @param cell_idx The index (should get changed to name) of the cell of interest
-#' @param full_time_IDX Do you want the scale to go from Min to Max or from 0-100.
 #'
 #' @return Timeline plot of selected cell
 #' @importFrom ggplot2 ggplot
@@ -16,7 +16,7 @@
 #' @export
 #'
 
-PPR_timeline_plot <- function(reference.sg, reference_reduced, cell_idx = 1, lines = TRUE) {
+pppr_timeline_plot <- function(reference.sg, reference_reduced, cell_idx = 1, lines = TRUE) {
 
   # Convert reference.sg to a data frame
   reference.sg <- as.data.frame(reference.sg)

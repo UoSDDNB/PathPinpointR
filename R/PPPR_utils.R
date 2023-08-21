@@ -1,6 +1,7 @@
 #' @title Print PPPR Object Summary
 #'
-#' @descripton Make calling the PPPR_OBJECT nicer by printing a summary of its contents.
+#' @description
+#' Make calling the PPPR_OBJECT nicer by printing a summary of its contents.
 #'
 #' @param x An object of class 'PPPR_OBJECT' to be summarized.
 #'
@@ -16,7 +17,7 @@ print.PPPR_OBJECT <- function(x) {
       cat("A List of", length(x[[e]]),  "matrices\n\n")
     } else if (is.matrix(x[[e]])) {
       cat("Element", e, ":", names(x[e]), "\n")
-      cat("A Matrix with dimentions of", paste(dim(x[[e]]), collapse = " x "), "\n\n")
+      cat("A Matrix with dimensions of", paste(dim(x[[e]]), collapse = " x "), "\n\n")
     }
   }
 }
