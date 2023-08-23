@@ -14,8 +14,6 @@
 #'
 #'
 #' @export
-#'
-
 pppr_timeline_plot <- function(reference.sg, lines = FALSE, reduced_binary_counts_matrix = NULL, cell_idx = 1) {
 
   # Convert reference.sg to a data frame
