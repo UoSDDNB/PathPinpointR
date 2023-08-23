@@ -6,7 +6,7 @@
 #' @param reference.sg A selection of switching genes.
 #' @param lines Logical, Do you want to plot the lines which indicate the predicted position of the selected cell.
 #' @param reduced_binary_counts_matrix a matrix of your samples binary gene expression.
-#' @param cell_idx The index (should get changed to name) of the cell of interest
+#' @param cell_id The index or name of the cell of interest
 #'
 #' @return Timeline plot of selected cell
 #' @importFrom ggplot2 ggplot
@@ -14,7 +14,7 @@
 #'
 #'
 #' @export
-pppr_timeline_plot <- function(reference.sg, lines = FALSE, reduced_binary_counts_matrix = NULL, cell_idx = 1) {
+pppr_timeline_plot <- function(reference.sg, lines = FALSE, reduced_binary_counts_matrix = NULL, cell_id = 1) {
 
   # Convert reference.sg to a data frame
   reference.sg <- as.data.frame(reference.sg)
@@ -56,6 +56,15 @@ pppr_timeline_plot <- function(reference.sg, lines = FALSE, reduced_binary_count
 
 if (lines) {
 
+  if (is.character(cell_id)) {
+    cell_idx <- which(colnames(reference_reduced) == cell_id)
+  } else if (is.numeric(cell_id)) {
+    # Convert numeric to integer if needed
+    cell_idx <- as.integer(cell_id)
+  } else {
+    stop("cell_id must be character or numeric.")
+  }
+
   # Check if row names in reference.sg match those in reduced_binary_counts_matrix
   if (!identical(rownames(reference.sg), rownames(reduced_binary_counts_matrix))) {
     stop("Row names in reference.sg do not match those in reduced_binary_counts_matrix")
@@ -70,22 +79,22 @@ if (lines) {
       # if G is NOT expressed in  C, and the switch is UP  , then draw the line to the right.
       if ((reduced_binary_counts_matrix[rownames(reference.sg)[g], cell_idx] == 0) && (reference.sg$direction[g] == "up")) {
         timeline_plot <- timeline_plot + geom_segment(aes_string(x = 0, xend = reference.sg$switch_at_timeidx[g], y = reference.sg$pseudoR2s[g], yend = reference.sg$pseudoR2s[g]),
-                                                      color = "blue", size = 0.8)
+                                                      color = "blue", linewidth = 0.6)
       }
       # if G is expressed in      c, and the switch is UP  , then draw the line to the right.
       if ((reduced_binary_counts_matrix[rownames(reference.sg)[g], cell_idx] == 1) && (reference.sg$direction[g] == "up")) {
         timeline_plot <- timeline_plot + geom_segment(aes_string(x = reference.sg$switch_at_timeidx[g], xend = 100, y = reference.sg$pseudoR2s[g], yend = reference.sg$pseudoR2s[g]),
-                                                      color = "blue", size = 0.8)
+                                                      color = "blue", linewidth = 0.6)
       }
       # if G is NOT expressed in  C, and the switch is Down, then draw the line to the Left.
       if ((reduced_binary_counts_matrix[rownames(reference.sg)[g], cell_idx] == 0) && (reference.sg$direction[g] == "down")) {
         timeline_plot <- timeline_plot + geom_segment(aes_string(x = reference.sg$switch_at_timeidx[g], xend = 100, y = -reference.sg$pseudoR2s[g], yend = -reference.sg$pseudoR2s[g]),
-                                                      color = "blue", size = 0.8)
+                                                      color = "blue", linewidth = 0.6)
       }
       # if G is expressed in      C, and the switch is Down, then draw the line to the Left.
       if ((reduced_binary_counts_matrix[rownames(reference.sg)[g], cell_idx] == 1) && (reference.sg$direction[g] == "down")) {
         timeline_plot <- timeline_plot + geom_segment(aes_string(x = 0, xend = reference.sg$switch_at_timeidx[g], y = -reference.sg$pseudoR2s[g], yend = -reference.sg$pseudoR2s[g]),
-                                                      color = "blue", size = 0.8)
+                                                      color = "blue", linewidth = 0.6)
       }
     }
 
