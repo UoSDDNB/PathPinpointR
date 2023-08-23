@@ -26,10 +26,10 @@ for (i in range){
   sample_reduced      <- filter_gene_expression_for_switching_genes(sample.gs@assays@data@listData$binary   , reference.sg)
 
   #
-  sample.gss <- create_racing_lines(sample_reduced, reference.sg)
+  sample.pppr <- create_racing_lines(sample_reduced, reference.sg)
 
   #
-  accuracy <- score_gss_accuracy(reference.gss = sample.gss, reference.gs = sample.gs)
+  accuracy <- pppr_accuracy_test(reference.pppr = sample.pppr, reference.gs = sample.gs)
 
   #
   precision$n_sg[precision_rownumber  ] <- dim(reference.sg)[1]

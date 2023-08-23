@@ -2,7 +2,7 @@
 % Please edit documentation in R/pppr_accuracy_test.R
 \name{pppr_accuracy_test}
 \alias{pppr_accuracy_test}
-\title{Title Accuracy Tester}
+\title{Accuracy Tester}
 \usage{
 pppr_accuracy_test(reference.pppr, reference.gs)
 }

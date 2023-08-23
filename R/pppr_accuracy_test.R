@@ -1,4 +1,4 @@
-#' Title Accuracy Tester
+#' Accuracy Tester
 #'
 #' @description
 #' Use this with "sample" cells taken from the reference. It will check how close the predicted position of the cells is to the real position.
@@ -12,8 +12,8 @@ pppr_accuracy_test <- function(reference.pppr, reference.gs) {
 
   # Create a data frame to store the accuracy results
   accuracy <- data.frame(
-    cell_names = colnames(reference.gs),                                         # Cell names from reference.gs
-    true_position_of_cells_pseudotime = reference.gs@colData$Pseudotime,  # True pseudotime values from reference.gs
+    cell_names = colnames(reference.gs),                                          # Cell names from reference.gs
+    true_position_of_cells_pseudotime = reference.gs@colData$Pseudotime,          # True pseudotime values from reference.gs
     true_position_of_cells_timeIDX = NA,                                          # Placeholder for true time indices
     predicted_position_of_cells_timeIDX = NA,                                     # Placeholder for predicted time indices
     inaccuracy = NA                                                               # Placeholder for inaccuracy values
