@@ -3,7 +3,7 @@
 #' @description
 #' Produces a plot for each cell which helps visualize how GSS is predicting the cells position.
 #'
-#' @param reference.sg A selection of switching genes which are evenly distributed through pseudo-time.
+#' @param reference.sg A selection of switching genes.
 #' @param lines Logical, Do you want to plot the lines which indicate the predicted position of the selected cell.
 #' @param reduced_binary_counts_matrix a matrix of your samples binary gene expression.
 #' @param cell_idx The index (should get changed to name) of the cell of interest
