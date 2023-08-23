@@ -38,7 +38,7 @@ pppr_cell_plot <- function(sample.pppr, cell_idx = 1, col = "red", overlay = FAL
              col = col)
 
     text(x = which.max(sample.pppr$cells_flat[cell_idx,]),
-         y = (sample.pppr$cells_flat[cell_idx,][which.max(sample.pppr$cells_flat[cell_idx,])])/1.5,
+         y = (sample.pppr$cells_flat[cell_idx,][which.max(sample.pppr$cells_flat[cell_idx,])])/1.25,
          labels = paste(rownames(sample.pppr$cells_flat)[cell_idx],"(PREDICTED)"),
          col = col,
          pos = 2,
@@ -55,7 +55,7 @@ pppr_cell_plot <- function(sample.pppr, cell_idx = 1, col = "red", overlay = FAL
                col = col)
 
       text(x = accuracy_data$true_position_of_cells_timeIDX[cell_idx],
-           y = (sample.pppr$cells_flat[cell_idx,][which.max(sample.pppr$cells_flat[cell_idx,])])/1.5,
+           y = (sample.pppr$cells_flat[cell_idx,][which.max(sample.pppr$cells_flat[cell_idx,])])/1.25,
            labels = paste(accuracy_data$cell_names[cell_idx],"(TRUE)"),
            col = col,
            pos = 2,    # Set the position to 2 (Left)
@@ -120,7 +120,7 @@ pppr_cell_plot <- function(sample.pppr, cell_idx = 1, col = "red", overlay = FAL
              col = col)
 
     text(x = which.max(sample.pppr$cells_flat[cell_idx,]),
-         y = (sample.pppr$cells_flat[cell_idx,][which.max(sample.pppr$cells_flat[cell_idx,])])/1.5,
+         y = (sample.pppr$cells_flat[cell_idx,][which.max(sample.pppr$cells_flat[cell_idx,])])/1.25,
          labels = paste(rownames(sample.pppr$cells_flat)[cell_idx],"(PREDICTED)"),
          col = col,
          pos = 2,
@@ -137,7 +137,7 @@ pppr_cell_plot <- function(sample.pppr, cell_idx = 1, col = "red", overlay = FAL
                col = col)
 
       text(x = accuracy_data$true_position_of_cells_timeIDX[cell_idx],
-           y = (sample.pppr$cells_flat[cell_idx,][which.max(sample.pppr$cells_flat[cell_idx,])])/1.5,
+           y = (sample.pppr$cells_flat[cell_idx,][which.max(sample.pppr$cells_flat[cell_idx,])])/1.25,
            labels = paste(accuracy_data$cell_names[cell_idx],"(TRUE)"),
            col = col,
            pos = 2,    # Set the position to 2 (Left)
