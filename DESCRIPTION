@@ -1,4 +1,4 @@
-Package: GeneSwitchesScorer
+Package: PathPinPointR
 Title: Identifies Progression of a Sample on a Trajectory
 Version: 0.1.0
 Authors@R:
