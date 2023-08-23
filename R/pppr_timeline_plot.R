@@ -4,8 +4,8 @@
 #' Produces a plot for each cell which helps visualize how GSS is predicting the cells position.
 #'
 #' @param reference.sg A selection of switching genes which are evenly distributed through pseudo-time.
-#' @param reduced_binary_counts_matrix a matrix of your samples binary gene expression.
 #' @param lines Logical, Do you want to plot the lines which indicate the predicted position of the selected cell.
+#' @param reduced_binary_counts_matrix a matrix of your samples binary gene expression.
 #' @param cell_idx The index (should get changed to name) of the cell of interest
 #'
 #' @return Timeline plot of selected cell
@@ -16,19 +16,10 @@
 #' @export
 #'
 
-pppr_timeline_plot <- function(reference.sg, reduced_binary_counts_matrix, cell_idx = 1, lines = TRUE) {
+pppr_timeline_plot <- function(reference.sg, lines = FALSE, reduced_binary_counts_matrix, cell_idx = 1) {
 
   # Convert reference.sg to a data frame
   reference.sg <- as.data.frame(reference.sg)
-
-  # Check if row names in reference.sg match those in reduced_binary_counts_matrix
-  if (!identical(rownames(reference.sg), rownames(reduced_binary_counts_matrix))) {
-    stop("Row names in reference.sg do not match those in reduced_binary_counts_matrix")
-  }
-
-  ## Reorder reference.sg
-  # as the code relies on the rownames and idicies of the genes in reduced_binary_counts_matrix and reference.sg matching.
-  reference.sg <- reference.sg[rownames(reduced_binary_counts_matrix),]
 
   # Add a new column direction_num and set it to -1
   reference.sg$direction_num <- -1
@@ -66,6 +57,15 @@ pppr_timeline_plot <- function(reference.sg, reduced_binary_counts_matrix, cell_
 
 
 if (lines) {
+
+  # Check if row names in reference.sg match those in reduced_binary_counts_matrix
+  if (!identical(rownames(reference.sg), rownames(reduced_binary_counts_matrix))) {
+    stop("Row names in reference.sg do not match those in reduced_binary_counts_matrix")
+  }
+
+  ## Reorder reference.sg
+  # as the code relies on the rownames and idicies of the genes in reduced_binary_counts_matrix and reference.sg matching.
+  reference.sg <- reference.sg[rownames(reduced_binary_counts_matrix),]
 
   #loop through all of the genes in reference.sg.
     for (g in 1:dim(reference.sg)[1]) {
