@@ -10,11 +10,6 @@
 #' @export
 pppr_accuracy_test <- function(reference.pppr, reference.gs) {
 
-  #check if the row names of reference.pppr matches the row names of reference.gs
-  if (!identical(rownames(reference.pppr), rownames(reference.gs))) {
-    stop("Row names of reference.pppr do not match reference.gs")
-  }
-
   # Create a data frame to store the accuracy results
   accuracy <- data.frame(
     cell_names = colnames(reference.gs),                                         # Cell names from reference.gs
