@@ -6,19 +6,19 @@
 \usage{
 pppr_timeline_plot(
   reference.sg,
-  reduced_binary_counts_matrix,
-  cell_idx = 1,
-  lines = TRUE
+  lines = FALSE,
+  reduced_binary_counts_matrix = NULL,
+  cell_idx = 1
 )
 }
 \arguments{
-\item{reference.sg}{A selection of switching genes which are evenly distributed through pseudo-time.}
+\item{reference.sg}{A selection of switching genes.}
+
+\item{lines}{Logical, Do you want to plot the lines which indicate the predicted position of the selected cell.}
 
 \item{reduced_binary_counts_matrix}{a matrix of your samples binary gene expression.}
 
 \item{cell_idx}{The index (should get changed to name) of the cell of interest}
-
-\item{lines}{Logical, Do you want to plot the lines which indicate the predicted position of the selected cell.}
 }
 \value{
 Timeline plot of selected cell

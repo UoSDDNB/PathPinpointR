@@ -4,10 +4,10 @@
 \alias{pppr_accuracy_test}
 \title{Title Accuracy Tester}
 \usage{
-pppr_accuracy_test(reference.gss, reference.gs)
+pppr_accuracy_test(reference.pppr, reference.gs)
 }
 \arguments{
-\item{reference.gss}{A "GSS_OBJECT" as outputted by create_racing_lines}
+\item{reference.pppr}{A "GSS_OBJECT" as outputted by create_racing_lines}
 
 \item{reference.gs}{The GS object containing Pseudotime.}
 }
