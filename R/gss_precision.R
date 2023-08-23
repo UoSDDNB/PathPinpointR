@@ -1,11 +1,11 @@
-#' gss_precision
+#' pppr_precision
 #'
 #' @param sample.gs GeneSwitches object that you have already run binarise and GLM on.
 #' @param range range of r2cutoffs to use
 #'
 #' @return the precision dataframe.
 #' @export
-gss_precision <- function(sample.gs, range = seq(0.02,0.04,0.005)){
+pppr_precision <- function(sample.gs, range = seq(0.02,0.04,0.005)){
 
 #Build a DF to store accuracy data.
 precision <- data.frame(
