@@ -81,22 +81,22 @@ if (lines) {
       # if G is NOT expressed in  C, and the switch is UP  , then draw the line to the right.
       if ((reference_reduced[rownames(reference.sg)[g], cell_idx] == 0) && (reference.sg$direction[g] == "up")) {
         timeline_plot <- timeline_plot + geom_segment(aes_string(x = 0, xend = reference.sg$switch_at_timeidx[g], y = reference.sg$pseudoR2s[g], yend = reference.sg$pseudoR2s[g]),
-                                                      color = "blue", size = 0.8)
+                                                      color = "blue", linewidth = 0.6)
       }
       # if G is expressed in      c, and the switch is UP  , then draw the line to the right.
       if ((reference_reduced[rownames(reference.sg)[g], cell_idx] == 1) && (reference.sg$direction[g] == "up")) {
         timeline_plot <- timeline_plot + geom_segment(aes_string(x = reference.sg$switch_at_timeidx[g], xend = 100, y = reference.sg$pseudoR2s[g], yend = reference.sg$pseudoR2s[g]),
-                                                      color = "blue", size = 0.8)
+                                                      color = "blue", linewidth = 0.6)
       }
       # if G is NOT expressed in  C, and the switch is Down, then draw the line to the Left.
       if ((reference_reduced[rownames(reference.sg)[g], cell_idx] == 0) && (reference.sg$direction[g] == "down")) {
         timeline_plot <- timeline_plot + geom_segment(aes_string(x = reference.sg$switch_at_timeidx[g], xend = 100, y = -reference.sg$pseudoR2s[g], yend = -reference.sg$pseudoR2s[g]),
-                                                      color = "blue", size = 0.8)
+                                                      color = "blue", linewidth = 0.6)
       }
       # if G is expressed in      C, and the switch is Down, then draw the line to the Left.
       if ((reference_reduced[rownames(reference.sg)[g], cell_idx] == 1) && (reference.sg$direction[g] == "down")) {
         timeline_plot <- timeline_plot + geom_segment(aes_string(x = 0, xend = reference.sg$switch_at_timeidx[g], y = -reference.sg$pseudoR2s[g], yend = -reference.sg$pseudoR2s[g]),
-                                                      color = "blue", size = 0.8)
+                                                      color = "blue", linewidth = 0.6)
       }
     }
 
