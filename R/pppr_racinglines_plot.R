@@ -1,12 +1,12 @@
 #' @title Identify and Visualise each cells position.
 #'
 #' @description
-#' Produces a plot for each cell which helps visualize how GSS is predicting the cells position.
+#' Produces a plot for each cell which helps visualize how PathPinPointR is predicting the cells position.
 #'
-#' @param reference_reduced a matrix of your samples binary gene expression.
 #' @param reference.sg A selection of switching genes which are evenly distributed through pseudo-time.
-#' @param cell_idx The index (should get changed to name) of the cell of interest
-#' @param full_time_IDX Do you want the scale to go from Min to Max or from 0-100.
+#' @param lines logical, do you want to include lines to inidicate the predicted position of a cell
+#' @param reference_reduced a matrix of your sample's binary gene expression.
+#' @param cell_id The index or name of the cell of interest
 #'
 #' @return Timeline plot of selected cell
 #' @import ggplot2
@@ -16,7 +16,7 @@
 #' @export
 #'
 
-PPR_timeline_plot <- function(reference.sg, lines = TRUE, reference_reduced = NULL, cell_idx = 1, cell_name = NULL) {
+pppr_timeline_plot <- function(reference.sg, lines = TRUE, reference_reduced = NULL, cell_id = 1) {
 
   # Convert reference.sg to a data frame
   reference.sg <- as.data.frame(reference.sg)
@@ -58,6 +58,15 @@ PPR_timeline_plot <- function(reference.sg, lines = TRUE, reference_reduced = NU
 
 if (lines) {
 
+  if (is.character(cell_id)) {
+    cell_idx <- which(colnames(reference_reduced) == cell_id)
+  } else if (is.numeric(cell_id)) {
+    # Convert numeric to integer if needed
+    cell_idx <- as.integer(cell_id)
+  } else {
+    stop("cell_id must be character or numeric.")
+  }
+
   ## Reorder reference.sg
   # as the code relies on the rownames and idicies of the genes in reference_reduced and reference.sg matching.
   reference_reduced <- reference_reduced[rownames(reference.sg),]
@@ -93,6 +102,7 @@ if (lines) {
 
 # Title the plot with the name of the cell
 timeline_plot <- timeline_plot + ggtitle(colnames(reference_reduced)[cell_idx])
+
 
 }
 
