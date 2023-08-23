@@ -1,3 +1,3 @@
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage("Welcome to GeneSwitchesScorer!")
+  packageStartupMessage("Welcome to PathPinPointR!")
 }
