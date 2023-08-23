@@ -3,16 +3,16 @@
 #' @description
 #' Use this with "sample" cells taken from the reference. It will check how close the predicted position of the cells is to the real position.
 #'
-#' @param reference.gss A "GSS_OBJECT" as outputted by create_racing_lines
+#' @param reference.pppr A "GSS_OBJECT" as outputted by create_racing_lines
 #' @param reference.gs The GS object containing Pseudotime.
 #'
 #' @return A score for how accurate the results are as a data frame.
 #' @export
-pppr_accuracy_test <- function(reference.gss, reference.gs) {
+pppr_accuracy_test <- function(reference.pppr, reference.gs) {
 
-  #check if the row names of reference.gss matches the row names of reference.gs
-  if (!identical(rownames(reference.gss), rownames(reference.gs))) {
-    stop("Row names of reference.gss do not match reference.gs")
+  #check if the row names of reference.pppr matches the row names of reference.gs
+  if (!identical(rownames(reference.pppr), rownames(reference.gs))) {
+    stop("Row names of reference.pppr do not match reference.gs")
   }
 
   # Create a data frame to store the accuracy results
@@ -30,9 +30,9 @@ pppr_accuracy_test <- function(reference.gss, reference.gs) {
   # Calculate the true time indices based on the pseudotime values
   accuracy$true_position_of_cells_timeIDX <- round((reference.gs@colData$Pseudotime - min(reference.gs@colData$Pseudotime)) / steptime)
 
-  # Predict the time indices for the cells using the reference.gss
-  # Note: This assumes that the names of cells in reference.gss$cells_flat match the cell names in reference.gs
-  accuracy$predicted_position_of_cells_timeIDX[match(names(apply(reference.gss$cells_flat, 1, which.max)), accuracy$cell_names)] <- apply(reference.gss$cells_flat, 1, which.max)
+  # Predict the time indices for the cells using the reference.pppr
+  # Note: This assumes that the names of cells in reference.pppr$cells_flat match the cell names in reference.gs
+  accuracy$predicted_position_of_cells_timeIDX[match(names(apply(reference.pppr$cells_flat, 1, which.max)), accuracy$cell_names)] <- apply(reference.pppr$cells_flat, 1, which.max)
 
   # Calculate the accuracy as the absolute difference between the true and predicted time indices
   accuracy$inaccuracy <- abs(accuracy$true_position_of_cells_timeIDX - accuracy$predicted_position_of_cells_timeIDX)
