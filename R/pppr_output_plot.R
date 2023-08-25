@@ -6,6 +6,9 @@
 #' @param sample.gss A GSS_OBJECT of the sample you wish to plot
 #' @param col The colour that you'd like
 #' @param overlay set to TRUE if you would like this plot to overlay a previous plot.
+#' @param label string that you would like to assign as the label to the line.
+#' @param genes_of_interest The names of any genes that you'd like to include the switching point of.
+#' @param switching_genes a matrix containing the switching gene information as produced by GeneSwitches.
 #'
 #' @return nice plot highlighting the probable position of your sample on your trajectory.
 #' @export
