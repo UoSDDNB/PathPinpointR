@@ -1,4 +1,4 @@
-#' @title Identify the "racing lines"
+#' @title PPPR Predict Position
 #'
 #' @description
 #' Produces an estimate for the position on trajectory of each gene in each cell of a sample.
@@ -16,7 +16,7 @@ pppr_predict_position <- function(reduced_binary_counts_matrix,reference.sg) {
   ## The final output will be a pppr_obj (list) comprised of 3 objects.
   # Make the list of length 3, and name the objects
   pppr_obj <- vector("list", 3)
-  names(pppr_obj) <- c("racing_lines","cells_flat","sample_flat")
+  names(pppr_obj) <- c("genomic_expression_traces","cells_flat","sample_flat")
   # Assign the pppr_obj class attribute to the list
   class(pppr_obj) <- "PPPR_OBJECT"
 
@@ -37,7 +37,7 @@ pppr_predict_position <- function(reduced_binary_counts_matrix,reference.sg) {
   switching_time <- as.numeric(reference.sg$switch_at_timeidx)
   switching_direction <- reference.sg$direction
 
-  # Building the racing lines list. (faster than building it dynamically.)
+  # Building the genomic_expression_traces list. (faster than building it dynamically.)
   all_patients_cells_scored <- vector("list", number_of_cells)
   names(all_patients_cells_scored) <- colnames(reduced_binary_counts_matrix)
 
@@ -45,8 +45,8 @@ pppr_predict_position <- function(reduced_binary_counts_matrix,reference.sg) {
   #which represent likely position of a cell on a trajectory based on the expression of each gene.
   for (c in 1:number_of_cells) {
     # Build the matrix of 0's which has genes as rows and pseudotime indecies as columns.
-   racing_mat <- matrix(0, nrow = number_of_switching_genes, ncol = 100)
-   rownames(racing_mat) <- rownames(reduced_binary_counts_matrix)
+   genomic_expression_mat <- matrix(0, nrow = number_of_switching_genes, ncol = 100)
+   rownames(genomic_expression_mat) <- rownames(reduced_binary_counts_matrix)
     binarized_gene_expression_for_cell_c <- reduced_binary_counts_matrix[, c]
 
     up_indices <- which(binarized_gene_expression_for_cell_c == 1 & switching_direction == "up")
@@ -55,27 +55,27 @@ pppr_predict_position <- function(reduced_binary_counts_matrix,reference.sg) {
     not_down_indices <- which(binarized_gene_expression_for_cell_c == 1 & switching_direction == "down")
 
     for (i in up_indices) {
-      racing_mat[i, switching_time[i]:100] <- 1
+      genomic_expression_mat[i, switching_time[i]:100] <- 1
     }
 
     for (i in down_indices) {
-      racing_mat[i, switching_time[i]:100] <- 1
+      genomic_expression_mat[i, switching_time[i]:100] <- 1
     }
 
     for (i in not_up_indices) {
-      racing_mat[i, 1:switching_time[i]] <- 1
+      genomic_expression_mat[i, 1:switching_time[i]] <- 1
     }
 
     for (i in not_down_indices) {
-      racing_mat[i, 1:switching_time[i]] <- 1
+      genomic_expression_mat[i, 1:switching_time[i]] <- 1
     }
 
-    all_patients_cells_scored[[c]] <- racing_mat
+    all_patients_cells_scored[[c]] <- genomic_expression_mat
   }
 
-  pppr_obj$racing_lines <- all_patients_cells_scored
+  pppr_obj$genomic_expression_traces <- all_patients_cells_scored
 
-### RACING LINES CREATED
+### GENOMIC EXPRESSION TRACES CREATED
 # Now flatten:
 
 # Use lapply to calculate column sums for each matrix
