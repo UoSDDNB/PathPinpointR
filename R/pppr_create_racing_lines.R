@@ -11,7 +11,7 @@
 #'     and the rows represent genes, values indicate a likely position of the cell upon the trajectory based that genes bianrized expression.
 #' @export
 #'
-create_racing_lines <- function(reduced_binary_counts_matrix,reference.sg) {
+pppr_predict_position <- function(reduced_binary_counts_matrix,reference.sg) {
 
   ## The final output will be a pppr_obj (list) comprised of 3 objects.
   # Make the list of length 3, and name the objects
