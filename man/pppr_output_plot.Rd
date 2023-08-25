@@ -19,6 +19,12 @@ pppr_output_plot(
 \item{col}{The colour that you'd like}
 
 \item{overlay}{set to TRUE if you would like this plot to overlay a previous plot.}
+
+\item{label}{string that you would like to assign as the label to the line.}
+
+\item{genes_of_interest}{The names of any genes that you'd like to include the switching point of.}
+
+\item{switching_genes}{a matrix containing the switching gene information as produced by GeneSwitches.}
 }
 \value{
 nice plot highlighting the probable position of your sample on your trajectory.
