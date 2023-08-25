@@ -4,7 +4,7 @@
 #' Produces a plot for each cell which helps visualize how GSS is predicting the cells position.
 #'
 #' @param reference.sg A selection of switching genes.
-#' @param lines Logical, Do you want to plot the lines which indicate the predicted position of the selected cell.
+#' @param genomic_expression_traces Logical, Do you want to plot the lines which indicate the predicted position of the selected cell.
 #' @param reduced_binary_counts_matrix a matrix of your samples binary gene expression.
 #' @param cell_id The index or name of the cell of interest
 #'
@@ -14,7 +14,7 @@
 #'
 #'
 #' @export
-pppr_timeline_plot <- function(reference.sg, lines = FALSE, reduced_binary_counts_matrix = NULL, cell_id = 1) {
+pppr_timeline_plot <- function(reference.sg, genomic_expression_traces = FALSE, reduced_binary_counts_matrix = NULL, cell_id = 1) {
 
   # Convert reference.sg to a data frame
   reference.sg <- as.data.frame(reference.sg)
@@ -54,7 +54,7 @@ pppr_timeline_plot <- function(reference.sg, lines = FALSE, reduced_binary_count
                                text = element_text(size = 12))
 
 
-if (lines) {
+if (genomic_expression_traces) {
 
   if (is.character(cell_id)) {
     cell_idx <- which(colnames(reference_reduced) == cell_id)
