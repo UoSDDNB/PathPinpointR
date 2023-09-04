@@ -1,28 +1,28 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# PathPinPointR
+# PathPinpointR
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of PathPinPointR is to identify the position of a sample upon a
+The goal of PathPinpointR is to identify the position of a sample upon a
 trajectory.
 
 ## Installation
 
-You can install the development version of PathPinPointR from
+You can install the development version of PathPinpointR from
 [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("moi-taiga/PathPinPointR")
+devtools::install_github("moi-taiga/PathPinpointR")
 ```
 
 ## Example
 
 [GSS
-Workflow](https://moi-taiga.github.io/PathPinPointR/articles/GSS_Workflow.html)
+Workflow](https://moi-taiga.github.io/PathPinpointR/articles/GSS_Workflow.html)
 
 ## Limitations:
 
