@@ -1,14 +1,14 @@
-#' @title Print PPPR Object Summary
+#' @title Print PPR Object Summary
 #'
 #' @description
-#' Make calling the PPPR_OBJECT nicer by printing a summary of its contents.
+#' Make calling the PPR_OBJECT nicer by printing a summary of its contents.
 #'
-#' @param x An object of class 'PPPR_OBJECT' to be summarized.
+#' @param x An object of class 'PPR_OBJECT' to be summarized.
 #'
-#' @return A summary of the contents of the 'PPPR_OBJECT'.
+#' @return A summary of the contents of the 'PPR_OBJECT'.
 #' @export
-print.PPPR_OBJECT <- function(x) {
-  cat("This is an object of class 'PPPR_OBJECT'\n")
+print.PPR_OBJECT <- function(x) {
+  cat("This is an object of class 'PPR_OBJECT'\n")
   cat("It contains", length(x), "elements:\n\n")
 
   for (e in seq_along(x)) {

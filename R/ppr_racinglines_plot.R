@@ -16,7 +16,7 @@
 #' @export
 #'
 
-pppr_timeline_plot <- function(reference.sg, lines = TRUE, reference_reduced = NULL, cell_id = 1) {
+ppr_timeline_plot <- function(reference.sg, lines = TRUE, reference_reduced = NULL, cell_id = 1) {
 
   # Convert reference.sg to a data frame
   reference.sg <- as.data.frame(reference.sg)

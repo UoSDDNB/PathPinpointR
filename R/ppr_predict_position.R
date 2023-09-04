@@ -11,14 +11,14 @@
 #'     and the rows represent genes, values indicate a likely position of the cell upon the trajectory based that genes bianrized expression.
 #' @export
 #'
-pppr_predict_position <- function(reduced_binary_counts_matrix,reference.sg) {
+ppr_predict_position <- function(reduced_binary_counts_matrix,reference.sg) {
 
-  ## The final output will be a pppr_obj (list) comprised of 3 objects.
+  ## The final output will be a ppr_obj (list) comprised of 3 objects.
   # Make the list of length 3, and name the objects
-  pppr_obj <- vector("list", 3)
-  names(pppr_obj) <- c("genomic_expression_traces","cells_flat","sample_flat")
-  # Assign the pppr_obj class attribute to the list
-  class(pppr_obj) <- "PPPR_OBJECT"
+  ppr_obj <- vector("list", 3)
+  names(ppr_obj) <- c("genomic_expression_traces","cells_flat","sample_flat")
+  # Assign the ppr_obj class attribute to the list
+  class(ppr_obj) <- "PPR_OBJECT"
 
   ## Reorder reference.sg
   # as the code relies on the rownames and idicies of the genes in reduced_binary_counts_matrix and reference.sg matching.
@@ -73,16 +73,16 @@ pppr_predict_position <- function(reduced_binary_counts_matrix,reference.sg) {
     all_patients_cells_scored[[c]] <- genomic_expression_mat
   }
 
-  pppr_obj$genomic_expression_traces <- all_patients_cells_scored
+  ppr_obj$genomic_expression_traces <- all_patients_cells_scored
 
 ### GENOMIC EXPRESSION TRACES CREATED
 # Now flatten:
 
 # Use lapply to calculate column sums for each matrix
-pppr_obj$cells_flat <- do.call(rbind, lapply(all_patients_cells_scored, colSums))
-rownames(pppr_obj$cells_flat) <- names(all_patients_cells_scored)
+ppr_obj$cells_flat <- do.call(rbind, lapply(all_patients_cells_scored, colSums))
+rownames(ppr_obj$cells_flat) <- names(all_patients_cells_scored)
 # Combine each cells column sums into a single flat matrix.
-pppr_obj$sample_flat <- matrix(colSums(pppr_obj$cells_flat), nrow = 1)
+ppr_obj$sample_flat <- matrix(colSums(ppr_obj$cells_flat), nrow = 1)
 
-return(pppr_obj)
+return(ppr_obj)
 }

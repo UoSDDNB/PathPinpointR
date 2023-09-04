@@ -1,11 +1,11 @@
-#' pppr_precision
+#' ppr_precision
 #'
 #' @param sample.gs GeneSwitches object that you have already run binarise and GLM on.
 #' @param range range of r2cutoffs to use
 #'
 #' @return the precision dataframe.
 #' @export
-pppr_precision <- function(sample.gs, range = seq(0.02,0.04,0.005)){
+ppr_precision <- function(sample.gs, range = seq(0.02,0.04,0.005)){
 
 #Build a DF to store accuracy data.
 precision <- data.frame(
@@ -26,10 +26,10 @@ for (i in range){
   sample_reduced      <- filter_gene_expression_for_switching_genes(sample.gs@assays@data@listData$binary   , reference.sg)
 
   #
-  sample.pppr <- create_racing_lines(sample_reduced, reference.sg)
+  sample.ppr <- create_racing_lines(sample_reduced, reference.sg)
 
   #
-  accuracy <- pppr_accuracy_test(reference.pppr = sample.pppr, reference.gs = sample.gs)
+  accuracy <- ppr_accuracy_test(reference.ppr = sample.ppr, reference.gs = sample.gs)
 
   #
   precision$n_sg[precision_rownumber  ] <- dim(reference.sg)[1]
