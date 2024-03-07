@@ -23,7 +23,7 @@ for (i in range){
   reference.sg <- filter_switchgenes(sample.gs, allgenes = TRUE, r2cutoff = i)
 
   # Reduce the binary counts matricies of the query data to only include the selection of evenly distributed genes from the reference.
-  sample_reduced      <- filter_gene_expression_for_switching_genes(sample.gs@assays@data@listData$binary   , reference.sg)
+  sample_reduced      <- ppr_filter_gene_expression_for_switching_genes(sample.gs@assays@data@listData$binary   , reference.sg)
 
   #
   sample.ppr <- ppr_predict_position(sample_reduced, reference.sg)
