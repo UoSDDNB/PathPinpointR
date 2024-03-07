@@ -1,5 +1,5 @@
 ---
-title: "wholeanalysis"
+title: "covid"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{wholeanalysis}
@@ -7,9 +7,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, eval = FALSE, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+#```{r setup, eval = FALSE, include=FALSE}
+#knitr::opts_chunk$set(echo = TRUE)
+#```
 
 ## Load Libraries
 ```{r, eval = FALSE}
