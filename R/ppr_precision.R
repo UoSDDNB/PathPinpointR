@@ -26,7 +26,7 @@ for (i in range){
   sample_reduced      <- filter_gene_expression_for_switching_genes(sample.gs@assays@data@listData$binary   , reference.sg)
 
   #
-  sample.ppr <- create_racing_lines(sample_reduced, reference.sg)
+  sample.ppr <- ppr_predict_position(sample_reduced, reference.sg)
 
   #
   accuracy <- ppr_accuracy_test(reference.ppr = sample.ppr, reference.gs = sample.gs)
