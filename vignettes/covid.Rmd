@@ -1,0 +1,518 @@
+---
+title: "wholeanalysis"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{wholeanalysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load Libraries
+```{r, eval = FALSE}
+# library(data.table)
+# library(Matrix)
+# library(reticulate)
+library(Seurat)
+# library(ggplot2)
+# library(patchwork)
+# library(RColorBrewer)
+# library(parallel)
+# library(GeneSwitches)
+# library(slingshot)
+```
+
+### Loading in the downsampled atlas and covid objects
+```{r, eval = FALSE}
+atlas.seu <- readRDS("~/R Packages/mini_data/covid/downsample_1000_atlas.rds")
+covid.seu <- readRDS("~/R Packages/mini_data/covid/downsample_1000_covidBlood.rds")
+```
+
+## sctransforming the downsampled atlas object
+```{r, eval = FALSE}
+atlas.seu <- SCTransform(atlas.seu, verbose = FALSE)
+```
+
+
+## loading in the individual datasets
+```{r, eval = FALSE}
+PTCL_POST <-  readRDS("/scratch/ojlr1u20/PTCL_POST.rds")
+PTCL_PRE <-  readRDS("/scratch/ojlr1u20/PTCL_PRE.rds")
+```
+
+### subsetting them to get more cells in each sample
+```{r, eval = FALSE}
+PTCL_POST <- subset(PTCL_POST, subset = nFeature_RNA > 200)
+PTCL_PRE <- subset(PTCL_PRE, subset = nFeature_RNA > 200)
+```
+
+
+#Label transfer so consistency is maintained from atlas and patient sample dataset annotation
+```{r, eval = FALSE}
+post_anchors <- FindTransferAnchors(
+  reference = atlas.seu,
+  query = PTCL_POST,
+  normalization.method = "SCT",
+  reference.reduction = "pca",
+  dims = 1:50
+)
+
+PTCL_POST <- MapQuery(
+  anchorset = post_anchors,
+  query = PTCL_POST,
+  reference = atlas.seu,
+  refdata = list(
+    cell_type = "cell_type"
+  ),
+  reference.reduction = "pca"
+)
+
+pre_anchors <- FindTransferAnchors(
+  reference = atlas.seu,
+  query = PTCL_PRE,
+  normalization.method = "SCT",
+  reference.reduction = "pca",
+  dims = 1:50
+)
+
+PTCL_PRE <- MapQuery(
+  anchorset = pre_anchors,
+  query = PTCL_PRE,
+  reference = atlas.seu,
+  refdata = list(
+    cell_type = "cell_type"
+  ),
+  reference.reduction = "pca"
+)
+```
+
+
+## Setting a threshold
+```{r, eval = FALSE}
+PTCL_POST_ss <- subset(PTCL_POST, subset = predicted.cell_type.score > 0.65)
+PTCL_PRE_ss <- subset(PTCL_PRE, subset = predicted.cell_type.score > 0.65)
+
+PTCL_POST_ss <- NormalizeData(PTCL_POST_ss)
+PTCL_POST_ss <- FindVariableFeatures(PTCL_POST_ss)
+PTCL_POST_ss <- ScaleData(PTCL_POST_ss)
+PTCL_POST_ss <- RunPCA(PTCL_POST_ss)
+PTCL_POST_ss <- FindNeighbors(PTCL_POST_ss)
+PTCL_POST_ss <- FindClusters(PTCL_POST_ss)
+PTCL_POST_ss <- RunUMAP(PTCL_POST_ss, dims = 1:30, n_neighbors = 20, min_dist = 0.3)
+
+DimPlot(PTCL_POST_ss,reduction="umap",label=T,pt.size=1,group.by="predicted.cell_type")
+
+PTCL_PRE_ss <- NormalizeData(PTCL_PRE_ss)
+PTCL_PRE_ss <- FindVariableFeatures(PTCL_PRE_ss)
+PTCL_PRE_ss <- ScaleData(PTCL_PRE_ss)
+PTCL_PRE_ss <- RunPCA(PTCL_PRE_ss)
+PTCL_PRE_ss <- FindNeighbors(PTCL_PRE_ss)
+PTCL_PRE_ss <- FindClusters(PTCL_PRE_ss)
+PTCL_PRE_ss <- RunUMAP(PTCL_PRE_ss, dims = 1:30, n_neighbors = 20, min_dist = 0.3)
+
+DimPlot(PTCL_PRE_ss,reduction="umap",label=T,pt.size=1,group.by="predicted.cell_type")
+```
+
+
+### subsetting the downsampled atlas into three T cell types that fit the exhaustion trajectory
+```{r, eval = FALSE}
+atlas.seu <- readRDS("/scratch/ojlr1u20/TICAtlas_downsampled_1000.rds")
+seu_pr <- subset(x = atlas.seu, idents = c("Naive T cells","Cytotoxic CD8 T cells", "Terminally exhausted CD8 T cells"))
+seu_sources <- SplitObject(seu_pr, split.by = "source")
+```
+
+## Then, loop through the list of Seurat objects and remove any that have less than 100 cells
+
+## Create a new list to store the filtered Seurat objects
+```{r, eval = FALSE}
+filtered_seu_sources <- list()
+```
+
+# Loop over each Seurat object in the original list
+```{r, eval = FALSE}
+for (i in 1:length(seu_sources)) {
+  # Check the number of cells in the Seurat object
+  num_cells <- dim(seu_sources[[i]]@assays$RNA@counts)[2] 
+  # If the number of cells is less than 100, skip this Seurat object
+  if (num_cells < 100) {
+    next
+  }
+  # Otherwise, add the Seurat object to the filtered list
+  filtered_seu_sources[[length(filtered_seu_sources)+1]] <- seu_sources[[i]]
+}
+
+for (i in 1:length(filtered_seu_sources)) {
+  filtered_seu_sources[[i]] = NormalizeData(filtered_seu_sources[[i]], normalization.method = "LogNormalize",
+                                            scale.factor = 10000, verbose = FALSE)
+  filtered_seu_sources[[i]] = FindVariableFeatures(filtered_seu_sources[[i]], selection.method = "vst", 
+                                                   nfeatures = 1500, verbose = FALSE)
+}
+```
+
+## All are default settings except anchor.features
+```{r, eval = FALSE}
+seuAnch = FindIntegrationAnchors(filtered_seu_sources, anchor.features = 1500, 
+                                 normalization.method = "LogNormalize", 
+                                 reduction = "cca", dims = 1:30,
+                                 k.anchor = 5, k.filter = 200,
+                                 k.score = 30, max.features = 200)
+```
+
+
+## Here, we integrate all genes common between snRNA and scRNA
+```{r, eval = FALSE}
+seu = IntegrateData(anchorset = seuAnch, dims = 1:30,
+                    normalization.method = "LogNormalize")
+
+DefaultAssay(seu) = "integrated"
+seu <- ScaleData(seu, verbose = FALSE)
+seu <- FindVariableFeatures(seu)
+seu <- RunPCA(seu, npcs = 30, verbose = FALSE)
+seu <- RunUMAP(seu, reduction = "pca", dims = 1:30)
+seu <- FindNeighbors(seu, reduction = "pca", dims = 1:30)
+seu <- FindClusters(seu, resolution = 0.5)
+
+p1 <- DimPlot(seu, reduction = "umap", group.by = "cell_type")
+p2 <- DimPlot(seu, reduction = "umap", label = TRUE, repel = TRUE)
+p1 + p2
+```
+
+### switch to SCE
+```{r, eval = FALSE}
+sce <- as.SingleCellExperiment(seu)
+```
+
+
+
+
+
+
+#UMAP
+## run slingshot
+```{r, eval = FALSE}
+sce <- slingshot(sce, clusterLabels = "cell_type", reducedDim = 'UMAP')
+```
+
+## check it looks ok
+```{r, eval = FALSE}
+summary(sce$slingPseudotime_1)
+```
+
+## plot
+#### *MTN - not sure if we need grDevices*
+```{r, eval = FALSE}
+library(grDevices)
+colors <- colorRampPalette(brewer.pal(11,'Spectral')[-6])(100)
+plotcol <- colors[cut(sce$slingPseudotime_1, breaks=100)]
+plot(reducedDims(sce)$UMAP, col = plotcol, pch=16, asp = 1)
+lines(SlingshotDataSet(sce), lwd=2, col='black')
+```
+
+## create GS object
+```{r, eval = FALSE}
+counts <- exp(logcounts(sce)) - 1
+assay(sce, "counts") <- counts
+
+sce_gs <- SingleCellExperiment(assays = List(expdata = logcounts(sce)))
+colData(sce_gs)$Pseudotime <- -sce$slingPseudotime_1
+reducedDims(sce_gs) <- SimpleList(UMAP = reducedDim(sce, "UMAP", withDimnames=TRUE))
+```
+
+## Binarize
+```{r, eval = FALSE}
+bn_cutoff <- 1.5
+sce_gs <- binarize_exp(sce_gs, fix_cutoff = TRUE, binarize_cutoff = bn_cutoff)
+sce_gs <- find_switch_logistic_fastglm(sce_gs, downsample = TRUE, show_warning = FALSE)
+```
+
+## filter top 15 best fitting switching genes among all the genes
+```{r, eval = FALSE}
+sg_allgenes_umap <- filter_switchgenes(sce_gs, allgenes = TRUE, topnum = 100)
+```
+## plot
+```{r, eval = FALSE}
+plot_timeline_ggplot(sg_allgenes_umap, timedata = sce_gs$Pseudotime, txtsize = 3)
+```
+
+## Select an evenly distributed selection of genes from a GeneSwitches Object.
+# select_evenly_distributed_switching_genes
+```{r, eval = FALSE}
+select_evenly_distributed_switching_genes <- function(sg_allgenes, min_time_spacing){
+  
+  ## Sort sg_allgenes by pseudoR2s 
+  sg_allgenes <- sg_allgenes[order(-sg_allgenes$pseudoR2s),]
+  
+  # Initialize the time value of the previously selected gene for both "up"'s and "down"'s
+  ups <- sg_allgenes[sg_allgenes$direction == "up", ]
+  prev_ups_times <- ups$switch_at_timeidx[1]
+  downs <- sg_allgenes[sg_allgenes$direction == "down", ]
+  prev_downs_times <- downs$switch_at_timeidx[1]
+  
+  # Initialize the subsetted matrix with the first "up" and "down" gene
+  subsetted_matrix <- downs[1, ]
+  subsetted_matrix <- rbind(subsetted_matrix, ups[1, ])
+  
+  # Loop over the remaining "up" genes and add them to the subsetted matrix if they meet the criteria
+  for (i in 2:nrow(ups)) {
+    # Check if the time value of the current gene is spaced by at least min_time_spacing from all previously selected genes
+    if (all(abs(ups$switch_at_timeidx[i] - prev_ups_times) >= min_time_spacing)) {
+      # Add the current gene to the subsetted matrix
+      subsetted_matrix <- rbind(subsetted_matrix, ups[i, ])
+      # Update the previous time values
+      prev_ups_times <- c(prev_ups_times, ups$switch_at_timeidx[i])
+    }
+  }
+  
+  # Loop over the remaining "down" genes and add them to the subsetted matrix if they meet the criteria
+  for (i in 2:nrow(downs)) {
+    # Check if the time value of the current gene is spaced by at least min_time_spacing from all previously selected genes
+    if (all(abs(downs$switch_at_timeidx[i] - prev_downs_times) >= min_time_spacing)) {
+      # Add the current gene to the subsetted matrix
+      subsetted_matrix <- rbind(subsetted_matrix, downs[i, ])
+      # Update the previous time values
+      prev_downs_times <- c(prev_downs_times, downs$switch_at_timeidx[i])
+    }
+  }
+  
+  # return the subsetted matrix
+  gs_scorer_genes <- subsetted_matrix
+  return(gs_scorer_genes)
+}
+```
+
+# Create a reduced binary expression matrix for only the selected switching genes, 
+# binary_counts_matrix is from the Patient DATA and gs_scorer_genes is from Atlas Data
+```{r, eval = FALSE}
+filter_gene_expression_for_switching_genes<-function(binary_counts_matrix, gs_scorer_genes) {
+  indices_of_switching_genes<-which(rownames(binary_counts_matrix) %in% gs_scorer_genes[,1])
+  reduced_binary_counts_matrix<- binary_counts_matrix[indices_of_switching_genes,]
+  gs_scorer_genes_to_keep<-which(gs_scorer_genes[,1] %in% rownames(reduced_binary_counts_matrix))
+  gs_scorer_genes<- gs_scorer_genes[gs_scorer_genes_to_keep,]
+  #print(gs_scorer_genes_to_keep)
+  returnlist<-list(reduced_binary_counts_matrix, gs_scorer_genes)
+  return(returnlist)
+}
+```
+
+#### Old?
+```{r, eval = FALSE}
+#filtered_return<-filter_gene_expression_for_switching_genes(binary_counts_matrix, gs_scorer_genes)
+#reduced_binary_counts_matrix<-filtered_return[[1]]
+#gs_scorer_genes<-filtered_return[[2]]
+```
+
+## Identify the "racing lines" 
+### TODO make this ^^ comment more verbose.
+```{r, eval = FALSE}
+create_racing_lines<-function(reduced_binary_counts_matrix,gs_scorer_genes) {
+  all_patients_cells_scored<-list()
+  number_of_cells<-dim(reduced_binary_counts_matrix)[2]
+  number_of_switching_genes<-dim(gs_scorer_genes)[1]
+  #for each patient cell C 
+  for (c in 1:number_of_cells){
+    print(paste(c,"out of", number_of_cells, "cells"))
+    racing_mat<-matrix(0,nrow = number_of_switching_genes, ncol = 100)
+    
+    #for each switching gene G
+    for (g in 1:number_of_switching_genes){
+      print(paste(g,"out of", number_of_switching_genes, "switching genes"))
+      #find out the switch time Gt, and direction Gd
+      switching_time <- as.numeric(gs_scorer_genes[g,12])
+      switching_direction <- gs_scorer_genes[g,10]
+      #find out if its expressed Ct
+      is_expressed <- reduced_binary_counts_matrix[g,c]
+      #If Ct = TRUE
+      if(is_expressed == 1){
+        #If Gd = UP
+        if(switching_direction == "up"){
+          # [Gt:100] = 1
+          racing_mat[g,switching_time:100]<-1
+        }else{
+          #If Gd = DOWN
+          # [0:Gt] = 1
+          racing_mat[g,0:switching_time]<-1
+        }
+        #If Ct = FALSE    
+      }else{
+        if(switching_direction == "up"){
+          #If Gd = UP
+          #[0:Gt] = 1
+          racing_mat[g,0:switching_time]<-1
+        }else{
+          #If Gd = DOWN
+          # [Gt:100] = 1
+          racing_mat[g,switching_time:100]<-1
+        }
+      }
+    }
+    all_patients_cells_scored[[c]]<-racing_mat
+  }
+  return(all_patients_cells_scored)
+}
+```
+
+## Create list_of_cell_position_frequencies using valid indices
+## Does this need to be included in a function?
+```{r, eval = FALSE}
+#list_of_cell_position_frequencies <- create_racing_lines(reduced_binary_counts_matrix, gs_scorer_genes)
+```
+
+## Combining all cells racing lines after binerization (Owen's way)
+#### *TODO make the high-points into single points in order to makae the yaxis of the final plot more intuitive. *
+```{r, eval = FALSE}
+flatten_cell_frequencies_owen <- function(list_of_cell_position_frequencies) {
+  all_patient_cells_scored_flat <- list()
+  length_of_list <- length(list_of_cell_position_frequencies)
+  for(i in 1:length_of_list){
+    location_of_highpoint <- as.numeric(colSums(list_of_cell_position_frequencies[[i]]) == max(colSums(list_of_cell_position_frequencies[[i]])))
+    all_patient_cells_scored_flat[[i]] <- location_of_highpoint
+  }
+  flat_matrix <- do.call(rbind, all_patient_cells_scored_flat)
+  return(flat_matrix)
+}
+```
+
+## Combining all cells racing lines after binerization (Owen's way)
+#### *DONE: make the high-points into single points in order to mkae the yaxis of the final plot more intuitive. *
+#### *this is an inelegant solution as it chooses the FIRST column index of the highpoint.*
+```{r, eval = FALSE}
+flatten_cell_frequencies_owen_done <- function(list_of_cell_position_frequencies) {
+  all_patient_cells_scored_flat <- list()
+  length_of_list <- length(list_of_cell_position_frequencies)
+  for(i in 1:length_of_list){
+    location_of_highpoint <- as.numeric(colSums(list_of_cell_position_frequencies[[i]]) == max(colSums(list_of_cell_position_frequencies[[i]])))
+    indices <- which(location_of_highpoint == 1)[-1]
+    location_of_highpoint[indices] <- 0
+    all_patient_cells_scored_flat[[i]] <- location_of_highpoint
+  }
+  flat_matrix <- do.call(rbind, all_patient_cells_scored_flat)
+  return(flat_matrix)
+}
+```
+
+## Combining all cells racing lines without binerization (Moi's way). 
+```{r, eval = FALSE}
+flatten_cell_frequencies_moi <- function(list_of_cell_position_frequencies) {
+  #making an empty flat matrix
+  all_patient_cells_scored_flat <- matrix(0, nrow = 1, ncol = 100)
+  #
+  length_of_list <- length(list_of_cell_position_frequencies)
+  # for every cells matrix calculate the colsums and add them to the flat matrix
+  for (i in 1:length_of_list) {
+    all_patient_cells_scored_flat <- all_patient_cells_scored_flat + colSums(list_of_cell_position_frequencies[[i]])
+  }
+  # divide the values in the flat matrix by the number of cells in an attempt to make the yaxis more informative.
+  # This may be the wrong approach but it shouldnt change the shape of the final plot
+  all_patient_cells_scored_flat <- all_patient_cells_scored_flat/length_of_list
+  
+  return(all_patient_cells_scored_flat)
+}
+```
+
+## select_evenly_distributed_switching_genes
+```{r, eval = FALSE}
+gs_scorer_genes <- select_evenly_distributed_switching_genes(sg_allgenes_umap, min_time_spacing = 5)
+```
+## plot
+```{r, eval = FALSE}
+plot_timeline_ggplot(gs_scorer_genes, timedata = sce_gs$Pseudotime, txtsize = 3)
+```
+
+## subsetting the pre-treatment patient data to only include the exhaustion trajectory.
+```{r, eval = FALSE}
+pre_T.seu <- subset(x = PTCL_PRE_ss, subset = predicted.cell_type %in% c("Naive T cells","Cytotoxic CD8 T cells", "Terminally exhausted CD8 T cells"))
+```
+## subsetting the post treatment patient data to only include the exhaustion trajectory.
+```{r, eval = FALSE}
+post_T.seu <- subset(x = PTCL_POST_ss, subset = predicted.cell_type %in% c("Naive T cells","Cytotoxic CD8 T cells", "Terminally exhausted CD8 T cells"))
+```
+
+## converting the pre-treatment patient data to SCE.
+```{r, eval = FALSE}
+pre.sce <- as.SingleCellExperiment(pre_T.seu)
+```
+
+## converting the pre-treatment patient data to SCE.
+```{r, eval = FALSE}
+post.sce <- as.SingleCellExperiment(post_T.seu)
+```
+
+## convert the pre treatment patient data to a GS obj. 
+```{r, eval = FALSE}
+gs_pre <- SingleCellExperiment(assays = List(expdata = logcounts(pre.sce)))
+```
+## convert the post treatment patient data to a GS obj. 
+```{r, eval = FALSE}
+gs_post <- SingleCellExperiment(assays = List(expdata = logcounts(post.sce)))
+```
+## TODO check if this cutoff is suitable for the patient data. 
+```{r, eval = FALSE}
+bn_cutoff <- 0.2
+# binarize pre treatment patient data
+gs_pre<- binarize_exp(gs_pre, fix_cutoff = TRUE, binarize_cutoff = bn_cutoff)
+# binarize post treatment patient data
+gs_post<- binarize_exp(gs_post, fix_cutoff = TRUE, binarize_cutoff = bn_cutoff)
+
+binary_counts_matrix_pre<-assays(gs_pre)$binary
+```
+
+#create a reduced binary expression matrix for only the switching genes, binary counts is from the patient and gs scorer is from atlas
+```{r, eval = FALSE}
+filtered_return_pre<-filter_gene_expression_for_switching_genes(binary_counts_matrix_pre, gs_scorer_genes)
+```
+
+# MTN - I'm not sure what this does
+```{r, eval = FALSE}
+reduced_binary_counts_matrix_pre<-filtered_return_pre[[1]]
+```
+# MTN - or this.
+```{r, eval = FALSE}
+gs_scorer_genes<-filtered_return_pre[[2]]
+```
+
+#Create list_of_cell_position_frequencies using valid indices
+```{r, eval = FALSE}
+list_of_cell_position_frequencies <- create_racing_lines(reduced_binary_counts_matrix_pre, gs_scorer_genes)
+```
+# Combining all cells racing lines after binerization (Owen's way)
+```{r, eval = FALSE}
+preflat <- flatten_cell_frequencies_moi(list_of_cell_position_frequencies)
+plot(colSums(preflat))
+
+binary_counts_matrix_post<-assays(gs_post)$binary
+```
+
+#create a reduced binary expression matrix for only the switching genes, binary counts is from the patient and gs scorer is from atlas
+```{r, eval = FALSE}
+filtered_return_post<-filter_gene_expression_for_switching_genes(binary_counts_matrix_post, gs_scorer_genes)
+```
+
+# MTN - I'm not sure what this does
+```{r, eval = FALSE}
+reduced_binary_counts_matrix_post<-filtered_return_post[[1]]
+```
+
+# MTN - or this.
+```{r, eval = FALSE}
+gs_scorer_genes<-filtered_return_post[[2]]
+```
+
+#Create list_of_cell_position_frequencies using valid indices
+```{r, eval = FALSE}
+list_of_cell_position_frequencies <- create_racing_lines(reduced_binary_counts_matrix_post, gs_scorer_genes)
+```
+
+# Combining all cells racing lines after binerization and plot
+```{r, eval = FALSE}
+postflat <- flatten_cell_frequencies_moi(list_of_cell_position_frequencies)
+plot(colSums(postflat))
+```
+
+## view the differnece between patients
+```{r, eval = FALSE}
+patient_diff = colSums(postflat) - colSums(preflat)
+plot(patient_diff)
+```
