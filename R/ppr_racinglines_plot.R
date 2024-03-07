@@ -4,7 +4,7 @@
 #' Produces a plot for each cell which helps visualize how PathPinPointR is predicting the cells position.
 #'
 #' @param reference.sg A selection of switching genes which are evenly distributed through pseudo-time.
-#' @param lines logical, do you want to include lines to inidicate the predicted position of a cell
+#' @param lines logical, do you want to include lines to indicate the predicted position of a cell
 #' @param reference_reduced a matrix of your sample's binary gene expression.
 #' @param cell_id The index or name of the cell of interest
 #'
