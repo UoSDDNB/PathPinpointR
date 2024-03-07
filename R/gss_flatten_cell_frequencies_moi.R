@@ -1,5 +1,3 @@
-#' #' Title flatten_cell_frequencies_moi
-#' #'
 #' #' @description
 #' #' Combining all cells racing lines with out binerization (Moi's way).
 #' #'
