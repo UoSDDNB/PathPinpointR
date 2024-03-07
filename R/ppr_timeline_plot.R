@@ -33,7 +33,7 @@ ppr_timeline_plot <- function(reference.sg, genomic_expression_traces = FALSE, r
 
   # Create the initial ggplot object with x and y aesthetics, color, and labels
   timeline_plot <- ggplot(reference.sg, aes(x = switch_at_timeidx, y = pseudoR2s * direction_num, label = rownames(reference.sg))) +
-    geom_point(size = 1) + xlab("Time-Index") + ylab("Quality of fitting (R^2)")
+    geom_point(size = 1) + xlab("Pseudotime-Index") + ylab("Quality of fitting (R^2)")
 
   # Add the classic theme to the plot
   timeline_plot <- timeline_plot + theme_classic()
