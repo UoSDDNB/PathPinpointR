@@ -3,7 +3,7 @@
 %   R/ppr_filter_gene_expression_for_switching_genes.R
 \name{filter_gene_expression_for_switching_genes}
 \alias{filter_gene_expression_for_switching_genes}
-\title{Filter Gene Expression for Switching Genes}
+\title{ppr_filter Gene Expression for Switching Genes}
 \usage{
 filter_gene_expression_for_switching_genes(binary_counts_matrix, reference.sg)
 }

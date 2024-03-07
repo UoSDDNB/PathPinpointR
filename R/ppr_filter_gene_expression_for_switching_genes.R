@@ -1,4 +1,4 @@
-#' Filter Gene Expression for Switching Genes
+#' ppr_filter Gene Expression for Switching Genes
 #'
 #' @description
 #' Create a reduced binary expression matrix for only the selected switching genes,
