@@ -2,7 +2,7 @@
 title: "covid"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{wholeanalysis}
+  %\VignetteIndexEntry{covid}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
