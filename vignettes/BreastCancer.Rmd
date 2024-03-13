@@ -37,7 +37,7 @@ bc.seu[["RNA"]] <- JoinLayers(bc.seu[["RNA"]])
 
 
 ### data stuff 
-```{r data}
+```{r preprocess}
 #SCTransform
 bc.seu <- SCTransform(bc.seu, verbose = FALSE, method = "glmGamPoi")
 
@@ -53,7 +53,7 @@ bc.seu <- RunUMAP(bc.seu, dims = 1:20)
 ```
 
 #### View the Umap of the reference object
-```{r data}
+```{r viewmap}
 #dimplot of the bc.seurat object
 DimPlot(bc.seu, group.by = "orig.ident", label = TRUE, reduction = "umap")
 DimPlot(bc.seu, group.by = "Tcell_cluster", label = TRUE, reduction = "umap")
@@ -61,7 +61,7 @@ DimPlot(bc.seu, group.by = "Tcell_metacluster", label = TRUE, reduction = "umap"
 ```
 
 #More pre PPR data prep
-```{r data}
+```{r}
 # convet to single cell experiment object
 #bc.sce <- as.SingleCellExperiment(bc.seu, assay = "SCT")
 bc.sce <- SingleCellExperiment(assays = list(expdata = bc.seu@assays$RNA$counts))
@@ -99,7 +99,7 @@ bc_switching_genes <- filter_switchgenes(bc.sce, allgenes = TRUE, r2cutoff = 0.0
 ```
 
 #PPR
-```{r data}
+```{r }
 # Filter the gene expression matrix for the switching genes
 bc_reduced <- ppr_filter_gene_expression_for_switching_genes(bc.sce@assays@data@listData$binary, bc_switching_genes)
 
@@ -143,7 +143,7 @@ plot(x = sleepy_precision$r2cutoff , y= sleepy_precision$inaccuracy_mean, type =
 
 
 #### Running with sample data;
-```{r data}
+```{r }
 # load A single-cell and spatially-resolved atlas of human breast cancers - T_cells.rds
 atlas.seu <- readRDS("~/Rprojects/BC/A single-cell and spatially-resolved atlas of human breast cancers - T_cells.rds")
 
