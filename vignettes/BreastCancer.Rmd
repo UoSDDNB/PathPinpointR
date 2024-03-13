@@ -2,6 +2,10 @@
 title: "BreastCancer"
 output: html_document
 date: "Sys.Date()"
+vignette: >
+  %\VignetteIndexEntry{BreastCancer}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
