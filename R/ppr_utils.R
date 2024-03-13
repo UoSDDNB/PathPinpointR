@@ -21,3 +21,11 @@ print.PPR_OBJECT <- function(x) {
     }
   }
 }
+
+print <- function(x, ...) {
+  if (inherits(x, "PPR_OBJECT")) {
+    print.PPR_OBJECT(x)
+  } else {
+    NextMethod()
+  }
+}

@@ -18,7 +18,8 @@ Suggests:
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
 Imports: 
-    fastglm,
+    Seurat,
     ggplot2,
     ggrepel,
-    GeneSwitches
+    GeneSwitches,
+    fastglm
