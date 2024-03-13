@@ -4,6 +4,7 @@
 #' @param range range of r2cutoffs to use
 #'
 #' @return the precision dataframe.
+#' @importFrom GeneSwitches filter_switchgenes
 #' @export
 ppr_precision <- function(sample.gs, range = seq(0.02,0.04,0.005)){
 

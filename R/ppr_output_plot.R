@@ -11,9 +11,10 @@
 #' @param switching_genes a matrix containing the switching gene information as produced by GeneSwitches.
 #'
 #' @return nice plot highlighting the probable position of your sample on your trajectory.
+#' @importFrom graphics segments text lines
 #' @export
 #'
-ppr_output_plot <- function(sample.gss, col = "red", overlay = FALSE, label = "sample name", genes_of_interest = NULL, switching_genes = reference.sg){
+ppr_output_plot <- function(sample.gss, col = "red", overlay = FALSE, label = "sample name", genes_of_interest = NULL, switching_genes){
 
  if (!overlay) {
   plot(x = 1:100,

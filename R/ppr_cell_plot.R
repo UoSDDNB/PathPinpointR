@@ -13,6 +13,7 @@
 #' @param genes_of_interest The genes that you would like to plot
 #'
 #' @return nice plot highlighting the probable position of your sample on your trajectory.
+#' @importFrom graphics segments text lines
 #' @export
 #'
 ppr_cell_plot <- function(sample.ppr, cell_idx = 1, col = "red", overlay = FALSE, genes_of_interest = NULL, switching_genes = NULL, true_position = FALSE, accuracy_data = NULL) {

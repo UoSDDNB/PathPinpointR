@@ -5,7 +5,6 @@ Authors@R:
     person("Moi", "Taiga Nicholas", , "mtn1n22@soton.ac.uk", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5609-868X"))
 Description: This package identifies the progression of a sample on a trajectory by scoring the expression levels of switching genes. 
-    It depends on the GeneSwitches package for gene switch identification.
 License: GPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -19,6 +18,6 @@ Suggests:
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
 Imports: 
-    Seurat,
     ggplot2,
-    ggrepel
+    ggrepel,
+    GeneSwitches

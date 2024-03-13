@@ -9,7 +9,7 @@
 #' @param cell_id The index or name of the cell of interest
 #'
 #' @return Timeline plot of selected cell
-#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 ggplot aes geom_point xlab ylab theme_classic geom_hline geom_label element_blank unit element_text aes_string geom_segment ggtitle
 #' @importFrom ggrepel geom_text_repel
 #'
 #'
@@ -32,7 +32,7 @@ ppr_timeline_plot <- function(reference.sg, genomic_expression_traces = FALSE, r
 
 
   # Create the initial ggplot object with x and y aesthetics, color, and labels
-  timeline_plot <- ggplot(reference.sg, aes(x = switch_at_timeidx, y = pseudoR2s * direction_num, label = rownames(reference.sg))) +
+  timeline_plot <- ggplot(reference.sg, aes(x = reference.sg$switch_at_timeidx, y = reference.sg$pseudoR2s * reference.sg$direction_num, label = rownames(reference.sg))) +
     geom_point(size = 1) + xlab("Pseudotime-Index") + ylab("Quality of fitting (R^2)")
 
   # Add the classic theme to the plot
@@ -42,7 +42,7 @@ ppr_timeline_plot <- function(reference.sg, genomic_expression_traces = FALSE, r
   timeline_plot <- timeline_plot + geom_hline(yintercept = 0, color = "black", linewidth = 0.6)
 
   # Add labels for pseudotime on the plot
-  timeline_plot <- timeline_plot + geom_label(data = timeidx_df, aes(x = timeidx_range, y = 0, label = timeidx_labs),
+  timeline_plot <- timeline_plot + geom_label(data = timeidx_df, aes(x = timeidx_df$timeidx_range, y = 0, label = timeidx_df$timeidx_labs),
                                     size = (3), color = "black")
 
   # Add text labels with repulsion to avoid overlap

@@ -10,7 +10,7 @@ ppr_output_plot(
   overlay = FALSE,
   label = "sample name",
   genes_of_interest = NULL,
-  switching_genes = reference.sg
+  switching_genes
 )
 }
 \arguments{

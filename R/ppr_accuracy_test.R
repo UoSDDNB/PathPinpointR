@@ -8,6 +8,7 @@
 #' @param plot Logical value. If TRUE, a histogram of inaccuracy will be plotted. Default is FALSE.
 #'
 #' @return If plot = FALSE, returns a data frame containing accuracy results. If plot = TRUE, returns a list containing the accuracy data frame and a plot object.
+#' @importFrom graphics abline hist text
 #' @export
 ppr_accuracy_test <- function(reference.ppr, reference.gs, plot = TRUE) {
   # Create a data frame to store the accuracy results
