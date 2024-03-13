@@ -1,0 +1,167 @@
+---
+title: "BreastCancer"
+output: html_document
+date: "Sys.Date()"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+## Breast Cancer Example
+
+
+###Load the required libraries
+```{r libraries}
+library(Seurat)
+library(SingleCellExperiment)
+library(slingshot)
+library(RColorBrewer)
+library(GeneSwitches)
+library(PathPinpointR)
+```
+
+
+###Load the data
+##### where to get the object from
+```{r data}
+#load object from rds
+bc.seu <- readRDS("~/Rprojects/BC/merged14.rds")
+#join layers
+bc.seu[["RNA"]] <- JoinLayers(bc.seu[["RNA"]])
+```
+
+
+### data stuff 
+```{r data}
+#SCTransform
+bc.seu <- SCTransform(bc.seu, verbose = FALSE, method = "glmGamPoi")
+
+#run PCA
+bc.seu <- RunPCA(bc.seu)
+
+#elbow plot with ndims =50 and
+ElbowPlot(bc.seu, ndims = 50)
+ElbowPlot(bc.seu)
+
+#run umap with 20 dimensions
+bc.seu <- RunUMAP(bc.seu, dims = 1:20)
+```
+
+#### View the Umap of the reference object
+```{r data}
+#dimplot of the bc.seurat object
+DimPlot(bc.seu, group.by = "orig.ident", label = TRUE, reduction = "umap")
+DimPlot(bc.seu, group.by = "Tcell_cluster", label = TRUE, reduction = "umap")
+DimPlot(bc.seu, group.by = "Tcell_metacluster", label = TRUE, reduction = "umap")
+```
+
+#More pre PPR data prep
+```{r data}
+# convet to single cell experiment object
+#bc.sce <- as.SingleCellExperiment(bc.seu, assay = "SCT")
+bc.sce <- SingleCellExperiment(assays = list(expdata = bc.seu@assays$RNA$counts))
+colData(bc.sce) <- DataFrame(bc.seu@meta.data)
+reducedDims(bc.sce)$PCA <- bc.seu@reductions$pca@cell.embeddings
+#reducedDims(bc.sce)$UMAP <- bc.seu@reductions$umap@cell.embeddings
+  
+# run slingshot
+bc.sce <- slingshot(bc.sce, 
+                    clusterLabels = "Tcell_metacluster",
+                    start.clus = "niave",
+                    end.clus = "CD8_exhausted"
+                    #reducedDim = "UMAP"
+                    )
+
+# plot slingshot 
+#colors <- colorRampPalette(brewer.pal(11,'Spectral')[-6])(100)
+#plotcol <- colors[cut(bc.sce$slingPseudotime_1, breaks=100)]
+#plot(reducedDims(bc.sce)$PCA, col = plotcol, pch=16, asp = 1)
+#lines(SlingshotDataSet(bc.sce), lwd=2, col='black')
+
+
+
+#binarize the expression matrix (0.5 chosen as cutoff)
+bc.sce <- binarize_exp(bc.sce, fix_cutoff = TRUE, binarize_cutoff = 0.5)
+
+
+#fit logistic regression and find the switching pseudo-time point for each gene
+bc.sce$Pseudotime <- bc.sce$slingPseudotime_1
+bc.sce <- find_switch_logistic_fastglm(bc.sce, downsample = FALSE, show_warning = FALSE)
+
+
+# Produce a filtered df of switching genes
+bc_switching_genes <- filter_switchgenes(bc.sce, allgenes = TRUE, r2cutoff = 0.0269)
+```
+
+#PPR
+```{r data}
+# Filter the gene expression matrix for the switching genes
+bc_reduced <- ppr_filter_gene_expression_for_switching_genes(bc.sce@assays@data@listData$binary, bc_switching_genes)
+
+# Plot the switching genes
+plot_timeline_ggplot(bc_switching_genes, timedata = colData(bc.sce)$Pseudotime, txtsize = 3)
+ppr_timeline_plot(bc_switching_genes)
+
+
+##Making a pseudo sample.
+# #Take a subset of the seurat object which only includes the exhausted cells
+# sleepy_cells <- subset(bc.seu, subset = Tcell_cluster == "T-CD8-exhausted")
+# #downsample the cells
+# sleepy_cells <- subset(sleepy_cells, downsample = 10)
+
+#subset a small group of exhausted cells from the single cell experiment object (bc_sce)
+sleepy_cells_sce <- bc.sce[,colData(bc.sce)$Tcell_cluster == "T-CD8-exhausted"]
+#randomly downsample
+sleepy_cells_sce <- sleepy_cells_sce[,sample(1:ncol(sleepy_cells_sce), 90)]
+#filter the gene expression matrix for the switching genes
+sleepy_cells_sce <- ppr_filter_gene_expression_for_switching_genes(sleepy_cells_sce@assays@data@listData$binary, bc_switching_genes)
+
+#use ppr to predict the position of the exhausted cells
+sleepy_cells.ppr <- ppr_predict_position(sleepy_cells_sce, bc_switching_genes)
+
+#use ppr to score the accuracy of the prediction
+  ppr_accuracy_test(sleepy_cells.ppr, bc.sce, plot = FALSE)
+
+#
+ppr_output_plot(sleepy_cells.ppr, col = "red", label = "tired")
+
+
+
+#plot the precision of the prediction
+sleepy_precision <- ppr_precision(bc.sce, range = seq(0.024, 0.029, 0.0001))
+plot(x = sleepy_precision$r2cutoff , y= sleepy_precision$inaccuracy_mean)
+#plot that again with a line graph
+plot(x = sleepy_precision$r2cutoff , y= sleepy_precision$inaccuracy_mean, type = "l")
+```
+
+#ppr_timeline_plot(bc_switching_genes, genomic_expression_traces = TRUE, reduced_binary_counts_matrix = bc_reduced , cell_id = 1)
+
+
+#### Running with sample data;
+```{r data}
+# load A single-cell and spatially-resolved atlas of human breast cancers - T_cells.rds
+atlas.seu <- readRDS("~/Rprojects/BC/A single-cell and spatially-resolved atlas of human breast cancers - T_cells.rds")
+
+# #dimplot the atlas
+# DimPlot(sample.seu, group.by = "cell_type", label = TRUE, reduction = "umap")
+
+#Subset to only include one donor_id (CID3586)
+sample.seu <- subset(atlas.seu, subset = donor_id == "CID3586")
+#We may need to subset further by celltype
+
+#Convert to single cell experiment object
+sample.sce <- SingleCellExperiment(assays = list(expdata = sample.seu@assays$RNA$counts))
+
+#binarize the expression matrix (0.5 chosen as cutoff)
+sample.sce <- binarize_exp(sample.sce, fix_cutoff = TRUE, binarize_cutoff = 0.5)
+
+# Filter the gene expression matrix for the switching genes
+sample_reduced <- ppr_filter_gene_expression_for_switching_genes(sample.sce@assays@data@listData$binary, bc_switching_genes)
+
+#use ppr to predict the position of the exhausted cells
+sample.ppr <- ppr_predict_position(sample_reduced, reference.sg = bc_switching_genes)
+
+# plot the predicted position of sample
+ppr_output_plot(sample.ppr, col = "red", label = "sample")
+```
