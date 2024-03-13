@@ -4,15 +4,17 @@
 \alias{ppr_accuracy_test}
 \title{Accuracy Tester}
 \usage{
-ppr_accuracy_test(reference.ppr, reference.gs)
+ppr_accuracy_test(reference.ppr, reference.gs, plot = TRUE)
 }
 \arguments{
 \item{reference.ppr}{A "PPR_OBJECT" as outputted by create_racing_lines}
 
 \item{reference.gs}{The GS object containing Pseudotime.}
+
+\item{plot}{Logical value. If TRUE, a histogram of inaccuracy will be plotted. Default is FALSE.}
 }
 \value{
-A score for how accurate the results are as a data frame.
+If plot = FALSE, returns a data frame containing accuracy results. If plot = TRUE, returns a list containing the accuracy data frame and a plot object.
 }
 \description{
 Use this with "sample" cells taken from the reference. It will check how close the predicted position of the cells is to the real position.
