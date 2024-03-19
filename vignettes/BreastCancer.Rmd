@@ -163,11 +163,15 @@ sample.sce <- SingleCellExperiment(assays = list(expdata = sample.seu@assays$RNA
 #binarize the expression matrix (0.5 chosen as cutoff)
 sample.sce <- binarize_exp(sample.sce, fix_cutoff = TRUE, binarize_cutoff = 0.5)
 
+#convert ensble gene names to gene symbols
+rownames(sample.sce@assays@data@listData$binary) <- grch38$symbol[match(rownames(sample.sce), grch38$ensgene)]
+
 # Filter the gene expression matrix for the switching genes
 sample_reduced <- ppr_filter_gene_expression_for_switching_genes(sample.sce@assays@data@listData$binary, bc_switching_genes)
 
 # saveRDS(sample_reduced, "~/Rprojects/BC/sample_reduced.rds")
 # sample_reduced <- readRDS("~/Rprojects/BC/sample_reduced.rds")
+
 
 
 #use ppr to predict the position of the exhausted cells
