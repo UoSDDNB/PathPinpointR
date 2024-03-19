@@ -125,9 +125,10 @@ sleepy_cells_sce <- ppr_filter_gene_expression_for_switching_genes(sleepy_cells_
 
 #use ppr to predict the position of the exhausted cells
 sleepy_cells.ppr <- ppr_predict_position(sleepy_cells_sce, bc_switching_genes)
+reference.ppr <- ppr_predict_position(bc_reduced, bc_switching_genes)
 
 #use ppr to score the accuracy of the prediction
-  ppr_accuracy_test(sleepy_cells.ppr, bc.sce, plot = FALSE)
+  ppr_accuracy_test(sleepy_cells.ppr, bc.sce, plot = TRUE)
 
 #
 ppr_output_plot(sleepy_cells.ppr, col = "red", label = "tired")
