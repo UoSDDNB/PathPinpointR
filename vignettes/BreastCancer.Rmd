@@ -58,6 +58,7 @@ bc.seu <- RunUMAP(bc.seu, dims = 1:20)
 DimPlot(bc.seu, group.by = "orig.ident", label = TRUE, reduction = "umap")
 DimPlot(bc.seu, group.by = "Tcell_cluster", label = TRUE, reduction = "umap")
 DimPlot(bc.seu, group.by = "Tcell_metacluster", label = TRUE, reduction = "umap")
+DimPlot(bc.seu, group.by = "Tcell_metacluster", label = TRUE, reduction = "pca")
 ```
 
 #More pre PPR data prep
@@ -78,10 +79,10 @@ bc.sce <- slingshot(bc.sce,
                     )
 
 # plot slingshot 
-#colors <- colorRampPalette(brewer.pal(11,'Spectral')[-6])(100)
-#plotcol <- colors[cut(bc.sce$slingPseudotime_1, breaks=100)]
-#plot(reducedDims(bc.sce)$PCA, col = plotcol, pch=16, asp = 1)
-#lines(SlingshotDataSet(bc.sce), lwd=2, col='black')
+# colors <- colorRampPalette(brewer.pal(11,'Spectral')[-6])(100)
+# plotcol <- colors[cut(bc.sce$slingPseudotime_1, breaks=100)]
+# plot(reducedDims(bc.sce)$PCA, col = plotcol, pch=16, asp = 1)
+# lines(SlingshotDataSet(bc.sce), lwd=2, col='black')
 
 
 
@@ -92,7 +93,8 @@ bc.sce <- binarize_exp(bc.sce, fix_cutoff = TRUE, binarize_cutoff = 0.5)
 #fit logistic regression and find the switching pseudo-time point for each gene
 bc.sce$Pseudotime <- bc.sce$slingPseudotime_1
 bc.sce <- find_switch_logistic_fastglm(bc.sce, downsample = FALSE, show_warning = FALSE)
-
+#saveRDS(bc.sce, "~/Rprojects/BC/binarized_and_filtered_bc_sce.rds")
+#bc.sce <- readRDS("~/Rprojects/BC/binarized_and_filtered_bc_sce.rds")
 
 # Produce a filtered df of switching genes
 bc_switching_genes <- filter_switchgenes(bc.sce, allgenes = TRUE, r2cutoff = 0.0269)
