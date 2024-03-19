@@ -2,15 +2,15 @@
 % Please edit documentation in R/ppr_utils.R
 \name{print.PPR_OBJECT}
 \alias{print.PPR_OBJECT}
-\title{Print PPR Object Summary}
+\title{Print method for PPR Object.}
 \usage{
-print.PPR_OBJECT(x)
+\method{print}{PPR_OBJECT}(x)
 }
 \arguments{
 \item{x}{An object of class 'PPR_OBJECT' to be summarized.}
 }
 \value{
-A summary of the contents of the 'PPR_OBJECT'.
+A summary of the contents of the object.
 }
 \description{
 Make calling the PPR_OBJECT nicer by printing a summary of its contents.
