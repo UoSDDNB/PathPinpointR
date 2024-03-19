@@ -22,10 +22,14 @@ print.PPR_OBJECT <- function(x) {
   }
 }
 
-print <- function(x, ...) {
-  if (inherits(x, "PPR_OBJECT")) {
-    print.PPR_OBJECT(x)
-  } else {
-    NextMethod()
-  }
-}
+# print.PPR_OBJECT_default <- function(x, ...) {
+#   NextMethod()
+# }
+#
+# print <- function(x, ...) {
+#   if (inherits(x, "PPR_OBJECT")) {
+#     print.PPR_OBJECT(x)
+#   } else {
+#     print.PPR_OBJECT_default(x, ...)
+#   }
+# }
