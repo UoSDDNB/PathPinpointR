@@ -23,6 +23,7 @@ library(slingshot)
 library(RColorBrewer)
 library(GeneSwitches)
 library(PathPinpointR)
+library(annotables)
 ```
 
 
@@ -179,4 +180,82 @@ sample.ppr <- ppr_predict_position(sample_reduced, reference.sg = bc_switching_g
 
 # plot the predicted position of sample
 ppr_output_plot(sample.ppr, col = "red", label = "sample")
+```
+
+#### Running with sample 2 data;
+```{r }
+# load A single-cell and spatially-resolved atlas of human breast cancers - T_cells.rds
+atlas.seu <- readRDS("~/Rprojects/BC/A single-cell and spatially-resolved atlas of human breast cancers - T_cells.rds")
+
+# #dimplot the atlas
+# DimPlot(sample.seu, group.by = "cell_type", label = TRUE, reduction = "umap")
+
+#Subset to only include one donor_id (CID3586)
+sample2.seu <- subset(atlas.seu, subset = donor_id == "CID4066")
+#We may need to subset further by celltype
+
+#Convert to single cell experiment object
+sample2.sce <- SingleCellExperiment(assays = list(expdata = sample2.seu@assays$RNA$counts))
+
+#binarize the expression matrix (0.5 chosen as cutoff)
+sample2.sce <- binarize_exp(sample2.sce, fix_cutoff = TRUE, binarize_cutoff = 0.5)
+
+#convert ensble gene names to gene symbols
+rownames(sample2.sce@assays@data@listData$binary) <- grch38$symbol[match(rownames(sample2.sce), grch38$ensgene)]
+
+# Filter the gene expression matrix for the switching genes
+sample2_reduced <- ppr_filter_gene_expression_for_switching_genes(sample2.sce@assays@data@listData$binary, bc_switching_genes)
+
+# saveRDS(sample2_reduced, "~/Rprojects/BC/sample2_reduced.rds")
+# sample2_reduced <- readRDS("~/Rprojects/BC/sample2_reduced.rds")
+
+## Split per patient and run ppr. 
+
+#use ppr to predict the position of the exhausted cells
+sample2.ppr <- ppr_predict_position(sample2_reduced, reference.sg = bc_switching_genes)
+
+# plot the predicted position of sample2
+ppr_output_plot(sample2.ppr, col = "blue", label = "sample2", overlay = TRUE)
+```
+
+
+#### Running with all patient data;
+```{r }
+# load A single-cell and spatially-resolved atlas of human breast cancers - T_cells.rds
+atlas.seu <- readRDS("~/Rprojects/BC/A single-cell and spatially-resolved atlas of human breast cancers - T_cells.rds")
+
+# #dimplot the atlas
+# DimPlot(sample.seu, group.by = "cell_type", label = TRUE, reduction = "umap")
+
+# QC
+# VlnPlot(atlas.seu, features = c("nFeature_RNA", "nCount_RNA", "percent_mito"), ncol = 3)
+atlas.seu <- subset(atlas.seu, subset = percent_mito < 13)
+atlas.seu <- subset(atlas.seu, subset = nFeature_RNA < 3000 & nFeature_RNA > 250)
+atlas.seu <- subset(atlas.seu, subset = nCount_RNA < 10000)
+
+#Convert to single cell experiment object
+atlas.sce <- SingleCellExperiment(assays = list(expdata = atlas.seu@assays$RNA$counts))
+
+# observe the gene expression histogram of atlas.sce
+hist(colSums(assay(atlas.sce)), xlim = c(0, 500), breaks = 10000, main = "Gene expression histogram", xlab = "Gene expression", ylab = "Frequency")
+
+#binarize the expression matrix (0.5 chosen as cutoff)
+atlas.sce <- binarize_exp(atlas.sce, fix_cutoff = TRUE, binarize_cutoff = 200)
+
+#convert ensble gene names to gene symbols
+rownames(atlas.sce@assays@data@listData$binary) <- grch38$symbol[match(rownames(atlas.sce), grch38$ensgene)]
+
+# Filter the gene expression matrix for the switching genes
+atlas_reduced <- ppr_filter_gene_expression_for_switching_genes(atlas.sce@assays@data@listData$binary, bc_switching_genes)
+
+# saveRDS(atlas_reduced, "~/Rprojects/BC/atlas_reduced.rds")
+# atlas_reduced <- readRDS("~/Rprojects/BC/atlas_reduced.rds")
+
+
+
+#use ppr to predict the position of the exhausted cells
+atlas.ppr <- ppr_predict_position(atlas_reduced, reference.sg = bc_switching_genes)
+
+# plot the predicted position of atlas
+ppr_output_plot(atlas.ppr, col = "blue", label = "atlas", overlay = TRUE)
 ```
