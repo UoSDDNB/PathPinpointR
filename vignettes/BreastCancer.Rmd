@@ -31,7 +31,8 @@ library(annotables)
 ##### where to get the object from
 ```{r data}
 #load object from rds
-bc.seu <- readRDS("~/Rprojects/BC/merged14.rds")
+#bc.seu <- readRDS("~/Rprojects/BC/merged14.rds")
+bc.seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/merged14.rds")
 #join layers
 bc.seu[["RNA"]] <- JoinLayers(bc.seu[["RNA"]])
 ```
@@ -259,3 +260,5 @@ atlas.ppr <- ppr_predict_position(atlas_reduced, reference.sg = bc_switching_gen
 # plot the predicted position of atlas
 ppr_output_plot(atlas.ppr, col = "blue", label = "atlas", overlay = TRUE)
 ```
+
+### New healthy Patient.
