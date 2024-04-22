@@ -109,12 +109,16 @@ bc.sce <- find_switch_logistic_fastglm(bc.sce, downsample = FALSE, show_warning 
 #saveRDS(bc.sce, "~/Rprojects/BC/binarized_and_filtered_bc_sce.rds")
 #bc.sce <- readRDS("~/Rprojects/BC/binarized_and_filtered_bc_sce.rds")
 
+#saveRDS(bc.sce, "/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/binarized_and_filtered_bc_sce.rds")
+#bc.sce <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/binarized_and_filtered_bc_sce.rds")
+
 # Produce a filtered df of switching genes
 bc_switching_genes <- filter_switchgenes(bc.sce, allgenes = TRUE, r2cutoff = 0.0269)
 ```
 
 #PPR
 ```{r }
+#devtools::load_all()
 # Filter the gene expression matrix for the switching genes
 bc_reduced <- ppr_filter_gene_expression_for_switching_genes(bc.sce@assays@data@listData$binary, bc_switching_genes)
 
