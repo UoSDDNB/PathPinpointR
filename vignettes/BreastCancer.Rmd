@@ -17,13 +17,13 @@ knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 
 ###Load the required libraries
 ```{r libraries}
-library(Seurat)
-library(SingleCellExperiment)
-library(slingshot)
-library(RColorBrewer)
-library(GeneSwitches)
-library(PathPinpointR)
-library(annotables)
+#library(Seurat)
+#library(SingleCellExperiment)
+#library(slingshot)
+#library(RColorBrewer)
+#library(GeneSwitches)
+#library(PathPinpointR)
+#library(annotables)
 ```
 
 
@@ -33,13 +33,16 @@ library(annotables)
 #load object from rds
 #bc.seu <- readRDS("~/Rprojects/BC/merged14.rds")
 bc.seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/merged14.rds")
-#join layers
-bc.seu[["RNA"]] <- JoinLayers(bc.seu[["RNA"]])
 ```
 
 
 ### data stuff 
 ```{r preprocess}
+library(Seurat)
+
+#join layers
+bc.seu[["RNA"]] <- JoinLayers(bc.seu[["RNA"]])
+
 #SCTransform
 bc.seu <- SCTransform(bc.seu, verbose = FALSE, method = "glmGamPoi")
 
@@ -63,15 +66,19 @@ DimPlot(bc.seu, group.by = "Tcell_metacluster", label = TRUE, reduction = "umap"
 DimPlot(bc.seu, group.by = "Tcell_metacluster", label = TRUE, reduction = "pca")
 ```
 
-#More pre PPR data prep
+# More pre PPR data prep
 ```{r}
+library(SingleCellExperiment)
 # convet to single cell experiment object
 #bc.sce <- as.SingleCellExperiment(bc.seu, assay = "SCT")
 bc.sce <- SingleCellExperiment(assays = list(expdata = bc.seu@assays$RNA$counts))
 colData(bc.sce) <- DataFrame(bc.seu@meta.data)
 reducedDims(bc.sce)$PCA <- bc.seu@reductions$pca@cell.embeddings
 #reducedDims(bc.sce)$UMAP <- bc.seu@reductions$umap@cell.embeddings
-  
+```
+
+```{r}
+library(slingshot)
 # run slingshot
 bc.sce <- slingshot(bc.sce, 
                     clusterLabels = "Tcell_metacluster",
@@ -87,7 +94,11 @@ bc.sce <- slingshot(bc.sce,
 # lines(SlingshotDataSet(bc.sce), lwd=2, col='black')
 
 
+```
 
+
+```{r}
+library(GeneSwitches)
 #binarize the expression matrix (0.5 chosen as cutoff)
 bc.sce <- binarize_exp(bc.sce, fix_cutoff = TRUE, binarize_cutoff = 0.5)
 
