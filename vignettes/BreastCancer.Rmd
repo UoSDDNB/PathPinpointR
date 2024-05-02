@@ -17,13 +17,13 @@ knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 
 ###Load the required libraries
 ```{r libraries}
-#library(Seurat)
-#library(SingleCellExperiment)
-#library(slingshot)
-#library(RColorBrewer)
-#library(GeneSwitches)
-#library(PathPinpointR)
-#library(annotables)
+# library(Seurat)
+# library(SingleCellExperiment)
+# library(slingshot)
+# library(RColorBrewer)
+# library(GeneSwitches)
+# library(PathPinpointR)
+# library(annotables)
 ```
 
 
