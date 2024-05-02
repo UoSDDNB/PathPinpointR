@@ -30,15 +30,16 @@ library(ggplot2)
 library(slingshot)
 library(RColorBrewer)
 library(GeneSwitches)
-# library(GeneSwitchesScorer)
- library(SingleCellExperiment)
+library(SingleCellExperiment)
+library(devtools)
+devtools::load_all()
 ```
 
 ## SEURAT
 
 ### Here we use this Reprogramming dataset as the reference 
 ```{r eval=FALSE}
-seu <- readRDS("/mainfs/ddnb/PathPinpointR/blastocyst/blastocyst.rds")
+seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/blastocyst.rds")
 ```
 
 #### View the reference UMAP
@@ -101,6 +102,9 @@ sce  <- slingshot(sce,
                             start.clus  = "2",
                             end.clus = "1",
                             reducedDim = "UMAP")
+
+#Rename the Pseudotime column to work with GeneSwitches
+colData(sce)$Pseudotime <- sce$slingPseudotime_1
 ```
 
 ### Plot the slingshot trajectory.
@@ -140,8 +144,8 @@ lines(SlingshotDataSet(sce), lwd=2, col='black')
 
 ### Binarize
 ```{r eval=FALSE}
-sce    <- binarize_exp(sce, fix_cutoff = TRUE, binarize_cutoff = 1, ncores = 64)
-Mole21a.sce   <- binarize_exp(Mole21a.sce, fix_cutoff = TRUE, binarize_cutoff = 1, ncores = 64)
+#sce    <- binarize_exp(sce, fix_cutoff = TRUE, binarize_cutoff = 1, ncores = 64)
+#Mole21a.sce   <- binarize_exp(Mole21a.sce, fix_cutoff = TRUE, binarize_cutoff = 1, ncores = 64)
 #sce <- binarize_exp(sce, ncores = 64)
 #Mole21a.sce   <- binarize_exp(Mole21a.sce, ncores = 64)
 ```
@@ -149,73 +153,59 @@ Mole21a.sce   <- binarize_exp(Mole21a.sce, fix_cutoff = TRUE, binarize_cutoff = 
 ### CHECKPOINT
 ##### **with how long binerizing takes you may want to choose to save objects for future use.
 ```{r eval=FALSE}
- saveRDS(sce   , "~/R Packages/mini_data/Binerized/reference.rds")
- saveRDS(Mole21a.sce  , "~/R Packages/mini_data/Binerized/fibroblast.rds")
-
- sce    <- readRDS("~/R Packages/mini_data/Binerized/reference.rds")
- Mole21a.sce   <- readRDS("~/R Packages/mini_data/Binerized/fibroblast.rds")
- 
+ # saveRDS(sce   , "~/R Packages/mini_data/Binerized/reference.rds")
+ # saveRDS(Mole21a.sce  , "~/R Packages/mini_data/Binerized/Mole21a.rds")
+ # 
+ # sce    <- readRDS("~/R Packages/mini_data/Binerized/reference.rds")
+Mole21a.sce   <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/binarized_blastocyst_Mole21a_sce.rds")
 ```
 
 ### fit logistic regression and find the switching pseudo-time point for each gene
 ```{r eval=FALSE}
-sce <- find_switch_logistic_fastglm(sce, downsample = FALSE, show_warning = FALSE)
+#sce <- find_switch_logistic_fastglm(sce, downsample = FALSE, show_warning = FALSE)
 ```
 
 #### **This is another time consuming process, may want to choose to save objects for future use.**
 ```{r eval=FALSE}
-saveRDS(reference_glm.gs   , "~/R Packages/mini_data/Binerized/reference_glm.rds")
-sce    <- readRDS("~/R Packages/mini_data/Binerized/reference_glm.rds")
+## saveRDS(sce   , "~/R Packages/mini_data/Binerized/reference_glm.rds")
+sce    <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/switches_gastglm_blastocyst_reference_sce.rds")
 ```
 
 ### Filter to only include Switching Genes
 ```{r eval=FALSE}
-reference.sg <- filter_switchgenes(sce, allgenes = TRUE,r2cutoff = 0.03)
+switchingGenes <- filter_switchgenes(sce, allgenes = TRUE,r2cutoff = 0.2)
 ```
 
 ##### View all of the switching genes
 ```{r eval=FALSE}
-plot_timeline_ggplot(reference.sg, timedata = colData(reference_glm.gs)$Pseudotime, txtsize = 3)
+plot_timeline_ggplot(switchingGenes, timedata = colData(sce)$Pseudotime, txtsize = 3)
 ```
 
-# Using GeneSwitchesScorer
 
-### Filter for an even distribution
-```{r eval=FALSE}
-gss.sg <- select_evenly_distributed_switching_genes(reference.sg, min_time_spacing = 5)
-```
+# Using PPR
 
 ##### View the selected switching genes
 ```{r eval=FALSE}
-plot_timeline_ggplot(gss.sg, timedata = colData(reference_glm.gs)$Pseudotime, txtsize = 3)
+ppr_timeline_plot(switchingGenes)
 ```
 
 ### Reduce the binary counts matricies of the query data to only include the selection of evenly distributed genes from the refernence.
 ```{r eval=FALSE}
-fibroblast_reduced      <- filter_gene_expression_for_switching_genes(Mole21a.sce@assays@data@listData$binary   , gss.sg)
-mixed_reduced           <- filter_gene_expression_for_switching_genes(mixed.gs@assays@data@listData$binary        , gss.sg)
-early_primed_reduced    <- filter_gene_expression_for_switching_genes(early_primed.gs@assays@data@listData$binary , gss.sg)
-primed_reduced          <- filter_gene_expression_for_switching_genes(primed.gs@assays@data@listData$binary       , gss.sg)
-reference_reduced       <- filter_gene_expression_for_switching_genes(sce@assays@data@listData$binary    , gss.sg)
+Mole21a_reduced      <- ppr_filter_gene_expression_for_switching_genes(Mole21a.sce@assays@data@listData$binary   ,switchingGenes )
+reference_reduced       <- filter_gene_expression_for_switching_genes(sce@assays@data@listData$binary    , switchingGenes)
 ```
 
 ### Produce an estimate for the position on trajectory of each gene in each cell of a sample.
 ```{r eval=FALSE}
-Mole21a.sces   <- create_racing_lines(fibroblast_reduced  , gss.sg)
-mixed.gss        <- create_racing_lines(mixed_reduced       , gss.sg)
-early_primed.gss <- create_racing_lines(early_primed_reduced, gss.sg)
-primed.gss       <- create_racing_lines(primed_reduced      , gss.sg)
-sces    <- create_racing_lines(reference_reduced   , gss.sg)
+Mole21a.sce   <- create_racing_lines(Mole21a_reduced  , switchingGenes)
+sce    <- create_racing_lines(reference_reduced   , switchingGenes)
 ```
 
 ### Accuracy
 #### *As our samples are subsets of the reference dataset we can calculate the accuracy of GSS*
 ```{r eval=FALSE}
-fibroblast_accuracy   <- score_gss_accuracy(Mole21a.sces, sce)
-mixed_accuracy        <- score_gss_accuracy(mixed.gss, sce)
-early_primed_accuracy <- score_gss_accuracy(early_primed.gss, sce)
-primed_accuracy       <- score_gss_accuracy(primed.gss, sce)
-reference_accuracy    <- score_gss_accuracy(sces, sce)
+Mole21a_accuracy   <- score_gss_accuracy(Mole21a.sce, sce)
+reference_accuracy    <- score_gss_accuracy(sce, sce)
 ```
 
 ## Plotting
@@ -223,63 +213,39 @@ reference_accuracy    <- score_gss_accuracy(sces, sce)
 ### Plot the predicted position of each sample:
 #### *Optional: include the switching point of some genes of interest:*
 ```{r eval=FALSE}
-gss_output_plot(Mole21a.sces, col = "red", overlay=FALSE, label = "fibroblast", genes_of_interest = c("ENSG00000248605","ENSG00000272168"))
-gss_output_plot(mixed.gss, col = "peachpuff4", overlay=TRUE, label = "mixed")
-gss_output_plot(early_primed.gss, col = "purple", overlay=TRUE, label = "early primed")
-gss_output_plot(primed.gss, col = "darkgreen", overlay=TRUE, label = "primed" , genes_of_interest = c("ENSG00000236924"))
+gss_output_plot(Mole21a.sce, col = "red", overlay=FALSE, label = "Mole21a", genes_of_interest = c("ENSG00000248605","ENSG00000272168"))
 ```
 
-## Further analysis of the results
 
-### Investigate the predicted position of indervidual cells:
 
-#### Plot the preducted position of all cells in a Sample
-###### *only run this on a selection of cells or a small sample*
-```{r eval=FALSE}
-for (c in 1:nrow(sc.gss$cells_flat)) {
-  plot(x = 1:100, y = sc.gss$cells_flat[c,], type = "h",
-       xlab = "Pseudotime Index", ylab = "Cell Position Likelihood",
-       main = paste("Trajectory Progress of", rownames(sc.gss$cells_flat)[c]))
-  segments(which.max(sc.gss$cells_flat[c,]),
-           0.0,
-           which.max(sc.gss$cells_flat[c,]),
-           as.numeric(sc.gss$cells_flat[c,which.max(sc.gss$cells_flat[c,])]),
-           lwd=2,
-           col ="red")
-
-}
-```
 
 #### Plot the "racing lines" for indervidual cells.
 ```{r eval=FALSE}
-racinglines_timeline(reference.sg, reference_reduced, cell_idx = 1)
+racinglines_timeline(switchingGenes, reference_reduced, cell_idx = 1)
 ```
 
 ### Plot the distribution of inaccuracy of each sample:
 ```{r eval=FALSE}
-hist(fibroblast_accuracy$inaccuracy  , breaks = 100)
-hist(mixed_accuracy$inaccuracy       , breaks = 100)
-hist(early_primed_accuracy$inaccuracy, breaks = 100)
-hist(primed_accuracy$inaccuracy      , breaks = 100)
+hist(Mole21a_accuracy$inaccuracy  , breaks = 100)
 hist(reference_accuracy$inaccuracy   , breaks = 100)
 ```
 
 ### Investigate the predicted position of indervidual cells:
 ```{r eval=FALSE}
 #
-plot(fibroblast_accuracy$true_position_of_cells_timeIDX, fibroblast_accuracy$inaccuracy,
+plot(Mole21a_accuracy$true_position_of_cells_timeIDX, Mole21a_accuracy$inaccuracy,
      xlab = "True Position", ylab = "Inaccuracy", main = "Inaccuracy by True Positions")
 
 #
-boxplot(fibroblast_accuracy$inaccuracy ~ fibroblast_accuracy$true_position_of_cells_timeIDX,
+boxplot(Mole21a_accuracy$inaccuracy ~ Mole21a_accuracy$true_position_of_cells_timeIDX,
         xlab = "True Position", ylab = "Inaccuracy", main = "Boxplots of Inaccuracy by True Positions")
-true_position_bin <- cut(fibroblast_accuracy$true_position_of_cells_timeIDX,
+true_position_bin <- cut(Mole21a_accuracy$true_position_of_cells_timeIDX,
                              breaks = c(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80.85,90,95,100))
-boxplot(fibroblast_accuracy$inaccuracy ~ true_position_bin,
+boxplot(Mole21a_accuracy$inaccuracy ~ true_position_bin,
         xlab = "True Position", ylab = "Inaccuracy", main = "Boxplots of Inaccuracy by True Positions")
 
 #
-plot(fibroblast_accuracy$true_position_of_cells_timeIDX,fibroblast_accuracy$predicted_position_of_cells_timeIDX,
+plot(Mole21a_accuracy$true_position_of_cells_timeIDX,Mole21a_accuracy$predicted_position_of_cells_timeIDX,
      xlab = "True Position", ylab = "Predicted Position", main = "Predicted Positions by True Positions")
 segments(0,0,100,100, lwd=2, col ="green")
 segments(0,10,100,110, lwd=2, col ="blue")
@@ -288,7 +254,7 @@ segments(0,40,100,140, lwd=2, col ="red")
 segments(0,-40,100,60, lwd=2, col ="red")
 
 #
-boxplot(fibroblast_accuracy$predicted_position_of_cells_timeIDX ~ fibroblast_accuracy$true_position_of_cells_timeIDX,
+boxplot(Mole21a_accuracy$predicted_position_of_cells_timeIDX ~ Mole21a_accuracy$true_position_of_cells_timeIDX,
         xlab = "True Position", ylab = "Predicted Position", main = "Boxplots of Predicted Positions by True Positions")
 segments(0,0,100,100, lwd=2, col ="green")
 segments(0,10,100,110, lwd=2, col ="blue")
@@ -297,68 +263,4 @@ segments(0,40,100,140, lwd=2, col ="red")
 segments(0,-40,100,60, lwd=2, col ="red")
 ```
 
-### Investigate the precision of min_time_spacing values:
-```{r eval=FALSE}
-precision <- data.frame(
-  min_time_spacing = 0:100,
-  n_genes          = NA,                                                   # Number of genes after min_time_spacing
-  accuracy_min     = NA,                                                   # Placeholder for accuracy minimum values
-  accuracy_1       = NA,
-  accuracy_median  = NA,
-  accuracy_mean    = NA,
-  accuracy_3       = NA,
-  accuracy_max     = NA
-  )
 
-
-
-for (i in 0:100){
-# Filter for an even distribution
-gss_genes <- select_evenly_distributed_switching_genes(sce, min_time_spacing = i)
-
-# Reduce the binary counts matricies of the query data to only include the selection of evenly distributed genes from the refernence.
-sample_reduced      <- filter_gene_expression_for_switching_genes(sample.gs@assays@data@listData$binary   , gss_genes)
-
-#
-sample.gss <- create_racing_lines(sample_reduced, gss_genes)
-
-#
-accuracy <- score_gss_accuracy(sample.gss, sce)
-
-#
-precision$n_genes[i+1]          <- dim(gss_genes)[1]
-precision$accuracy_min[i+1]     <- summary(accuracy$accuracy)[1]
-precision$accuracy_1[i+1]       <- summary(accuracy$accuracy)[2]
-precision$accuracy_median[i+1]  <- summary(accuracy$accuracy)[3]
-precision$accuracy_mean[i+1]    <- summary(accuracy$accuracy)[4]
-precision$accuracy_3[i+1]       <- summary(accuracy$accuracy)[5]
-precision$accuracy_max[i+1]     <- summary(accuracy$accuracy)[6]
-
-#
-cat(i," done \n")
-}
-
-
-ggplot(data = precision, mapping = aes(x = min_time_spacing)) +
-  geom_point(aes(y = accuracy_min), color = "lightblue") +
-  geom_point(aes(y = accuracy_1), color = "lightpink") +
-  geom_point(aes(y = accuracy_median), color = "red") +
-  geom_point(aes(y = accuracy_mean), color = "blue") +
-  geom_point(aes(y = accuracy_3), color = "darkgreen") +
-  geom_point(aes(y = accuracy_max), color = "lightblue") +
-  ylab("innacuracy")
-
-ggplot(data = precision, mapping = aes(x = n_genes)) +
-  geom_point(aes(y = accuracy_min), color = "lightblue") +
-  geom_point(aes(y = accuracy_1), color = "lightpink") +
-  geom_point(aes(y = accuracy_median), color = "red") +
-  geom_point(aes(y = accuracy_mean), color = "blue") +
-  geom_point(aes(y = accuracy_3), color = "darkgreen") +
-  geom_point(aes(y = accuracy_max), color = "lightblue") +
-  ylab("innacuracy") + scale_x_log10()
-
-
-ggplot(data = precision, mapping = aes(x = min_time_spacing)) +
-  geom_point(aes(y = n_genes), color = "red") +
-  scale_y_log10()
-```
