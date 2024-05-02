@@ -192,20 +192,20 @@ ppr_timeline_plot(switchingGenes)
 ### Reduce the binary counts matricies of the query data to only include the selection of evenly distributed genes from the refernence.
 ```{r eval=FALSE}
 Mole21a_reduced      <- ppr_filter_gene_expression_for_switching_genes(Mole21a.sce@assays@data@listData$binary   ,switchingGenes )
-reference_reduced       <- filter_gene_expression_for_switching_genes(sce@assays@data@listData$binary    , switchingGenes)
+reference_reduced    <- ppr_filter_gene_expression_for_switching_genes(sce@assays@data@listData$binary    , switchingGenes)
 ```
 
 ### Produce an estimate for the position on trajectory of each gene in each cell of a sample.
 ```{r eval=FALSE}
-Mole21a.sce   <- create_racing_lines(Mole21a_reduced  , switchingGenes)
-sce    <- create_racing_lines(reference_reduced   , switchingGenes)
+Mole21a.ppr   <- PathPinpointR::ppr_predict_position(Mole21a_reduced  , switchingGenes)
+reference.ppr    <- ppr_predict_position(reference_reduced   , switchingGenes)
 ```
 
 ### Accuracy
 #### *As our samples are subsets of the reference dataset we can calculate the accuracy of GSS*
 ```{r eval=FALSE}
-Mole21a_accuracy   <- score_gss_accuracy(Mole21a.sce, sce)
-reference_accuracy    <- score_gss_accuracy(sce, sce)
+ppr_accuracy_test(Mole21a.ppr, sce)
+ppr_accuracy_test(reference.ppr, sce)
 ```
 
 ## Plotting
@@ -213,21 +213,27 @@ reference_accuracy    <- score_gss_accuracy(sce, sce)
 ### Plot the predicted position of each sample:
 #### *Optional: include the switching point of some genes of interest:*
 ```{r eval=FALSE}
-gss_output_plot(Mole21a.sce, col = "red", overlay=FALSE, label = "Mole21a", genes_of_interest = c("ENSG00000248605","ENSG00000272168"))
+ppr_output_plot(Mole21a.ppr, col = "red", overlay=FALSE, label = "Mole21a")
+#ppr_output_plot(ANOTHER!.ppr, col = "green", overlay=TRUE, label = "ANOTHER!")
 ```
 
 
 
 
-#### Plot the "racing lines" for indervidual cells.
+#### Plot an indervidual cell.
 ```{r eval=FALSE}
-racinglines_timeline(switchingGenes, reference_reduced, cell_idx = 1)
+ppr_cell_plot(Mole21a.ppr, cell_idx = 1)
 ```
 
-### Plot the distribution of inaccuracy of each sample:
 ```{r eval=FALSE}
-hist(Mole21a_accuracy$inaccuracy  , breaks = 100)
-hist(reference_accuracy$inaccuracy   , breaks = 100)
+ppr_timeline_plot(switchingGenes, genomic_expression_traces = TRUE, reduced_binary_counts_matrix = Mole21a_reduced, cell_id = 1)
+```
+
+### Precision
+##### Estimate the precision of PPR by running accuracy_test at a range of values
+###### BUG! 
+```{r eval=FALSE}
+ppr_precision(sce)
 ```
 
 ### Investigate the predicted position of indervidual cells:
