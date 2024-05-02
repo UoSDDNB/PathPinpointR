@@ -8,3 +8,5 @@
 .DS_Store
 docs
 inst/doc
+data
+scripts_iridis
