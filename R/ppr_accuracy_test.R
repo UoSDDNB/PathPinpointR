@@ -40,7 +40,7 @@ ppr_accuracy_test <- function(reference.ppr, reference.gs, plot = TRUE) {
     mean_inaccuracy <- mean(accuracy$inaccuracy, na.rm = TRUE)
     abline(v = mean_inaccuracy, col = "red", lwd = 1)
     text(mean_inaccuracy, max(hist_plot$counts) * 0.9, labels = paste("Mean =", round(mean_inaccuracy, 2)), adj = c(0.5, 0), col = "red")
-    return(list(accuracy_data = accuracy, histogram = hist_plot))
+    return(hist_plot)
   } else {
     return(accuracy)
   }
