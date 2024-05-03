@@ -32,7 +32,7 @@ for (i in range){
   sample.ppr <- ppr_predict_position(sample_reduced, reference.sg)
 
   #
-  accuracy <- ppr_accuracy_test(reference.ppr = sample.ppr, reference.gs = sample.gs)
+  accuracy <- ppr_accuracy_test(reference.ppr = sample.ppr, reference.gs = sample.gs, plot = FALSE)
 
   #
   precision$n_sg[precision_rownumber  ] <- dim(reference.sg)[1]
