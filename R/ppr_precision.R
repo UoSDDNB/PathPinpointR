@@ -1,5 +1,7 @@
 #' ppr_precision
 #'
+#' @description Used to find the optimum r2cutoff to use, based on using reference as your sample.
+#' 
 #' @param sample.gs GeneSwitches object that you have already run binarise and GLM on.
 #' @param range range of r2cutoffs to use
 #'
