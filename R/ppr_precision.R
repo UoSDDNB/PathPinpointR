@@ -3,23 +3,23 @@
 #' @description Used to find the optimum r2cutoff to use, based on using reference as your sample.
 #' 
 #' @param sample.gs GeneSwitches object that you have already run binarise and GLM on.
-#' @param range range of r2cutoffs to use
+#' @param r2_cutoff_range range of r2cutoffs to use
 #'
-#' @return the precision dataframe.
+#' @return a plot of the precision df. (#TODO make the df as an optional output!)
 #' @importFrom GeneSwitches filter_switchgenes
 #' @export
-ppr_precision <- function(sample.gs, range = seq(0.02,0.04,0.005)){
+ppr_precision <- function(sample.gs, r2_cutoff_range = seq(0.0,0.5,0.1)){
 
 #Build a DF to store accuracy data.
 precision <- data.frame(
-                r2cutoff = range,                                           # R2cutoff used.
+                r2cutoff = r2_cutoff_range,                                           # R2cutoff used.
                     n_sg = NA,                                              # Number of genes after min_time_spacing
          inaccuracy_mean = NA                                               # Placeholder for accuracy mean values
 )
 
 precision_rownumber <- 1
 
-for (i in range){
+for (i in r2_cutoff_range){
   ##Follow the GS and GSS steps.
 
   # Filter the switching genes
@@ -44,7 +44,26 @@ for (i in range){
   #
   precision_rownumber <- precision_rownumber + 1
 }
-return(precision)
+
+# Plotting inaccuracy_mean
+plot(precision$r2cutoff, precision$inaccuracy_mean, type = "l",  # Line plot
+     xlab = "R-squared Cutoff", ylab = "Mean Inaccuracy",        # Axis labels
+     main = "Mean Inaccuracy vs R-squared Cutoff")               # Plot title
+
+# Adding points
+points(precision$r2cutoff, precision$inaccuracy_mean, pch = 16)
+
+# Adding grid
+grid()
+
+# Adding a legend
+legend("topright", legend = "Inaccuracy Mean", pch = 16, col = "black", bty = "n")
+
+# Save the plot as an object
+myplot <- recordPlot()
+
+
+return(myplot)
 }
 
 
