@@ -204,7 +204,7 @@ reference.ppr    <- ppr_predict_position(reference_reduced   , switchingGenes)
 ### Accuracy
 #### *As our samples are subsets of the reference dataset we can calculate the accuracy of GSS*
 ```{r eval=FALSE}
-ppr_accuracy_test(Mole21a.ppr, sce)
+Mole21a_accuracy <- ppr_accuracy_test(Mole21a.ppr, sce)
 ppr_accuracy_test(reference.ppr, sce)
 ```
 
