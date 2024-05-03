@@ -44,29 +44,35 @@ seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/blastocyst
 
 #### View the reference UMAP
 ```{r eval=FALSE}
-DimPlot(object = seu, reduction = "umap", group.by = "orig.ident" ,label = T) +
+DimPlot(object = seu, 
+        reduction = "umap",
+        group.by = "orig.ident",
+        label = TRUE) +
   ggtitle("Reference")
-DimPlot(object = seu, reduction = "umap", group.by = "seurat_clusters" ,label = T) +
+DimPlot(object = seu,
+        reduction = "umap",
+        group.by = "seurat_clusters",
+        label = T) +
   ggtitle("Reference")
 ```
 
 ### QC
 ```{r eval=FALSE}
-# 
-#seu[["percent.mt"]] <- PercentageFeatureSet(seu, pattern = "MT-")
+
+# seu[["percent.mt"]] <- PercentageFeatureSet(seu, pattern = "MT-")
 
 # Visualize QC metrics as a violin plot
-#VlnPlot(seu, features = c("nFeature_RNA", "nCount_RNA", "pctMT"), ncol = 3)
+# VlnPlot(seu, features = c("nFeature_RNA", "nCount_RNA", "pctMT"), ncol = 3)
 
 
 ```
 
 ### QC
 ```{r}
-#seu <- subset(seu, subset = nFeature_RNA > 2500 & pctMT < 10 & nCount_RNA < 1e+07)
+# seu <- subset(seu, subset = nFeature_RNA > 2500 & pctMT < 10 & nCount_RNA < 1e+07)
 
 # Visualize QC metrics as a violin plot
-#VlnPlot(seu, features = c("nFeature_RNA", "nCount_RNA", "pctMT"), ncol = 3)
+# VlnPlot(seu, features = c("nFeature_RNA", "nCount_RNA", "pctMT"), ncol = 3)
 
 ```
 
@@ -98,10 +104,10 @@ Mole21a.sce   <- SingleCellExperiment(assays = list(expdata = Mole21a.seu@assays
 ### Run slingshot on the reference data to produce a reprogramming trajectory.
 ```{r eval=FALSE}
 sce  <- slingshot(sce,
-                            clusterLabels = "seurat_clusters",
-                            start.clus  = "2",
-                            end.clus = "1",
-                            reducedDim = "UMAP")
+                  clusterLabels = "seurat_clusters",
+                  start.clus  = "2",
+                  end.clus = "1",
+                  reducedDim = "UMAP")
 
 #Rename the Pseudotime column to work with GeneSwitches
 colData(sce)$Pseudotime <- sce$slingPseudotime_1
@@ -173,7 +179,7 @@ sce    <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/switche
 
 ### Filter to only include Switching Genes
 ```{r eval=FALSE}
-switchingGenes <- filter_switchgenes(sce, allgenes = TRUE,r2cutoff = 0.2)
+switchingGenes <- filter_switchgenes(sce, allgenes = TRUE,r2cutoff = 0.28)
 ```
 
 ##### View all of the switching genes
@@ -198,14 +204,14 @@ reference_reduced    <- ppr_filter_gene_expression_for_switching_genes(sce@assay
 ### Produce an estimate for the position on trajectory of each gene in each cell of a sample.
 ```{r eval=FALSE}
 Mole21a.ppr   <- PathPinpointR::ppr_predict_position(Mole21a_reduced  , switchingGenes)
-reference.ppr    <- ppr_predict_position(reference_reduced   , switchingGenes)
+reference_ppr    <- ppr_predict_position(reference_reduced   , switchingGenes)
 ```
 
 ### Accuracy
 #### *As our samples are subsets of the reference dataset we can calculate the accuracy of GSS*
 ```{r eval=FALSE}
 Mole21a_accuracy <- ppr_accuracy_test(Mole21a.ppr, sce)
-ppr_accuracy_test(reference.ppr, sce)
+reference_accuracy <- ppr_accuracy_test(reference_ppr, sce, plot = TRUE)
 ```
 
 ## Plotting
@@ -226,7 +232,10 @@ ppr_cell_plot(Mole21a.ppr, cell_idx = 1)
 ```
 
 ```{r eval=FALSE}
-ppr_timeline_plot(switchingGenes, genomic_expression_traces = TRUE, reduced_binary_counts_matrix = Mole21a_reduced, cell_id = 1)
+ppr_timeline_plot(switchingGenes,
+                  genomic_expression_traces = TRUE,
+                  reduced_binary_counts_matrix = Mole21a_reduced,
+                  cell_id = 1)
 ```
 
 ### Precision
