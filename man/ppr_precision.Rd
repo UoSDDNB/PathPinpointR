@@ -4,16 +4,19 @@
 \alias{ppr_precision}
 \title{ppr_precision}
 \usage{
-ppr_precision(sample.gs, range = seq(0.02, 0.04, 0.005))
+ppr_precision(sce, r2_cutoff_range = seq(0, 0.5, 0.1), plot = TRUE)
 }
 \arguments{
-\item{sample.gs}{GeneSwitches object that you have already run binarise and GLM on.}
+\item{sce}{SingleCellExperiement object,
+that you have already run GeneSwitches::binarize_exp(),
+and GeneSwitches::find_switch_logistic_fastglm() on.}
 
-\item{range}{range of r2cutoffs to use}
+\item{r2_cutoff_range}{range of r2cutoffs to use}
 }
 \value{
-the precision dataframe.
+a plot of the precision df.
 }
 \description{
-ppr_precision
+Used to find the optimum r2cutoff to use,
+#' based on using reference as your sample.
 }
