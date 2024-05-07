@@ -27,10 +27,10 @@ The data used here is an Intregrated dataset of multiple blastocyst datsets [Her
 ```{r eval=FALSE}
 library(Seurat)
 library(ggplot2)
+library(SingleCellExperiment)
 library(slingshot)
 library(RColorBrewer)
 library(GeneSwitches)
-library(SingleCellExperiment)
 library(devtools)
 devtools::load_all()
 ```
@@ -44,16 +44,22 @@ seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/blastocyst
 
 #### View the reference UMAP
 ```{r eval=FALSE}
-DimPlot(object = seu, 
-        reduction = "umap",
-        group.by = "orig.ident",
-        label = TRUE) +
-  ggtitle("Reference")
-DimPlot(object = seu,
-        reduction = "umap",
-        group.by = "seurat_clusters",
-        label = T) +
-  ggtitle("Reference")
+p1 <- DimPlot(object = seu, 
+              reduction = "umap",
+              group.by = "orig.ident",
+              label = TRUE) +
+      ggtitle("Reference")
+
+ggsave(filename = "/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/dimplot_orig_ident.png", plot = p1)
+
+# Plot and save the second DimPlot
+p2 <- DimPlot(object = seu,
+              reduction = "umap",
+              group.by = "seurat_clusters",
+              label = TRUE) +
+      ggtitle("Reference")
+
+ggsave(filename = "/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/dimplot_seurat_clusters.png", plot = p2)
 ```
 
 ### QC
@@ -115,10 +121,19 @@ colData(sce)$Pseudotime <- sce$slingPseudotime_1
 
 ### Plot the slingshot trajectory.
 ```{r eval=FALSE}
-colors <- colorRampPalette(brewer.pal(11,'Spectral')[-6])(100)
-plotcol <- colors[cut(sce$slingPseudotime_1, breaks=100)]
-plot(reducedDims(sce)$UMAP, col = plotcol, pch=16, asp = 1)
-lines(SlingshotDataSet(sce), lwd=2, col='black')
+# Generate colors
+colors <- colorRampPalette(brewer.pal(11, 'Spectral')[-6])(100)
+plotcol <- colors[cut(sce$slingPseudotime_1, breaks = 100)]
+
+# Open a PDF device to save the plot
+pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/slingshot.pdf")
+
+# Plot the data
+plot(reducedDims(sce)$UMAP, col = plotcol, pch = 16, asp = 1)
+lines(SlingshotDataSet(sce), lwd = 2, col = 'black')
+
+# Close the PDF device
+dev.off()
 ```
 
 
@@ -179,12 +194,19 @@ sce    <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/switche
 
 ### Filter to only include Switching Genes
 ```{r eval=FALSE}
-switchingGenes <- filter_switchgenes(sce, allgenes = TRUE,r2cutoff = 0.28)
+switchingGenes <- filter_switchgenes(sce, allgenes = TRUE,r2cutoff = 0.26)
 ```
 
 ##### View all of the switching genes
 ```{r eval=FALSE}
+# Open a PDF device to save the plot
+pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/timeline_plot.pdf")
+
+# Plot the timeline using plot_timeline_ggplot
 plot_timeline_ggplot(switchingGenes, timedata = colData(sce)$Pseudotime, txtsize = 3)
+
+# Close the PDF device
+dev.off()
 ```
 
 
@@ -195,7 +217,7 @@ plot_timeline_ggplot(switchingGenes, timedata = colData(sce)$Pseudotime, txtsize
 ppr_timeline_plot(switchingGenes)
 ```
 
-### Reduce the binary counts matricies of the query data to only include the selection of evenly distributed genes from the refernence.
+### Reduce the binary counts matricies of the query data to only include the selection os switching genes.
 ```{r eval=FALSE}
 Mole21a_reduced      <- ppr_filter_gene_expression_for_switching_genes(Mole21a.sce@assays@data@listData$binary   ,switchingGenes )
 reference_reduced    <- ppr_filter_gene_expression_for_switching_genes(sce@assays@data@listData$binary    , switchingGenes)
