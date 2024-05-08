@@ -1,4 +1,4 @@
-#' filter Gene Expression for Switching Genes
+#' Subset Gene Expression for Switching Genes
 #'
 #' @description
 #' Reduce a binary expression matrix to only the switching genes.
@@ -10,12 +10,12 @@
 #' @param switching_genes Genes identified by GeneSwitches as "switching",
 #' produced using your reference.
 #'
-#' @return a binary expression matrix filtered to only include switching genes
+#' @return a binary expression matrix subseted to only include switching genes
 #' @export
 #'
 #'
 
-filter_for_switching_genes <- function(sample_sce, switching_genes) {
+subset_switching_genes <- function(sample_sce, switching_genes) {
   # Check if sample_sce contains binarized expression data
   if (is.null(sample_sce@assays@data@listData$binary)) {
     # If binarized expression data is missing, display a message and stop.
