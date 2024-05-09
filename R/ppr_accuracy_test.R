@@ -31,15 +31,17 @@ ppr_accuracy_test <- function(reference_ppr, reference_sce, plot = TRUE) {
 
   # Calculate the time step based on the pseudotime range
   # TODO clarify the deinfition of "time step"
-  steptime <- (max(reference_sce@colData$Pseudotime) - min(reference_sce@colData$Pseudotime)) / 100
+  steptime <- (max(true_pseudotime) - min(true_pseudotime)) / 100
 
   # Calculate the true time indices based on the pseudotime values
-  accuracy$true_timeIDX <- round((reference_sce@colData$Pseudotime - min(reference_sce@colData$Pseudotime)) / steptime)
+  accuracy$true_timeIDX <- round((true_pseudotime -
+                                    min(true_pseudotime)) / steptime)
 
   # Predict the time indices for the cells using the reference_ppr
-  # Note: This assumes that the names of cells in reference_ppr$cells_flat match the cell names in reference_sce
-  # accuracy$predicted_timeIDX[match(names(apply(reference_ppr$cells_flat, 1, which.max)), accuracy$cell_names)] <- apply(reference_ppr$cells_flat, 1, which.max)
-  # More efficient method:
+  # Note:
+  # This assumes that the names of cells in reference_ppr$cells_flat match the,
+  # cell names in reference_sce
+
   accuracy$predicted_timeIDX <- max.col(reference_ppr$cells_flat, "first")
 
   # Calculate the accuracy
