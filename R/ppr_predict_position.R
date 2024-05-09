@@ -4,15 +4,26 @@
 #' Produces an estimate for the position on trajectory of each gene in each cell of a sample.
 #'     This can be later aggregated to estimate the position of the sample along the trajectory.
 #'
-#' @param reduced_binary_counts_matrix a matrix of your samples binary gene expression.
-#' @param reference.sg Genes which switch through the trajectory as identified by GeneSwitches.
+#' @param sample_sce A Single Cell Experiment object,
+#' containing a matrix of your samples binary gene expression,
+#' which has been filtered to only include switching genes.
+#' @param switching_genes Genes which switch through the trajectory as identified by GeneSwitches.
 #'
 #' @return A list of matrices: A matrix for each cell where the columns represent progress through a trajectory,
 #'     and the rows represent genes, values indicate a likely position of the cell upon the trajectory based that genes bianrized expression.
 #' @export
 #'
-ppr_predict_position <- function(reduced_binary_counts_matrix,reference.sg) {
+ppr_predict_position <- function(sample_sce, switching_genes) {
 
+  # Check if sample_sce contains binarized expression data
+  if (is.null(sample_sce@assays@data@listData$binary)) {
+    # If binarized expression data is missing, display a message and stop.
+    stop("\n  Binarized expression data not found in \"",
+         deparse(substitute(sample_sce)),
+         "\" \n  You must run `GeneSwitches::binarize_exp()` first.")
+  } else {
+  reduced_binary_counts_matrix <- sample_sce@assays@data@listData$binary
+  }
   ## The final output will be a ppr_obj (list) comprised of 3 objects.
   # Make the list of length 3, and name the objects
   ppr_obj <- vector("list", 3)
@@ -20,22 +31,22 @@ ppr_predict_position <- function(reduced_binary_counts_matrix,reference.sg) {
   # Assign the ppr_obj class attribute to the list
   class(ppr_obj) <- "PPR_OBJECT"
 
-  ## Reorder reference.sg
-  # as the code relies on the rownames and idicies of the genes in reduced_binary_counts_matrix and reference.sg matching.
-  reference.sg <- reference.sg[rownames(reduced_binary_counts_matrix),]
+  ## Reorder switching_genes
+  # as the code relies on the rownames and idicies of the genes in reduced_binary_counts_matrix and switching_genes matching.
+  switching_genes <- switching_genes[rownames(reduced_binary_counts_matrix),]
 
   ## Input values:
   number_of_cells <- dim(reduced_binary_counts_matrix)[2]
   # Should we get the number of switching genes from here? or dim(reduced_binary_counts_matrix)[1]
-  # It is possible for dim(reduced_binary_counts_matrix)[1] <  dim(reference.sg)[1]
-  number_of_switching_genes <- dim(reference.sg)[1]
+  # It is possible for dim(reduced_binary_counts_matrix)[1] <  dim(switching_genes)[1]
+  number_of_switching_genes <- dim(switching_genes)[1]
 
 
   # Different datasets store this information in different columns.. watch out.
   # Maybe this should be an input to the function?
   # as.numeric is needed/notneeded depending on dataset.
-  switching_time <- as.numeric(reference.sg$switch_at_timeidx)
-  switching_direction <- reference.sg$direction
+  switching_time <- as.numeric(switching_genes$switch_at_timeidx)
+  switching_direction <- switching_genes$direction
 
   # Building the genomic_expression_traces list. (faster than building it dynamically.)
   all_patients_cells_scored <- vector("list", number_of_cells)
@@ -49,10 +60,17 @@ ppr_predict_position <- function(reduced_binary_counts_matrix,reference.sg) {
    rownames(genomic_expression_mat) <- rownames(reduced_binary_counts_matrix)
     binarized_gene_expression_for_cell_c <- reduced_binary_counts_matrix[, c]
 
-    up_indices <- which(binarized_gene_expression_for_cell_c == 1 & switching_direction == "up")
-    down_indices <- which(binarized_gene_expression_for_cell_c == 0 & switching_direction == "down")
-    not_up_indices <- which(binarized_gene_expression_for_cell_c == 0 & switching_direction == "up")
-    not_down_indices <- which(binarized_gene_expression_for_cell_c == 1 & switching_direction == "down")
+    up_indices <- which(
+      binarized_gene_expression_for_cell_c == 1 & switching_direction == "up")
+
+    down_indices <- which(
+      binarized_gene_expression_for_cell_c == 0 & switching_direction == "down")
+
+    not_up_indices <- which(
+      binarized_gene_expression_for_cell_c == 0 & switching_direction == "up")
+
+    not_down_indices <- which(
+      binarized_gene_expression_for_cell_c == 1 & switching_direction == "down")
 
     for (i in up_indices) {
       genomic_expression_mat[i, switching_time[i]:100] <- 1
