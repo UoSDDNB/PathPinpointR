@@ -313,7 +313,7 @@ ppr_output_plot(samples_ppr[[1]], col = "red", overlay=FALSE, label = names(samp
 ppr_output_plot(samples_ppr[[2]], col = "blue", overlay=TRUE, label = names(samples_ppr)[2])
 ppr_output_plot(samples_ppr[[4]], col = "purple", overlay=TRUE, label = names(samples_ppr)[4])
 ppr_output_plot(samples_ppr[[5]], col = "#000000", overlay=TRUE, label = names(samples_ppr)[5])
-ppr_output_plot(samples_ppr[[8]], col = "#4dd80c", overlay=TRUE, label = names(samples_ppr)[7])
+ppr_output_plot(samples_ppr[[8]], col = "#4dd80c", overlay=TRUE, label = names(samples_ppr)[8])
 # Close the PDF device
 dev.off()
 
