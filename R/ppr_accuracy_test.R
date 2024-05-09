@@ -29,20 +29,24 @@ ppr_accuracy_test <- function(reference_ppr, reference_sce, plot = TRUE) {
     inaccuracy = NA
   )
 
+  #
+  ref_ptime <- reference_sce@colData$Pseudotime
+
   # Calculate the time step based on the pseudotime range
   # TODO clarify the deinfition of "time step"
-  steptime <- (max(true_pseudotime) - min(true_pseudotime)) / 100
+  steptime <- (max(ref_ptime) - min(ref_ptime)) / 100
 
   # Calculate the true time indices based on the pseudotime values
-  accuracy$true_timeIDX <- round((true_pseudotime -
-                                    min(true_pseudotime)) / steptime)
+  accuracy$true_timeIDX <- round((ref_ptime -
+                                    min(ref_ptime)) / steptime)
 
   # Predict the time indices for the cells using the reference_ppr
   # Note:
   # This assumes that the names of cells in reference_ppr$cells_flat match the,
   # cell names in reference_sce
-
-  accuracy$predicted_timeIDX <- max.col(reference_ppr$cells_flat, "first")
+  accuracy$predicted_timeIDX[match(names(apply(reference_ppr$cells_flat, 1, which.max)), accuracy$cell_names)] <- apply(reference_ppr$cells_flat, 1, which.max) 
+  # Faster method which only works with reference being used as sample.
+  #accuracy$predicted_timeIDX <- max.col(reference_ppr$cells_flat, "first")
 
   # Calculate the accuracy
   # (the absolute difference between the true and predicted time indices)
@@ -50,12 +54,12 @@ ppr_accuracy_test <- function(reference_ppr, reference_sce, plot = TRUE) {
 
   if (plot) {
     hist_plot <- hist(accuracy$inaccuracy,
-                       breaks = 100,
-                       main = "Histogram of Inaccuracy",
-                       xlab = "Inaccuracy")
+                      breaks = 100,
+                      main = "Histogram of Inaccuracy",
+                      xlab = "Inaccuracy")
     mean_inaccuracy <- mean(accuracy$inaccuracy, na.rm = TRUE)
     abline(v = mean_inaccuracy, col = "red", lwd = 1)
-    text(mean_inaccuracy, 
+    text(mean_inaccuracy,
          max(hist_plot$counts) * 0.9,
          labels = paste("Mean =", round(mean_inaccuracy, 2)),
          adj = c(0.5, 0),
