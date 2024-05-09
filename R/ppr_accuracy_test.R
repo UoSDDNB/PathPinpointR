@@ -4,7 +4,8 @@
 #' Use this with "sample" cells taken from the reference.
 #' Checks how close the predicted position of the cells is to the true position.
 #'
-#' @param reference_ppr A "PPR_OBJECT" as outputted by create_racing_lines
+#' @param sample_ppr A "PPR_OBJECT" which originates from the reference,
+#' Or a subet of the reference.
 #' @param reference_sce A SingleCellExperiment object,
 #' containing Pseudotime, binarized and found switching genes.
 #' @param plot Logical value. Default is FALSE.
@@ -14,7 +15,7 @@
 #' If plot = TRUE, returns a the accuracy data frame.
 #' @importFrom graphics abline hist text
 #' @export
-ppr_accuracy_test <- function(reference_ppr, reference_sce, plot = TRUE) {
+ppr_accuracy_test <- function(sample_ppr, reference_sce, plot = TRUE) {
   # Create a data frame to store the accuracy results
   accuracy <- data.frame(
     # Cell names from reference_sce
@@ -40,13 +41,13 @@ ppr_accuracy_test <- function(reference_ppr, reference_sce, plot = TRUE) {
   accuracy$true_timeIDX <- round((ref_ptime -
                                     min(ref_ptime)) / steptime)
 
-  # Predict the time indices for the cells using the reference_ppr
+  # Predict the time indices for the cells using the sample_ppr
   # Note:
-  # This assumes that the names of cells in reference_ppr$cells_flat match the,
+  # This assumes that the names of cells in sample_ppr$cells_flat match the,
   # cell names in reference_sce
-  accuracy$predicted_timeIDX[match(names(apply(reference_ppr$cells_flat, 1, which.max)), accuracy$cell_names)] <- apply(reference_ppr$cells_flat, 1, which.max) 
+  accuracy$predicted_timeIDX[match(names(apply(sample_ppr$cells_flat, 1, which.max)), accuracy$cell_names)] <- apply(sample_ppr$cells_flat, 1, which.max) 
   # Faster method which only works with reference being used as sample.
-  #accuracy$predicted_timeIDX <- max.col(reference_ppr$cells_flat, "first")
+  #accuracy$predicted_timeIDX <- max.col(sample_ppr$cells_flat, "first")
 
   # Calculate the accuracy
   # (the absolute difference between the true and predicted time indices)
