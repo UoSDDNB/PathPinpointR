@@ -186,7 +186,7 @@ dev.off()
 
 # read the reference and sample objects
 #sce <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/reference.rds")
-sample_Mole21a_binarized <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/binarized_Mole21a_sce.rds")
+#sample_Mole21a_binarized <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/binarized_Mole21a_sce.rds")
 
 samples_binarized <- list()
 for (sample in sample_names){
@@ -235,34 +235,35 @@ ppr_timeline_plot(switching_genes)
 ```{r}
 # filter the binary counts matricies to only include the switching genes
 reference_reduced <- subset_switching_genes(sce, switching_genes)
-Mole21a_reduced   <- subset_switching_genes(sample_Mole21a_binarized, switching_genes)
+#Mole21a_reduced   <- subset_switching_genes(sample_Mole21a_binarized, switching_genes)
 
 # Define a list to store the results
 samples_reduced <- list()
 
 # Iterate through each Seurat object in the list
-for (sample in samples_binarized) {
+for (sample_name in names(samples_binarized)){
+  sample_binarized <- samples_binarized[[sample_name]]
   # susbet each sample to only include the switching genes
-  sample_reduced <- subset_switching_genes(sample, switching_genes)
-
-  # Store the result in the new list
+  sample_reduced <- subset_switching_genes(sample_binarized, switching_genes)
+   # Store the result in the new list
   samples_reduced[[sample_name]] <- sample_reduced
 }
+
 ```
 
 ### Produce an estimate for the position on trajectory of each gene in each cell of a sample.
 ```{r}
 reference_ppr    <- ppr_predict_position(reference_reduced, switching_genes)
-Mole21a_ppr      <- ppr_predict_position(Mole21a_reduced, switching_genes)
+#Mole21a_ppr      <- ppr_predict_position(Mole21a_reduced, switching_genes)
 # Define a list to store the ppr objects of the samples
 samples_ppr <- list()
 
 # Iterate through each Seurat object in the predicting their positons,
 # on the reference trajectory, using PathPinpointR
-for (sample in samples_reduced) {
+for (sample_name in names(samples_reduced)){
+  sample_reduced <- samples_reduced[[sample_name]]
   # predict the position of each gene in each cell of the sample
-  sample_ppr <- ppr_predict_position(sample, switching_genes)
-
+  sample_ppr <- ppr_predict_position(sample_reduced, switching_genes)
   # Store the result in the new list
   samples_ppr[[sample_name]] <- sample_ppr
 }
@@ -271,8 +272,20 @@ for (sample in samples_reduced) {
 ### Accuracy
 #### *As our samples are subsets of the reference dataset we can calculate the accuracy of GSS*
 ```{r}
-Mole21a_accuracy <- ppr_accuracy_test(Mole21a.ppr, sce)
-reference_accuracy <- ppr_accuracy_test(reference_ppr, sce, plot = TRUE)
+# Open a PDF device to save the plot
+pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/reference_accuracy.pdf")
+#ppr_accuracy_test(Mole21a_ppr, sce, plot = TRUE)
+ppr_accuracy_test(reference_ppr, sce, plot = TRUE)
+# Close the PDF device
+dev.off()
+
+for (sample_name in names(samples_ppr)){
+  sample_ppr <- samples_ppr[[sample_name]]
+  pdf(paste0("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/", sample_name,"_accuracy.pdf"))
+  ppr_accuracy_test(sample, sce, plot = TRUE)
+  # Close the PDF device
+  dev.off()
+}
 ```
 
 ## Plotting
@@ -280,8 +293,30 @@ reference_accuracy <- ppr_accuracy_test(reference_ppr, sce, plot = TRUE)
 ### Plot the predicted position of each sample:
 #### *Optional: include the switching point of some genes of interest:*
 ```{r}
-ppr_output_plot(Mole21a.ppr, col = "red", overlay=FALSE, label = "Mole21a")
-#ppr_output_plot(ANOTHER!.ppr, col = "green", overlay=TRUE, label = "ANOTHER!")
+
+# Open a PDF device to save the plot
+pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/reference_ppr_output.pdf")
+ppr_output_plot(reference_ppr, col = "red", overlay=FALSE, label = "Reference")
+# Close the PDF device
+dev.off()
+
+for (sample_name in names(samples_ppr)){
+  sample_ppr <- samples_ppr[[sample_name]]
+  pdf(paste0("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/", sample_name,"_ppr_output.pdf"))
+  ppr_output_plot(sample_ppr, col = "red", overlay=FALSE, label = sample_name)
+  # Close the PDF device
+  dev.off()
+}
+
+pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/samples_ppr_output.pdf")
+ppr_output_plot(samples_ppr[[1]], col = "red", overlay=FALSE, label = names(samples_ppr)[1])
+ppr_output_plot(samples_ppr[[2]], col = "blue", overlay=TRUE, label = names(samples_ppr)[2])
+ppr_output_plot(samples_ppr[[4]], col = "purple", overlay=TRUE, label = names(samples_ppr)[4])
+ppr_output_plot(samples_ppr[[5]], col = "#000000", overlay=TRUE, label = names(samples_ppr)[5])
+ppr_output_plot(samples_ppr[[8]], col = "#4dd80c", overlay=TRUE, label = names(samples_ppr)[7])
+# Close the PDF device
+dev.off()
+
 ```
 
 
@@ -289,7 +324,7 @@ ppr_output_plot(Mole21a.ppr, col = "red", overlay=FALSE, label = "Mole21a")
 
 #### Plot an indervidual cell.
 ```{r}
-ppr_cell_plot(Mole21a.ppr, cell_idx = 1)
+ppr_cell_plot(Mole21a_ppr, cell_idx = 1)
 ```
 
 ```{r}
