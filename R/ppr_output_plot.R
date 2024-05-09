@@ -29,16 +29,16 @@ ppr_output_plot <- function(sample.gss, col = "red", overlay = FALSE, label = "s
        ylab = "GSS Score",
        main = paste("Predicted Positions"))
 
-  segments(which.max(colSums(sample.gss$sample_flat)),
+  segments(which_mid_max(colSums(sample.gss$sample_flat)),
            -3.9,
-           which.max(colSums(sample.gss$sample_flat)),
-           (sample.gss$sample_flat[which.max(colSums(sample.gss$sample_flat))]/max(sample.gss$sample_flat)*100),
+           which_mid_max(colSums(sample.gss$sample_flat)),
+           (sample.gss$sample_flat[which_mid_max(colSums(sample.gss$sample_flat))]/max(sample.gss$sample_flat)*100),
            lwd = 1,
            lty = 2,
            col = col)
 
-  text(x = which.max(colSums(sample.gss$sample_flat)),
-       y = (sample.gss$sample_flat[which.max(colSums(sample.gss$sample_flat))]/max(sample.gss$sample_flat)*100),
+  text(x = which_mid_max(colSums(sample.gss$sample_flat)),
+       y = (sample.gss$sample_flat[which_mid_max(colSums(sample.gss$sample_flat))]/max(sample.gss$sample_flat)*100),
        labels = label,
        col = col,
        pos = 3)
@@ -74,16 +74,16 @@ ppr_output_plot <- function(sample.gss, col = "red", overlay = FALSE, label = "s
          col = col,
          type = "l")
 
-    segments(which.max(colSums(sample.gss$sample_flat)),
+    segments(which_mid_max(colSums(sample.gss$sample_flat)),
              -3.9,
-             which.max(colSums(sample.gss$sample_flat)),
-             (sample.gss$sample_flat[which.max(colSums(sample.gss$sample_flat))]/max(sample.gss$sample_flat)*100),
+             which_mid_max(colSums(sample.gss$sample_flat)),
+             (sample.gss$sample_flat[which_mid_max(colSums(sample.gss$sample_flat))]/max(sample.gss$sample_flat)*100),
              lwd = 1,
              lty = 2,
              col = col)
 
-    text(x = which.max(colSums(sample.gss$sample_flat)),
-         y = (sample.gss$sample_flat[which.max(colSums(sample.gss$sample_flat))]/max(sample.gss$sample_flat)*100),
+    text(x = which_mid_max(colSums(sample.gss$sample_flat)),
+         y = (sample.gss$sample_flat[which_mid_max(colSums(sample.gss$sample_flat))]/max(sample.gss$sample_flat)*100),
          labels = label,
          col = col,
          pos = 3)

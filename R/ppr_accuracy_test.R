@@ -45,7 +45,7 @@ ppr_accuracy_test <- function(sample_ppr, reference_sce, plot = TRUE) {
   # Note:
   # This assumes that the names of cells in sample_ppr$cells_flat match the,
   # cell names in reference_sce
-  accuracy$predicted_timeIDX[match(names(apply(sample_ppr$cells_flat, 1, which.max)), accuracy$cell_names)] <- apply(sample_ppr$cells_flat, 1, which.max) 
+  accuracy$predicted_timeIDX[match(names(apply(sample_ppr$cells_flat, 1, which_mid_max)), accuracy$cell_names)] <- apply(sample_ppr$cells_flat, 1, which_mid_max) 
   # Faster method which only works with reference being used as sample.
   #accuracy$predicted_timeIDX <- max.col(sample_ppr$cells_flat, "first")
 

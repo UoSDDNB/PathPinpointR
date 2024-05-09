@@ -30,16 +30,16 @@ ppr_cell_plot <- function(sample.ppr, cell_idx = 1, col = "red", overlay = FALSE
          ylab = "GSS Score",
          main = paste("Cell Positions"))
 
-    segments(which.max(sample.ppr$cells_flat[cell_idx,]),
+    segments(which_mid_max(sample.ppr$cells_flat[cell_idx,]),
              -99999,
-             which.max(sample.ppr$cells_flat[cell_idx,]),
-             sample.ppr$cells_flat[cell_idx,][which.max(sample.ppr$cells_flat[cell_idx,])],
+             which_mid_max(sample.ppr$cells_flat[cell_idx,]),
+             sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])],
              lwd = 1,
              lty = 2,
              col = col)
 
-    text(x = which.max(sample.ppr$cells_flat[cell_idx,]),
-         y = (sample.ppr$cells_flat[cell_idx,][which.max(sample.ppr$cells_flat[cell_idx,])])/1.25,
+    text(x = which_mid_max(sample.ppr$cells_flat[cell_idx,]),
+         y = (sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])])/1.25,
          labels = paste(rownames(sample.ppr$cells_flat)[cell_idx],"(PREDICTED)"),
          col = col,
          pos = 2,
@@ -56,7 +56,7 @@ ppr_cell_plot <- function(sample.ppr, cell_idx = 1, col = "red", overlay = FALSE
                col = col)
 
       text(x = accuracy_data$true_position_of_cells_timeIDX[cell_idx],
-           y = (sample.ppr$cells_flat[cell_idx,][which.max(sample.ppr$cells_flat[cell_idx,])])/1.25,
+           y = (sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])])/1.25,
            labels = paste(accuracy_data$cell_names[cell_idx],"(TRUE)"),
            col = col,
            pos = 2,    # Set the position to 2 (Left)
@@ -64,16 +64,16 @@ ppr_cell_plot <- function(sample.ppr, cell_idx = 1, col = "red", overlay = FALSE
            srt = 90)   # Set the string rotation to 90 degrees
 
       segments(accuracy_data$true_position_of_cells_timeIDX[cell_idx],
-               sample.ppr$cells_flat[cell_idx,][which.max(sample.ppr$cells_flat[cell_idx,])],
-               which.max(sample.ppr$cells_flat[cell_idx,]),
-               sample.ppr$cells_flat[cell_idx,][which.max(sample.ppr$cells_flat[cell_idx,])],
+               sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])],
+               which_mid_max(sample.ppr$cells_flat[cell_idx,]),
+               sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])],
                lwd = 1,
                lty = 1,
                col = col)
 
-      text(x = (which.max(sample.ppr$cells_flat[cell_idx,]) - accuracy_data$true_position_of_cells_timeIDX[cell_idx] )/2 +accuracy_data$true_position_of_cells_timeIDX[cell_idx],
-           y = sample.ppr$cells_flat[cell_idx,][which.max(sample.ppr$cells_flat[cell_idx,])],
-           labels = paste(abs(which.max(sample.ppr$cells_flat[cell_idx,]) - accuracy_data$true_position_of_cells_timeIDX[cell_idx]), "\nINACCURACY"),
+      text(x = (which_mid_max(sample.ppr$cells_flat[cell_idx,]) - accuracy_data$true_position_of_cells_timeIDX[cell_idx] )/2 +accuracy_data$true_position_of_cells_timeIDX[cell_idx],
+           y = sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])],
+           labels = paste(abs(which_mid_max(sample.ppr$cells_flat[cell_idx,]) - accuracy_data$true_position_of_cells_timeIDX[cell_idx]), "\nINACCURACY"),
            col = col,
            pos = 3,    # Set the position to 3 (TOP)
            cex = 0.69)
@@ -112,16 +112,16 @@ ppr_cell_plot <- function(sample.ppr, cell_idx = 1, col = "red", overlay = FALSE
           col = col,
           type = "l")
 
-    segments(which.max(sample.ppr$cells_flat[cell_idx,]),
+    segments(which_mid_max(sample.ppr$cells_flat[cell_idx,]),
              -99999,
-             which.max(sample.ppr$cells_flat[cell_idx,]),
-             sample.ppr$cells_flat[cell_idx,][which.max(sample.ppr$cells_flat[cell_idx,])],
+             which_mid_max(sample.ppr$cells_flat[cell_idx,]),
+             sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])],
              lwd = 1,
              lty = 2,
              col = col)
 
-    text(x = which.max(sample.ppr$cells_flat[cell_idx,]),
-         y = (sample.ppr$cells_flat[cell_idx,][which.max(sample.ppr$cells_flat[cell_idx,])])/1.25,
+    text(x = which_mid_max(sample.ppr$cells_flat[cell_idx,]),
+         y = (sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])])/1.25,
          labels = paste(rownames(sample.ppr$cells_flat)[cell_idx],"(PREDICTED)"),
          col = col,
          pos = 2,
@@ -138,7 +138,7 @@ ppr_cell_plot <- function(sample.ppr, cell_idx = 1, col = "red", overlay = FALSE
                col = col)
 
       text(x = accuracy_data$true_position_of_cells_timeIDX[cell_idx],
-           y = (sample.ppr$cells_flat[cell_idx,][which.max(sample.ppr$cells_flat[cell_idx,])])/1.25,
+           y = (sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])])/1.25,
            labels = paste(accuracy_data$cell_names[cell_idx],"(TRUE)"),
            col = col,
            pos = 2,    # Set the position to 2 (Left)
@@ -146,16 +146,16 @@ ppr_cell_plot <- function(sample.ppr, cell_idx = 1, col = "red", overlay = FALSE
            srt = 90)   # Set the string rotation to 90 degrees
 
       segments(accuracy_data$true_position_of_cells_timeIDX[cell_idx],
-               sample.ppr$cells_flat[cell_idx,][which.max(sample.ppr$cells_flat[cell_idx,])],
-               which.max(sample.ppr$cells_flat[cell_idx,]),
-               sample.ppr$cells_flat[cell_idx,][which.max(sample.ppr$cells_flat[cell_idx,])],
+               sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])],
+               which_mid_max(sample.ppr$cells_flat[cell_idx,]),
+               sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])],
                lwd = 1,
                lty = 1,
                col = col)
 
-      text(x = (which.max(sample.ppr$cells_flat[cell_idx,]) - accuracy_data$true_position_of_cells_timeIDX[cell_idx] )/2 +accuracy_data$true_position_of_cells_timeIDX[cell_idx],
-           y = sample.ppr$cells_flat[cell_idx,][which.max(sample.ppr$cells_flat[cell_idx,])],
-           labels = paste(abs(which.max(sample.ppr$cells_flat[cell_idx,]) - accuracy_data$true_position_of_cells_timeIDX[cell_idx]), "\nINACCURACY"),
+      text(x = (which_mid_max(sample.ppr$cells_flat[cell_idx,]) - accuracy_data$true_position_of_cells_timeIDX[cell_idx] )/2 +accuracy_data$true_position_of_cells_timeIDX[cell_idx],
+           y = sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])],
+           labels = paste(abs(which_mid_max(sample.ppr$cells_flat[cell_idx,]) - accuracy_data$true_position_of_cells_timeIDX[cell_idx]), "\nINACCURACY"),
            col = col,
            pos = 3,    # Set the position to 3 (TOP)
            cex = 0.69)

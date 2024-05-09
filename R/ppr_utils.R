@@ -38,3 +38,15 @@ print.PPR_OBJECT <- function(x) {
 
 #' Set Default Print Method for PPR_OBJECT
 setMethod("print", "PPR_OBJECT", print.PPR_OBJECT)
+
+
+#' Select the middle index among multiple occurrences of the maximum value
+#'
+#' @param x Numeric vector.
+#' @return The middle index among multiple occurrences of the maximum value.
+#' @export
+which_mid_max <- function(x) {
+  max_indices <- which(x == max(x))
+  middle_index <- ceiling(length(max_indices) / 2)
+  max_indices[middle_index]
+}
