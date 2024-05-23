@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 ```
 
 This vignette will take you through running PPR. \
-The data used here is an Intregrated dataset of multiple blastocyst datsets [Here](http://). \
+The data used here is an Intregrated dataset of [blastocyst data](http://). \
 \
 \
 
@@ -39,19 +39,20 @@ devtools::load_all()
 ### Here we use this Reprogramming dataset as the reference 
 ```{r}
 seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/blastocyst.rds")
+#seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/additional_blastocyst/full_atlas.rds")
 ```
 
 #### View the reference UMAP
 ```{r}
-#p1 <- DimPlot(object = seu, 
+# p1 <- DimPlot(object = seu, 
 #              reduction = "umap",
 #              group.by = "orig.ident",
 #              label = TRUE) +
 #      ggtitle("Reference")
-#ggsave(filename = "/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/dimplot_orig_ident.png", plot = p1)
+# ggsave(filename = "/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/dimplot_orig_ident.png", plot = p1)
 
 # Plot and save the second DimPlot
-#p2 <- DimPlot(object = seu,
+# p2 <- DimPlot(object = seu,
 #              reduction = "umap",
 #              group.by = "seurat_clusters",
 #              label = TRUE) +
@@ -68,7 +69,9 @@ seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/blastocyst
 
 ### QC
 ```{r}
+#consider using double finder (has it aleady been run?)
 #seu <- subset(seu, subset = nFeature_RNA > 2500 & pctMT < 10 & nCount_RNA < 1e+07)
+#seu <- subset(seu, subset = pctMT < 11 & nCount_RNA < 1.8e+07)
 # Visualize QC metrics as a violin plot
 #VlnPlot(seu, features = c("nFeature_RNA", "nCount_RNA", "pctMT"), ncol = 3)
 ```
