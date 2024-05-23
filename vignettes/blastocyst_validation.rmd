@@ -38,8 +38,11 @@ devtools::load_all()
 ## SEURAT
 ### Here we use this Reprogramming dataset as the reference 
 ```{r}
-seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/blastocyst.rds")
-#seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/additional_blastocyst/full_atlas.rds")
+reference_seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/additional_blastocyst/full_atlas.rds")
+kd07_seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/additional_blastocyst/Atlas_Karvas_D07.rds")
+kd14_seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/additional_blastocyst/Atlas_Karvas_D14.rds")
+kd21_seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/additional_blastocyst/Atlas_Karvas_D21.rds")
+validation_seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/additional_blastocyst/Atlas_Validation_Blastocyst.rds")
 ```
 
 #### View the reference UMAP
@@ -49,7 +52,7 @@ seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/blastocyst
 #              group.by = "orig.ident",
 #              label = TRUE) +
 #      ggtitle("Reference")
-# ggsave(filename = "/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/dimplot_orig_ident.png", plot = p1)
+# ggsave(filename = "/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/validation/reference_dimplot_orig_ident.png", plot = p1)
 
 # Plot and save the second DimPlot
 # p2 <- DimPlot(object = seu,
@@ -62,35 +65,36 @@ seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/blastocyst
 
 ### QC
 ```{r}
-#seu[["percent.mt"]] <- PercentageFeatureSet(seu, pattern = "MT-")
 # Visualize QC metrics as a violin plot
-#VlnPlot(seu, features = c("nFeature_RNA", "nCount_RNA", "pctMT"), ncol = 3)
+VlnPlot(seu, features = c("nFeature_RNA", "nCount_RNA", "pctMT"), ncol = 3)
 ```
 
 ### QC
 ```{r}
 #consider using double finder (has it aleady been run?)
-#seu <- subset(seu, subset = nFeature_RNA > 2500 & pctMT < 10 & nCount_RNA < 1e+07)
-#seu <- subset(seu, subset = pctMT < 11 & nCount_RNA < 1.8e+07)
+seu <- subset(seu, subset = pctMT < 11 & nCount_RNA < 1.8e+07)
 # Visualize QC metrics as a violin plot
 #VlnPlot(seu, features = c("nFeature_RNA", "nCount_RNA", "pctMT"), ncol = 3)
+
+
+
+
 ```
 
-### We use subsets of the Reprogramming dataset as queries.
+### Extract the samples.
 ```{r}
-# Split the reference data into samples
+reference_seu <- subset(x = reference_seu, subset = lineage %in% "ICM.EPI")
 
-# Make a list of the unique sample names
-sample_names <- unique(seu@meta.data$orig.ident)
+kd07_seu <- subset(x = kd07_seu, subset = orig.ident %in% "D7")
+kd14_seu <- subset(x = kd14_seu, subset = orig.ident %in% "D14")
+kd21_seu <- subset(x = kd21_seu, subset = orig.ident %in% "D21")
+LW120_seu <- subset(x = validation_seu, subset = orig.ident %in% "LW120")
+LW122_seu <- subset(x = validation_seu, subset = orig.ident %in% "LW122")
 
-# Make an empty list to store the samples
-samples_seu <- list()
-
-# Iterate through each sample name, make a list of subsets.
-for (sample in sample_names){
-  sample_seu <- subset(x = seu, subset = orig.ident %in% sample)
-  samples_seu[[sample]] <- sample_seu
-}
+# make a list of the seurat objects
+samples_seu <- list(kd07_seu, kd14_seu, kd21_seu, LW120_seu, LW122_seu, reference_seu)
+names(samples_seu) <- c("kd07", "kd14", "kd21", "LW120", "LW122", "reference")
+sample_names <- names(samples_seu)
 ```
 
 
@@ -101,14 +105,29 @@ for (sample in sample_names){
 ## SingeCellExperiment
 ### Convert objects to SingleCellExperiment objects
 ```{r}
-sce    <- SingleCellExperiment(assays = list(expdata = seu@assays$RNA$counts))
-colData(sce) <- DataFrame(seu@meta.data)
-reducedDims(sce)$UMAP <- seu@reductions$umap@cell.embeddings
+# samples_sce <- list()
+# for (sample_name in names(samples_seu)) {
+#   sample_seu <- samples_seu[[sample_name]]
+#   sample_sce <- SingleCellExperiment(assays = list(expdata = sample_seu@assays$RNA$counts))
+#   samples_sce[[sample_name]] <- sample_sce
+# }
 
-for (sample in sample_names){
-  sample.sce <- SingleCellExperiment(assays = list(expdata = get(paste0(sample, ".seu"))@assays$RNA$counts))
-  assign(paste0(sample, ".sce"), sample.sce)
-}
+
+## remove two cells from the reference data
+dim(samples_sce$reference)
+# Identify the cells you want to remove
+cells_to_remove <- c("Petro16_E6.12.1269", "Petro16_E7.9.562")
+
+# Check if these cells exist in the colnames of the SingleCellExperiment object
+existing_cells <- colnames(samples_sce$reference)
+cells_to_remove <- cells_to_remove[cells_to_remove %in% existing_cells]
+
+# Subset the SingleCellExperiment object to exclude the specified cells
+samples_sce$reference <- samples_sce$reference[, !(colnames(samples_sce$reference) %in% cells_to_remove)]
+
+# Check the dimensions to ensure the cells have been removed
+dim(samples_sce$reference)
+
 ```
 
 
@@ -116,28 +135,33 @@ for (sample in sample_names){
 
 ### Run slingshot on the reference data to produce a reprogramming trajectory.
 ```{r}
-sce  <- slingshot(sce,
-                  clusterLabels = "seurat_clusters",
-                  start.clus  = "2",
-                  end.clus = "1",
-                  reducedDim = "UMAP")
+## Slingshot
+### Run slingshot on the reference data to produce a reprogramming trajectory.
+# print("Running Slingshot...")
+# colData(samples_sce$reference) <- DataFrame(samples_seu$reference@meta.data)
+# reducedDims(samples_sce$reference)$UMAP <- samples_seu$reference@reductions$umap@cell.embeddings
 
-#Rename the Pseudotime column to work with GeneSwitches
-colData(sce)$Pseudotime <- sce$slingPseudotime_1
+# samples_sce$reference <- slingshot(samples_sce$reference,
+#                 # clusterLabels = "seurat_clusters",
+#                 # start.clus = "23",
+#                 # end.clus = "20",
+#                  reducedDim = "UMAP")
+# # #Rename the Pseudotime column to work with GeneSwitches
+# colData(samples_sce$reference)$Pseudotime <- samples_sce$reference$slingPseudotime_1
 ```
 
 ### Plot the slingshot trajectory.
 ```{r}
 # Generate colors
 colors <- colorRampPalette(brewer.pal(11, 'Spectral')[-6])(100)
-plotcol <- colors[cut(sce$slingPseudotime_1, breaks = 100)]
+plotcol <- colors[cut(samples_sce$reference$slingPseudotime_1, breaks = 100)]
 
-# Open a PDF device to save the plot
-pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/slingshot.pdf")
+Open a PDF device to save the plot
+# pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/slingshot.pdf")
 
-# Plot the data
-plot(reducedDims(sce)$UMAP, col = plotcol, pch = 16, asp = 1)
-lines(SlingshotDataSet(sce), lwd = 2, col = 'black')
+Plot the data
+plot(reducedDims(samples_sce$reference)$UMAP, col = plotcol, pch = 16, asp = 1)
+lines(SlingshotDataSet(samples_sce$reference), lwd = 2, col = 'black')
 
 # Close the PDF device
 dev.off()
@@ -172,30 +196,41 @@ dev.off()
 
 ### Binarize
 ```{r}
-#sce    <- binarize_exp(sce, fix_cutoff = TRUE, binarize_cutoff = 1, ncores = 64)
-#Mole21a.sce   <- binarize_exp(Mole21a.sce, fix_cutoff = TRUE, binarize_cutoff = 1, ncores = 64)
-#sce <- binarize_exp(sce, ncores = 64)
-#Mole21a.sce   <- binarize_exp(Mole21a.sce, ncores = 64)
+## GeneSwitches
+### Binarize
+# print("Binarizing data...")
+# start_time <- Sys.time() # Record start time
+# print(paste("Binarization started at:", start_time))
+# #samples_sce$reference   <- binarize_exp(samples_sce$reference, fix_cutoff = TRUE, binarize_cutoff = 1, ncores = 64)
+
+# samples_sce_binarized <- list()
+# for (sample_name in names(samples_sce)){
+#   sample_sce <- samples_sce[[sample_name]]
+#   sample_sce_binarized <- binarize_exp(sample_sce, fix_cutoff = TRUE, binarize_cutoff = 1, ncores = 40)
+#   samples_sce_binarized[[sample_name]] <- sample_sce_binarized
+# }
+
+# for (sample_name in names(samples_sce)){
+#   print(sample_name)
+#   print(dim(samples_sce[[sample_name]]))
+# }
+# end_time <- Sys.time() # Record end time
+# print("Data binarized successfully.")
 ```
 
 ### CHECKPOINT
 ##### **with how long binerizing takes you may want to choose to save objects for future use.
 ```{r}
- #save the reference and sample objects
- #saveRDS(sce   , "/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/reference.rds")
- #for (sample in sample_names){
- #       saveRDS(get(paste0(sample, ".sce")), paste0("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/binarized_", sample, "_sce.rds"))
- #}
 
-# read the reference and sample objects
-#sce <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/reference.rds")
-#sample_Mole21a_binarized <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/binarized_Mole21a_sce.rds")
+
+# read the sample objects
 
 samples_binarized <- list()
-for (sample in sample_names){
-  samples_binarized[[sample]] <- readRDS(paste0("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/binarized_", sample, "_sce.rds"))
+for (sample_name in sample_names){
+  samples_binarized[[sample_name]] <- readRDS(paste0("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/additional_blastocyst/binarized_", sample_name, "_sce.rds"))
 }
-
+#do better
+samples_binarized <- samples_binarized[-6] 
 ```
 
 ### fit logistic regression and find the switching pseudo-time point for each gene
@@ -205,25 +240,24 @@ for (sample in sample_names){
 
 #### **This is another time consuming process, may want to choose to save objects for future use.**
 ```{r}
-## saveRDS(sce   , "~/R Packages/mini_data/Binerized/reference_glm.rds")
-sce    <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/switches_gastglm_blastocyst_reference_sce.rds")
+reference_sce <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/additional_blastocyst/switches_fastglm_blastocyst_validation_reference_sce.rds")
 ```
 
 ### Filter to only include Switching Genes
 ```{r}
-switching_genes <- filter_switchgenes(sce, allgenes = TRUE,r2cutoff = 0.26)
+switching_genes <- filter_switchgenes(reference_sce, allgenes = TRUE,r2cutoff = 0.26)
 ```
 
 ##### View all of the switching genes
 ```{r}
 # Open a PDF device to save the plot
-pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/timeline_plot.pdf")
+#pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/timeline_plot.pdf")
 
 # Plot the timeline using plot_timeline_ggplot
-plot_timeline_ggplot(switching_genes, timedata = colData(sce)$Pseudotime, txtsize = 3)
+plot_timeline_ggplot(switching_genes, timedata = colData(reference_sce)$Pseudotime, txtsize = 3)
 
 # Close the PDF device
-dev.off()
+#dev.off()
 ```
 
 
@@ -237,7 +271,7 @@ ppr_timeline_plot(switching_genes)
 ### Reduce the binary counts matricies of the query data to only include the selection os switching genes.
 ```{r}
 # filter the binary counts matricies to only include the switching genes
-reference_reduced <- subset_switching_genes(sce, switching_genes)
+reference_reduced <- subset_switching_genes(reference_sce, switching_genes)
 #Mole21a_reduced   <- subset_switching_genes(sample_Mole21a_binarized, switching_genes)
 
 # Define a list to store the results
@@ -276,19 +310,12 @@ for (sample_name in names(samples_reduced)){
 #### *As our samples are subsets of the reference dataset we can calculate the accuracy of GSS*
 ```{r}
 # Open a PDF device to save the plot
-pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/reference_accuracy.pdf")
-#ppr_accuracy_test(Mole21a_ppr, sce, plot = TRUE)
-ppr_accuracy_test(reference_ppr, sce, plot = TRUE)
+#pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/reference_accuracy.pdf")
+#ppr_accuracy_test(Mole21a_ppr, reference_sce, plot = TRUE)
+ppr_accuracy_test(reference_ppr, reference_sce, plot = TRUE)
 # Close the PDF device
-dev.off()
+#dev.off()
 
-for (sample_name in names(samples_ppr)){
-  sample_ppr <- samples_ppr[[sample_name]]
-  pdf(paste0("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/", sample_name,"_accuracy.pdf"))
-  ppr_accuracy_test(sample, sce, plot = TRUE)
-  # Close the PDF device
-  dev.off()
-}
 ```
 
 ## Plotting
@@ -298,27 +325,30 @@ for (sample_name in names(samples_ppr)){
 ```{r}
 
 # Open a PDF device to save the plot
-pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/reference_ppr_output.pdf")
+#pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/reference_ppr_output.pdf")
 ppr_output_plot(reference_ppr, col = "red", overlay=FALSE, label = "Reference")
 # Close the PDF device
-dev.off()
+#dev.off()
 
 for (sample_name in names(samples_ppr)){
   sample_ppr <- samples_ppr[[sample_name]]
-  pdf(paste0("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/", sample_name,"_ppr_output.pdf"))
+  #pdf(paste0("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/", sample_name,"_ppr_output.pdf"))
   ppr_output_plot(sample_ppr, col = "red", overlay=FALSE, label = sample_name)
   # Close the PDF device
-  dev.off()
+  #dev.off()
 }
 
-pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/samples_ppr_output.pdf")
+#> names(samples_ppr)
+#[1] "kd07"  "kd14"  "kd21"  "LW120" "LW122"
+
+#pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/samples_ppr_output.pdf")
 ppr_output_plot(samples_ppr[[1]], col = "red", overlay=FALSE, label = names(samples_ppr)[1])
 ppr_output_plot(samples_ppr[[2]], col = "blue", overlay=TRUE, label = names(samples_ppr)[2])
-ppr_output_plot(samples_ppr[[4]], col = "purple", overlay=TRUE, label = names(samples_ppr)[4])
-ppr_output_plot(samples_ppr[[5]], col = "#000000", overlay=TRUE, label = names(samples_ppr)[5])
-ppr_output_plot(samples_ppr[[8]], col = "#4dd80c", overlay=TRUE, label = names(samples_ppr)[8])
+ppr_output_plot(samples_ppr[[3]], col = "purple", overlay=TRUE, label = names(samples_ppr)[3])
+ppr_output_plot(samples_ppr[[4]], col = "#000000", overlay=TRUE, label = names(samples_ppr)[4])
+ppr_output_plot(samples_ppr[[5]], col = "#4dd80c", overlay=TRUE, label = names(samples_ppr)[5])
 # Close the PDF device
-dev.off()
+#dev.off()
 
 ```
 
@@ -339,42 +369,10 @@ ppr_timeline_plot(switching_genes,
 
 ### Precision
 ##### Estimate the precision of PPR by running accuracy_test at a range of values
-###### BUG! 
 ```{r}
 ppr_precision(sce)
 ```
 
-### Investigate the predicted position of indervidual cells:
-```{r}
-#
-plot(Mole21a_accuracy$true_position_of_cells_timeIDX, Mole21a_accuracy$inaccuracy,
-     xlab = "True Position", ylab = "Inaccuracy", main = "Inaccuracy by True Positions")
 
-#
-boxplot(Mole21a_accuracy$inaccuracy ~ Mole21a_accuracy$true_position_of_cells_timeIDX,
-        xlab = "True Position", ylab = "Inaccuracy", main = "Boxplots of Inaccuracy by True Positions")
-true_position_bin <- cut(Mole21a_accuracy$true_position_of_cells_timeIDX,
-                             breaks = c(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80.85,90,95,100))
-boxplot(Mole21a_accuracy$inaccuracy ~ true_position_bin,
-        xlab = "True Position", ylab = "Inaccuracy", main = "Boxplots of Inaccuracy by True Positions")
-
-#
-plot(Mole21a_accuracy$true_position_of_cells_timeIDX,Mole21a_accuracy$predicted_position_of_cells_timeIDX,
-     xlab = "True Position", ylab = "Predicted Position", main = "Predicted Positions by True Positions")
-segments(0,0,100,100, lwd=2, col ="green")
-segments(0,10,100,110, lwd=2, col ="blue")
-segments(0,-10,100,90, lwd=2, col ="blue")
-segments(0,40,100,140, lwd=2, col ="red")
-segments(0,-40,100,60, lwd=2, col ="red")
-
-#
-boxplot(Mole21a_accuracy$predicted_position_of_cells_timeIDX ~ Mole21a_accuracy$true_position_of_cells_timeIDX,
-        xlab = "True Position", ylab = "Predicted Position", main = "Boxplots of Predicted Positions by True Positions")
-segments(0,0,100,100, lwd=2, col ="green")
-segments(0,10,100,110, lwd=2, col ="blue")
-segments(0,-10,100,90, lwd=2, col ="blue")
-segments(0,40,100,140, lwd=2, col ="red")
-segments(0,-40,100,60, lwd=2, col ="red")
-```
 
 
