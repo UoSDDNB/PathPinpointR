@@ -27,7 +27,7 @@ ppr_cell_plot <- function(sample.ppr, cell_idx = 1, col = "red", overlay = FALSE
          col = col,
          type = "l",
          xlab = "Pseudo-Time Index",
-         ylab = "GSS Score",
+         ylab = "PPR Score",
          main = paste("Cell Positions"))
 
     segments(which_mid_max(sample.ppr$cells_flat[cell_idx,]),
