@@ -3,7 +3,7 @@
 #' @description
 #' Plots the predicted positon of your sample.
 #'
-#' @param sample.gss A GSS_OBJECT of the sample you wish to plot
+#' @param sample_ppr A PPR_OBJECT of the sample you wish to plot
 #' @param col The colour that you'd like
 #' @param overlay set to TRUE if you would like this plot to overlay a previous plot.
 #' @param label string that you would like to assign as the label to the line.
@@ -14,11 +14,11 @@
 #' @importFrom graphics segments text lines
 #' @export
 #'
-ppr_output_plot <- function(sample.gss, col = "red", overlay = FALSE, label = "sample name", genes_of_interest = NULL, switching_genes){
+ppr_output_plot <- function(sample_ppr, col = "red", overlay = FALSE, label = "sample name", genes_of_interest = NULL, switching_genes){
 
  if (!overlay) {
   plot(x = 1:100,
-       y = (sample.gss$sample_flat/max(sample.gss$sample_flat)*100),
+       y = (sample_ppr$sample_flat/max(sample_ppr$sample_flat)*100),
        ylim = c(0,110),
        xlim = c(0,100),
        pch = 20,
@@ -26,19 +26,19 @@ ppr_output_plot <- function(sample.gss, col = "red", overlay = FALSE, label = "s
        col = col,
        type = "l",
        xlab = "Pseudo-Time Index",
-       ylab = "GSS Score",
+       ylab = "ppr Score",
        main = paste("Predicted Positions"))
 
-  segments(which_mid_max(colSums(sample.gss$sample_flat)),
+  segments(which_mid_max(colSums(sample_ppr$sample_flat)),
            -3.9,
-           which_mid_max(colSums(sample.gss$sample_flat)),
-           (sample.gss$sample_flat[which_mid_max(colSums(sample.gss$sample_flat))]/max(sample.gss$sample_flat)*100),
+           which_mid_max(colSums(sample_ppr$sample_flat)),
+           (sample_ppr$sample_flat[which_mid_max(colSums(sample_ppr$sample_flat))]/max(sample_ppr$sample_flat)*100),
            lwd = 1,
            lty = 2,
            col = col)
 
-  text(x = which_mid_max(colSums(sample.gss$sample_flat)),
-       y = (sample.gss$sample_flat[which_mid_max(colSums(sample.gss$sample_flat))]/max(sample.gss$sample_flat)*100),
+  text(x = which_mid_max(colSums(sample_ppr$sample_flat)),
+       y = (sample_ppr$sample_flat[which_mid_max(colSums(sample_ppr$sample_flat))]/max(sample_ppr$sample_flat)*100),
        labels = label,
        col = col,
        pos = 3)
@@ -66,7 +66,7 @@ ppr_output_plot <- function(sample.gss, col = "red", overlay = FALSE, label = "s
 
   } else {
     lines(x = 1:100,
-         y = (sample.gss$sample_flat/max(sample.gss$sample_flat)*100),
+         y = (sample_ppr$sample_flat/max(sample_ppr$sample_flat)*100),
          ylim = c(0,110),
          xlim = c(0,100),
          pch = 20,
@@ -74,16 +74,16 @@ ppr_output_plot <- function(sample.gss, col = "red", overlay = FALSE, label = "s
          col = col,
          type = "l")
 
-    segments(which_mid_max(colSums(sample.gss$sample_flat)),
+    segments(which_mid_max(colSums(sample_ppr$sample_flat)),
              -3.9,
-             which_mid_max(colSums(sample.gss$sample_flat)),
-             (sample.gss$sample_flat[which_mid_max(colSums(sample.gss$sample_flat))]/max(sample.gss$sample_flat)*100),
+             which_mid_max(colSums(sample_ppr$sample_flat)),
+             (sample_ppr$sample_flat[which_mid_max(colSums(sample_ppr$sample_flat))]/max(sample_ppr$sample_flat)*100),
              lwd = 1,
              lty = 2,
              col = col)
 
-    text(x = which_mid_max(colSums(sample.gss$sample_flat)),
-         y = (sample.gss$sample_flat[which_mid_max(colSums(sample.gss$sample_flat))]/max(sample.gss$sample_flat)*100),
+    text(x = which_mid_max(colSums(sample_ppr$sample_flat)),
+         y = (sample_ppr$sample_flat[which_mid_max(colSums(sample_ppr$sample_flat))]/max(sample_ppr$sample_flat)*100),
          labels = label,
          col = col,
          pos = 3)
