@@ -92,7 +92,8 @@ LW120_seu <- subset(x = validation_seu, subset = orig.ident %in% "LW120")
 LW122_seu <- subset(x = validation_seu, subset = orig.ident %in% "LW122")
 
 # make a list of the seurat objects
-samples_seu <- list(kd07_seu, kd14_seu, kd21_seu, LW120_seu, LW122_seu, reference_seu)
+#samples_seu <- list(kd07_seu, kd14_seu, kd21_seu, LW120_seu, LW122_seu, reference_seu)
+samples_seu <- vector(mode = "list", length = 6)
 names(samples_seu) <- c("kd07", "kd14", "kd21", "LW120", "LW122", "reference")
 sample_names <- names(samples_seu)
 ```
@@ -163,6 +164,11 @@ Plot the data
 plot(reducedDims(samples_sce$reference)$UMAP, col = plotcol, pch = 16, asp = 1)
 lines(SlingshotDataSet(samples_sce$reference), lwd = 2, col = 'black')
 
+colors <- colorRampPalette(brewer.pal(11, 'Spectral')[-6])(100)
+plotcol <- colors[cut(reference_sce$slingPseudotime_1, breaks = 100)]
+plot(reducedDims(reference_sce)$UMAP, col = plotcol, pch = 16, asp = 1)
+lines(SlingshotDataSet(reference_sce), lwd = 2, col = 'black')
+
 # Close the PDF device
 dev.off()
 ```
@@ -221,8 +227,6 @@ dev.off()
 ### CHECKPOINT
 ##### **with how long binerizing takes you may want to choose to save objects for future use.
 ```{r}
-
-
 # read the sample objects
 
 samples_binarized <- list()
@@ -245,7 +249,7 @@ reference_sce <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/
 
 ### Filter to only include Switching Genes
 ```{r}
-switching_genes <- filter_switchgenes(reference_sce, allgenes = TRUE,r2cutoff = 0.26)
+switching_genes <- filter_switchgenes(reference_sce, allgenes = TRUE,r2cutoff = 0.278)
 ```
 
 ##### View all of the switching genes
@@ -332,10 +336,10 @@ ppr_output_plot(reference_ppr, col = "red", overlay=FALSE, label = "Reference")
 
 for (sample_name in names(samples_ppr)){
   sample_ppr <- samples_ppr[[sample_name]]
-  #pdf(paste0("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/", sample_name,"_ppr_output.pdf"))
+  pdf(paste0("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/", sample_name,"_ppr_output.pdf"))
   ppr_output_plot(sample_ppr, col = "red", overlay=FALSE, label = sample_name)
   # Close the PDF device
-  #dev.off()
+  dev.off()
 }
 
 #> names(samples_ppr)
@@ -357,20 +361,27 @@ ppr_output_plot(samples_ppr[[5]], col = "#4dd80c", overlay=TRUE, label = names(s
 
 #### Plot an indervidual cell.
 ```{r}
-ppr_cell_plot(Mole21a_ppr, cell_idx = 1)
+ppr_cell_plot(samples_ppr[[1]], cell_idx = 1)
 ```
 
 ```{r}
 ppr_timeline_plot(switching_genes,
-                  genomic_expression_traces = TRUE,
-                  reduced_binary_counts_matrix = Mole21a_reduced,
-                  cell_id = 1)
+genomic_expression_traces = TRUE,
+reduced_sce = samples_reduced[[5]],
+cell_id = 1)
 ```
 
 ### Precision
 ##### Estimate the precision of PPR by running accuracy_test at a range of values
 ```{r}
-ppr_precision(sce)
+ppr_precision(sce = reference_sce, r2_cutoff_range = seq(0.15, 0.8, 0.01))
+#0.278
+
+bin_mat1 <- samples_reduced[[1]]@assays@data@listData$binary
+bin_mat2 <- samples_reduced[[2]]@assays@data@listData$binary
+bin_mat3 <- samples_reduced[[3]]@assays@data@listData$binary
+bin_mat4 <- samples_reduced[[4]]@assays@data@listData$binary
+bin_mat5 <- samples_reduced[[5]]@assays@data@listData$binary
 ```
 
 
