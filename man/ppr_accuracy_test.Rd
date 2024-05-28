@@ -4,10 +4,11 @@
 \alias{ppr_accuracy_test}
 \title{accuracy_test}
 \usage{
-ppr_accuracy_test(reference_ppr, reference_sce, plot = TRUE)
+ppr_accuracy_test(sample_ppr, reference_sce, plot = TRUE)
 }
 \arguments{
-\item{reference_ppr}{A "PPR_OBJECT" as outputted by create_racing_lines}
+\item{sample_ppr}{A "PPR_OBJECT" which originates from the reference,
+Or a subet of the reference.}
 
 \item{reference_sce}{A SingleCellExperiment object,
 containing Pseudotime, binarized and found switching genes.}

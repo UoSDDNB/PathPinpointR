@@ -5,27 +5,30 @@
 \title{Identify and Visualise each cells position.}
 \usage{
 ppr_timeline_plot(
-  reference.sg,
+  switching_genes,
   genomic_expression_traces = FALSE,
   reduced_binary_counts_matrix = NULL,
   cell_id = 1
 )
 
 ppr_timeline_plot(
-  reference.sg,
+  switching_genes,
   genomic_expression_traces = FALSE,
   reduced_binary_counts_matrix = NULL,
   cell_id = 1
 )
 }
 \arguments{
-\item{reference.sg}{A selection of switching genes.}
+\item{switching_genes}{A selection of switching genes.}
 
-\item{genomic_expression_traces}{Logical, Do you want to plot the lines which indicate the predicted position of the selected cell.}
+\item{genomic_expression_traces}{Logical,
+Do you want lines which indicate the predicted position of the selected cell.}
 
 \item{reduced_binary_counts_matrix}{a matrix of your samples binary gene expression.}
 
 \item{cell_id}{The index or name of the cell of interest}
+
+\item{reference.sg}{A selection of switching genes which are evenly distributed through pseudo-time.}
 
 \item{lines}{logical, do you want to include lines to indicate the predicted position of a cell}
 
@@ -39,5 +42,6 @@ Timeline plot of selected cell
 \description{
 Produces a plot for each cell which helps visualize how PathPinPointR is predicting the cells position.
 
-Produces a plot for each cell which helps visualize how GSS is predicting the cells position.
+Produces a plot for a given cell,
+this helps visualize predicted position of the selected cell.
 }

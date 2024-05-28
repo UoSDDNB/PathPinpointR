@@ -5,7 +5,7 @@
 \title{PPR OUTPUT PLOT}
 \usage{
 ppr_output_plot(
-  sample.gss,
+  sample_ppr,
   col = "red",
   overlay = FALSE,
   label = "sample name",
@@ -14,7 +14,7 @@ ppr_output_plot(
 )
 }
 \arguments{
-\item{sample.gss}{A GSS_OBJECT of the sample you wish to plot}
+\item{sample_ppr}{A PPR_OBJECT of the sample you wish to plot}
 
 \item{col}{The colour that you'd like}
 
