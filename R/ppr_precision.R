@@ -50,7 +50,7 @@ ppr_precision <- function(sce,
 
     # Reduce the binary counts matricies of the query data,
     # to only include the selection of switching genes from the reference.
-    sample_reduced <- ppr_filter_gene_expression_for_switching_genes(sce@assays@data@listData$binary, switching_genes)
+    sample_reduced <- subset_switching_genes(sce, switching_genes)
 
     #
     sample_ppr <- ppr_predict_position(sample_reduced, switching_genes)
