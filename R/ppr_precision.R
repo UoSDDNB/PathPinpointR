@@ -56,7 +56,7 @@ ppr_precision <- function(sce,
     sample_ppr <- ppr_predict_position(sample_reduced, switching_genes)
 
     #
-    accuracy <- ppr_accuracy_test(reference_ppr = sample_ppr,
+    accuracy <- ppr_accuracy_test(sample_ppr = sample_ppr,
                                   reference_sce = sce, plot = FALSE)
 
     #
