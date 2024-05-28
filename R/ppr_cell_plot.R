@@ -1,27 +1,56 @@
 #' PPR INDERVIDUAL CELL PLOT
 #'
 #' @description
-#' Plots the predicted positon of a chosen cell.
+#' Plots the predicted position of a chosen cell.
 #'
-#' @param sample.ppr A ppr_OBJECT of the sample you wish to plot
+#' @param sample_ppr A ppr_OBJECT of the sample you wish to plot
 #' @param cell_idx The selected cell.
 #' @param col The colour that you'd like
-#' @param overlay set to TRUE if you would like this plot to overlay a previous plot.
+#' @param overlay TRUE if you would like this plot to overlay a previous plot.
 #' @param true_position do you wan to plot the "true position of your cell"
 #' @param accuracy_data dataset which contains the accuracy data
 #' @param switching_genes The data which includes all of the switching genes
 #' @param genes_of_interest The genes that you would like to plot
 #'
-#' @return nice plot highlighting the probable position of your sample on your trajectory.
+#' @return plot of the probable position of your sample on your trajectory.
 #' @importFrom graphics segments text lines
 #' @export
 #'
-ppr_cell_plot <- function(sample.ppr, cell_idx = 1, col = "red", overlay = FALSE, genes_of_interest = NULL, switching_genes = NULL, true_position = FALSE, accuracy_data = NULL) {
+ppr_cell_plot <- function(sample_ppr,
+                          cell_idx = 1,
+                          col = "red",
+                          overlay = FALSE,
+                          genes_of_interest = NULL,
+                          switching_genes = NULL,
+                          true_position = FALSE,
+                          accuracy_data = NULL) {
+
+  cell_data <- sample_ppr$cells_flat[cell_idx, ]
+  max_idx <- which_mid_max(cell_data)
+
+  true_pos_idx <- if (!is.null(accuracy_data)) {
+    accuracy_data$true_position_of_cells_timeIDX[cell_idx]
+  } else {
+    NA
+  }
+
+  max_val <- if (!is.null(cell_data[max_idx])) {
+    cell_data[max_idx]
+  } else {
+    NA
+  }
+
+  true_name <- if (!is.null(accuracy_data)) {
+    accuracy_data$cell_names[cell_idx]
+  } else {
+    NA
+  }
+
   if (!overlay) {
     plot(x = 1:100,
-         y = sample.ppr$cells_flat[cell_idx,],
-         ylim = c(0,max(sample.ppr$cells_flat) + 10),
-         xlim = c(0,100),
+         y = cell_data,
+         ylim = c(0, max(sample_ppr$cells_flat) + 10),
+         xlim = c(0, 100),
          pch = 20,
          cex = 0.8,
          col = col,
@@ -30,163 +59,152 @@ ppr_cell_plot <- function(sample.ppr, cell_idx = 1, col = "red", overlay = FALSE
          ylab = "PPR Score",
          main = paste("Cell Positions"))
 
-    segments(which_mid_max(sample.ppr$cells_flat[cell_idx,]),
+    segments(max_idx,
              -99999,
-             which_mid_max(sample.ppr$cells_flat[cell_idx,]),
-             sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])],
+             max_idx,
+             max_val,
              lwd = 1,
              lty = 2,
              col = col)
 
-    text(x = which_mid_max(sample.ppr$cells_flat[cell_idx,]),
-         y = (sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])])/1.25,
-         labels = paste(rownames(sample.ppr$cells_flat)[cell_idx],"(PREDICTED)"),
+    text(x = max_idx,
+         y = max_val / 1.25,
+         labels = paste(rownames(sample_ppr$cells_flat)[cell_idx],
+                        "(PREDICTED)"),
          col = col,
          pos = 2,
          cex = 0.69,
          srt = 90)
 
-    if(true_position == TRUE) {
-      segments(accuracy_data$true_position_of_cells_timeIDX[cell_idx],
+    if (true_position == TRUE) {
+      segments(true_pos_idx,
                -99999,
-               accuracy_data$true_position_of_cells_timeIDX[cell_idx],
+               true_pos_idx,
                99999,
                lwd = 1,
                lty = 2,
                col = col)
 
-      text(x = accuracy_data$true_position_of_cells_timeIDX[cell_idx],
-           y = (sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])])/1.25,
-           labels = paste(accuracy_data$cell_names[cell_idx],"(TRUE)"),
+      text(x = true_pos_idx,
+           y = max_val / 1.25,
+           labels = paste(true_name, "(TRUE)"),
            col = col,
-           pos = 2,    # Set the position to 2 (Left)
+           pos = 2,
            cex = 0.69,
-           srt = 90)   # Set the string rotation to 90 degrees
+           srt = 90)
 
-      segments(accuracy_data$true_position_of_cells_timeIDX[cell_idx],
-               sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])],
-               which_mid_max(sample.ppr$cells_flat[cell_idx,]),
-               sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])],
+      segments(true_pos_idx,
+               max_val,
+               max_idx,
+               max_val,
                lwd = 1,
                lty = 1,
                col = col)
 
-      text(x = (which_mid_max(sample.ppr$cells_flat[cell_idx,]) - accuracy_data$true_position_of_cells_timeIDX[cell_idx] )/2 +accuracy_data$true_position_of_cells_timeIDX[cell_idx],
-           y = sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])],
-           labels = paste(abs(which_mid_max(sample.ppr$cells_flat[cell_idx,]) - accuracy_data$true_position_of_cells_timeIDX[cell_idx]), "\nINACCURACY"),
+      text(x = (max_idx - true_pos_idx) / 2 + true_pos_idx,
+           y = max_val,
+           labels = paste(abs(max_idx - true_pos_idx), "\nINACCURACY"),
            col = col,
-           pos = 3,    # Set the position to 3 (TOP)
+           pos = 3,
            cex = 0.69)
-
     }
-
 
     if (length(genes_of_interest) > 0) {
       for (gene_name in genes_of_interest) {
-        segments(switching_genes[gene_name,"switch_at_timeidx"],
+        switch_idx <- switching_genes[gene_name, "switch_at_timeidx"]
+        segments(switch_idx,
                  -3.9,
-                 switching_genes[gene_name,"switch_at_timeidx"],
+                 switch_idx,
                  -0.5,
                  lwd = 1,
                  lty = 2)
 
-        text(x = switching_genes[gene_name,"switch_at_timeidx"] + 3,
+        text(x = switch_idx + 3,
              y = 1,
              labels = gene_name,
              srt = -20,
              cex = 0.86,
              pos = 2)
-
       }
     }
 
-
-
   } else {
     lines(x = 1:100,
-          y = sample.ppr$cells_flat[cell_idx,],
-          ylim = c(0,max(sample.ppr$cells_flat[cell_idx,]) + 10),
-          xlim = c(0,100),
+          y = cell_data,
+          ylim = c(0, max(cell_data) + 10),
+          xlim = c(0, 100),
           pch = 20,
           cex = 0.8,
           col = col,
           type = "l")
 
-    segments(which_mid_max(sample.ppr$cells_flat[cell_idx,]),
+    segments(max_idx,
              -99999,
-             which_mid_max(sample.ppr$cells_flat[cell_idx,]),
-             sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])],
+             max_idx,
+             max_val,
              lwd = 1,
              lty = 2,
              col = col)
 
-    text(x = which_mid_max(sample.ppr$cells_flat[cell_idx,]),
-         y = (sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])])/1.25,
-         labels = paste(rownames(sample.ppr$cells_flat)[cell_idx],"(PREDICTED)"),
+    text(x = max_idx,
+         y = max_val / 1.25,
+         labels = paste(rownames(sample_ppr$cells_flat)[cell_idx],
+                        "(PREDICTED)"),
          col = col,
          pos = 2,
          cex = 0.69,
          srt = 90)
 
-    if(true_position == TRUE) {
-      segments(accuracy_data$true_position_of_cells_timeIDX[cell_idx],
+    if (true_position == TRUE) {
+      segments(true_pos_idx,
                -99999,
-               accuracy_data$true_position_of_cells_timeIDX[cell_idx],
+               true_pos_idx,
                99999,
                lwd = 1,
                lty = 2,
                col = col)
 
-      text(x = accuracy_data$true_position_of_cells_timeIDX[cell_idx],
-           y = (sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])])/1.25,
-           labels = paste(accuracy_data$cell_names[cell_idx],"(TRUE)"),
+      text(x = true_pos_idx,
+           y = max_val / 1.25,
+           labels = paste(true_name, "(TRUE)"),
            col = col,
-           pos = 2,    # Set the position to 2 (Left)
+           pos = 2,
            cex = 0.69,
-           srt = 90)   # Set the string rotation to 90 degrees
+           srt = 90)
 
-      segments(accuracy_data$true_position_of_cells_timeIDX[cell_idx],
-               sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])],
-               which_mid_max(sample.ppr$cells_flat[cell_idx,]),
-               sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])],
+      segments(true_pos_idx,
+               max_val,
+               max_idx,
+               max_val,
                lwd = 1,
                lty = 1,
                col = col)
 
-      text(x = (which_mid_max(sample.ppr$cells_flat[cell_idx,]) - accuracy_data$true_position_of_cells_timeIDX[cell_idx] )/2 +accuracy_data$true_position_of_cells_timeIDX[cell_idx],
-           y = sample.ppr$cells_flat[cell_idx,][which_mid_max(sample.ppr$cells_flat[cell_idx,])],
-           labels = paste(abs(which_mid_max(sample.ppr$cells_flat[cell_idx,]) - accuracy_data$true_position_of_cells_timeIDX[cell_idx]), "\nINACCURACY"),
+      text(x = (max_idx - true_pos_idx) / 2 + true_pos_idx,
+           y = max_val,
+           labels = paste(abs(max_idx - true_pos_idx), "\nINACCURACY"),
            col = col,
-           pos = 3,    # Set the position to 3 (TOP)
+           pos = 3,
            cex = 0.69)
-
     }
 
     if (length(genes_of_interest) > 0) {
       for (gene_name in genes_of_interest) {
-        segments(switching_genes[gene_name,"switch_at_timeidx"],
+        switch_idx <- switching_genes[gene_name, "switch_at_timeidx"]
+        segments(switch_idx,
                  -3.9,
-                 switching_genes[gene_name,"switch_at_timeidx"],
+                 switch_idx,
                  -0.5,
                  lwd = 1,
                  lty = 2)
 
-        text(x = switching_genes[gene_name,"switch_at_timeidx"] + 3,
+        text(x = switch_idx + 3,
              y = 1,
              labels = gene_name,
              srt = -20,
              cex = 0.86,
              pos = 2)
-
       }
     }
   }
 }
-
-
-
-
-
-
-
-
