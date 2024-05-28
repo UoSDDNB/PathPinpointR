@@ -34,7 +34,7 @@ ppr_timeline_plot <- function(switching_genes,
   }
 
   # Generate pseudotime data based on the specified parameters
-  timeidx_df <- data.frame(timeidx_range = c(0, 25, 50, 75, 100), 
+  timeidx_df <- data.frame(timeidx_range = c(0, 25, 50, 75, 100),
                            timeidx_labs = c(0, 25, 50, 75, 100))
 
 
@@ -100,12 +100,12 @@ ppr_timeline_plot <- function(switching_genes,
            deparse(substitute(sce)),
            "\" \n  You must run `GeneSwitches::binarize_exp()` first.")
     }
-  # Extract the binary counts matrix from the reduced_sce object
-  bin_matrix <- reduced_sce@assays@data@listData$binary
+    # Extract the binary counts matrix from the reduced_sce object
+    bin_matrix <- reduced_sce@assays@data@listData$binary
 
     # Check if row names in switching_genes match bin_matrix
     if (!setequal(rownames(switching_genes),
-                   rownames(bin_matrix))) {
+                  rownames(bin_matrix))) {
       stop("Row names in switching_genes do not match those in bin_matrix")
     }
 
@@ -124,37 +124,54 @@ ppr_timeline_plot <- function(switching_genes,
             (switching_genes$direction[g] == "up")) {
         timeline_plot <- timeline_plot +
           geom_segment(aes_string(x = 0,
-                       xend = switching_genes$switch_at_timeidx[g],
-                       y = switching_genes$pseudoR2s[g],
-                       yend = switching_genes$pseudoR2s[g]),
+                                  xend = switching_genes$switch_at_timeidx[g],
+                                  y = switching_genes$pseudoR2s[g],
+                                  yend = switching_genes$pseudoR2s[g]),
                        color = "blue", linewidth = 0.6)
       }
       # IF G is expressed in C,
-      # AND the switch is UP, 
+      # AND the switch is UP,
       # then draw the line to the right.
-      if ((bin_matrix[rownames(switching_genes)[g], cell_idx] == 1) && (switching_genes$direction[g] == "up")) {
-        timeline_plot <- timeline_plot + geom_segment(aes_string(x = switching_genes$switch_at_timeidx[g], xend = 100, y = switching_genes$pseudoR2s[g], yend = switching_genes$pseudoR2s[g]),
-                                                      color = "blue", linewidth = 0.6)
+      if ((bin_matrix[rownames(switching_genes)[g], cell_idx] == 1) &&
+             (switching_genes$direction[g] == "up")) {
+        timeline_plot <- timeline_plot +
+          geom_segment(aes_string(x = switching_genes$switch_at_timeidx[g],
+                                  xend = 100, y = switching_genes$pseudoR2s[g],
+                                  yend = switching_genes$pseudoR2s[g]),
+                       color = "blue", linewidth = 0.6)
       }
-      # if G is NOT expressed in  C, and the switch is Down, then draw the line to the Left.
-      if ((bin_matrix[rownames(switching_genes)[g], cell_idx] == 0) && (switching_genes$direction[g] == "down")) {
-        timeline_plot <- timeline_plot + geom_segment(aes_string(x = switching_genes$switch_at_timeidx[g], xend = 100, y = -switching_genes$pseudoR2s[g], yend = -switching_genes$pseudoR2s[g]),
-                                                      color = "blue", linewidth = 0.6)
+      # if G is NOT expressed in C,
+      # and the switch is Down,
+      # then draw the line to the Left.
+      if ((bin_matrix[rownames(switching_genes)[g], cell_idx] == 0) &&
+            (switching_genes$direction[g] == "down")) {
+        timeline_plot <- timeline_plot + 
+          geom_segment(aes_string(x = switching_genes$switch_at_timeidx[g],
+                                  xend = 100,
+                                  y = -switching_genes$pseudoR2s[g],
+                                  yend = -switching_genes$pseudoR2s[g]),
+                       color = "blue", linewidth = 0.6)
       }
-      # if G is expressed in      C, and the switch is Down, then draw the line to the Left.
-      if ((bin_matrix[rownames(switching_genes)[g], cell_idx] == 1) && (switching_genes$direction[g] == "down")) {
-        timeline_plot <- timeline_plot + geom_segment(aes_string(x = 0, xend = switching_genes$switch_at_timeidx[g], y = -switching_genes$pseudoR2s[g], yend = -switching_genes$pseudoR2s[g]),
-                                                      color = "blue", linewidth = 0.6)
+      # if G is expressed in C, 
+      # and the switch is Down,
+      # then draw the line to the Left.
+      if ((bin_matrix[rownames(switching_genes)[g], cell_idx] == 1) &&
+            (switching_genes$direction[g] == "down")) {
+        timeline_plot <- timeline_plot +
+          geom_segment(aes_string(x = 0,
+                                  xend = switching_genes$switch_at_timeidx[g],
+                                  y = -switching_genes$pseudoR2s[g],
+                                  yend = -switching_genes$pseudoR2s[g]),
+                      color = "blue", linewidth = 0.6)
       }
     }
 
-# Title the plot with the name of the cell
-timeline_plot <- timeline_plot + ggtitle(colnames(bin_matrix)[cell_idx])
+    # Title the plot with the name of the cell
+    timeline_plot <- timeline_plot + ggtitle(colnames(bin_matrix)[cell_idx])
+
+  }
+
+  # Return the final plot
+  return(timeline_plot)
 
 }
-
-# Return the final plot
-return(timeline_plot)
-
-}
-
