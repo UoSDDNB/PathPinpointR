@@ -115,7 +115,7 @@ ppr_timeline_plot <- function(switching_genes,
     switching_genes <- switching_genes[rownames(bin_matrix),]
 
     # loop through all of the genes in switching_genes.
-    for (g in 1:dim(switching_genes)[1]) {
+    for (g in seq_len(dim(switching_genes)[1])) {
 
       # IF G is NOT expressed in C,
       # AND the switch is UP,
