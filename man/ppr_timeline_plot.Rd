@@ -7,14 +7,14 @@
 ppr_timeline_plot(
   switching_genes,
   genomic_expression_traces = FALSE,
-  reduced_binary_counts_matrix = NULL,
+  reduced_sce = NULL,
   cell_id = 1
 )
 
 ppr_timeline_plot(
   switching_genes,
   genomic_expression_traces = FALSE,
-  reduced_binary_counts_matrix = NULL,
+  reduced_sce = NULL,
   cell_id = 1
 )
 }
@@ -24,7 +24,8 @@ ppr_timeline_plot(
 \item{genomic_expression_traces}{Logical,
 Do you want lines which indicate the predicted position of the selected cell.}
 
-\item{reduced_binary_counts_matrix}{a matrix of your samples binary gene expression.}
+\item{reduced_sce}{a SingleCellExperiment object,
+that you have already run PathPinPointR::subset_switching_genes() on.}
 
 \item{cell_id}{The index or name of the cell of interest}
 

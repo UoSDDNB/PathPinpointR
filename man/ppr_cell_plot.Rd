@@ -5,7 +5,7 @@
 \title{PPR INDERVIDUAL CELL PLOT}
 \usage{
 ppr_cell_plot(
-  sample.ppr,
+  sample_ppr,
   cell_idx = 1,
   col = "red",
   overlay = FALSE,
@@ -16,13 +16,13 @@ ppr_cell_plot(
 )
 }
 \arguments{
-\item{sample.ppr}{A ppr_OBJECT of the sample you wish to plot}
+\item{sample_ppr}{A ppr_OBJECT of the sample you wish to plot}
 
 \item{cell_idx}{The selected cell.}
 
 \item{col}{The colour that you'd like}
 
-\item{overlay}{set to TRUE if you would like this plot to overlay a previous plot.}
+\item{overlay}{TRUE if you would like this plot to overlay a previous plot.}
 
 \item{genes_of_interest}{The genes that you would like to plot}
 
@@ -33,8 +33,8 @@ ppr_cell_plot(
 \item{accuracy_data}{dataset which contains the accuracy data}
 }
 \value{
-nice plot highlighting the probable position of your sample on your trajectory.
+plot of the probable position of your sample on your trajectory.
 }
 \description{
-Plots the predicted positon of a chosen cell.
+Plots the predicted position of a chosen cell.
 }
