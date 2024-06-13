@@ -1,4 +1,4 @@
-#' PPR INDERVIDUAL CELL PLOT
+#' PPR INDIVIDUAL CELL PLOT
 #'
 #' @description
 #' Plots the predicted position of a chosen cell.
@@ -7,7 +7,7 @@
 #' @param cell_idx The selected cell.
 #' @param col The colour that you'd like
 #' @param overlay TRUE if you would like this plot to overlay a previous plot.
-#' @param true_position do you wan to plot the "true position of your cell"
+#' @param true_position do you want to plot the "true position of your cell"
 #' @param accuracy_data dataset which contains the accuracy data
 #' @param switching_genes The data which includes all of the switching genes
 #' @param genes_of_interest The genes that you would like to plot
@@ -25,27 +25,33 @@ ppr_cell_plot <- function(sample_ppr,
                           true_position = FALSE,
                           accuracy_data = NULL) {
 
+  # Extract data for the selected cell
   cell_data <- sample_ppr$cells_flat[cell_idx, ]
+  # Find the index of the maximum value in cell data
   max_idx <- which_mid_max(cell_data)
 
+  # Get the true position index if accuracy data is provided
   true_pos_idx <- if (!is.null(accuracy_data)) {
     accuracy_data$true_position_of_cells_timeIDX[cell_idx]
   } else {
     NA
   }
 
+  # Get the maximum value at the max index
   max_val <- if (!is.null(cell_data[max_idx])) {
     cell_data[max_idx]
   } else {
     NA
   }
 
+  # Get the true name of the cell if accuracy data is provided
   true_name <- if (!is.null(accuracy_data)) {
     accuracy_data$cell_names[cell_idx]
   } else {
     NA
   }
 
+  # If overlay is FALSE, create a new plot
   if (!overlay) {
     plot(x = 1:100,
          y = cell_data,
@@ -59,6 +65,7 @@ ppr_cell_plot <- function(sample_ppr,
          ylab = "PPR Score",
          main = paste("Cell Positions"))
 
+    # Add a vertical dashed line at the max index
     segments(max_idx,
              -99999,
              max_idx,
@@ -67,6 +74,7 @@ ppr_cell_plot <- function(sample_ppr,
              lty = 2,
              col = col)
 
+    # Add text to indicate the predicted position
     text(x = max_idx,
          y = max_val / 1.25,
          labels = paste(rownames(sample_ppr$cells_flat)[cell_idx],
@@ -76,6 +84,7 @@ ppr_cell_plot <- function(sample_ppr,
          cex = 0.69,
          srt = 90)
 
+    # If true position is TRUE, add the true position lines and text
     if (true_position == TRUE) {
       segments(true_pos_idx,
                -99999,
@@ -109,6 +118,7 @@ ppr_cell_plot <- function(sample_ppr,
            cex = 0.69)
     }
 
+    # Plot the switching genes if any are provided
     if (length(genes_of_interest) > 0) {
       for (gene_name in genes_of_interest) {
         switch_idx <- switching_genes[gene_name, "switch_at_timeidx"]
@@ -129,6 +139,7 @@ ppr_cell_plot <- function(sample_ppr,
     }
 
   } else {
+    # If overlay is TRUE, add lines to an existing plot
     lines(x = 1:100,
           y = cell_data,
           ylim = c(0, max(cell_data) + 10),
@@ -138,6 +149,7 @@ ppr_cell_plot <- function(sample_ppr,
           col = col,
           type = "l")
 
+    # Add a vertical dashed line at the max index
     segments(max_idx,
              -99999,
              max_idx,
@@ -146,6 +158,7 @@ ppr_cell_plot <- function(sample_ppr,
              lty = 2,
              col = col)
 
+    # Add text to indicate the predicted position
     text(x = max_idx,
          y = max_val / 1.25,
          labels = paste(rownames(sample_ppr$cells_flat)[cell_idx],
@@ -155,6 +168,7 @@ ppr_cell_plot <- function(sample_ppr,
          cex = 0.69,
          srt = 90)
 
+    # If true position is TRUE, add the true position lines and text
     if (true_position == TRUE) {
       segments(true_pos_idx,
                -99999,
@@ -188,6 +202,7 @@ ppr_cell_plot <- function(sample_ppr,
            cex = 0.69)
     }
 
+    # Plot the switching genes if any are provided
     if (length(genes_of_interest) > 0) {
       for (gene_name in genes_of_interest) {
         switch_idx <- switching_genes[gene_name, "switch_at_timeidx"]
