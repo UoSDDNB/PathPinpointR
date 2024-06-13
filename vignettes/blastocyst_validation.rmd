@@ -43,6 +43,7 @@ kd07_seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/addit
 kd14_seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/additional_blastocyst/Atlas_Karvas_D14.rds")
 kd21_seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/additional_blastocyst/Atlas_Karvas_D21.rds")
 validation_seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/additional_blastocyst/Atlas_Validation_Blastocyst.rds")
+
 ```
 
 #### View the reference UMAP
@@ -96,6 +97,7 @@ LW122_seu <- subset(x = validation_seu, subset = orig.ident %in% "LW122")
 samples_seu <- vector(mode = "list", length = 6)
 names(samples_seu) <- c("kd07", "kd14", "kd21", "LW120", "LW122", "reference")
 sample_names <- names(samples_seu)
+
 ```
 
 
@@ -374,14 +376,8 @@ cell_id = 1)
 ### Precision
 ##### Estimate the precision of PPR by running accuracy_test at a range of values
 ```{r}
-ppr_precision(sce = reference_sce, r2_cutoff_range = seq(0.15, 0.8, 0.01))
+ppr_precision(sce = reference_sce, r2_cutoff_range = seq(0.1, 0.4, 0.01))
 #0.278
-
-bin_mat1 <- samples_reduced[[1]]@assays@data@listData$binary
-bin_mat2 <- samples_reduced[[2]]@assays@data@listData$binary
-bin_mat3 <- samples_reduced[[3]]@assays@data@listData$binary
-bin_mat4 <- samples_reduced[[4]]@assays@data@listData$binary
-bin_mat5 <- samples_reduced[[5]]@assays@data@listData$binary
 ```
 
 
