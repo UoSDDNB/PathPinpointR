@@ -1,4 +1,4 @@
-#' @title PPPR Predict Position
+#' @title PPR Predict Position
 #'
 #' @description
 #' Produces an estimate for the position on trajectory of each cell of a sample.
@@ -107,9 +107,9 @@ ppr_predict_position <- function(sample_sce, switching_genes) {
   # Now flatten:
 
   # Use lapply to calculate column sums for each matrix
-  ppr_obj$cells_flat <- do.call(rbind, 
-                                    lapply(all_patients_cells_scored,
-                                           colSums))
+  ppr_obj$cells_flat <- do.call(rbind,
+                                lapply(all_patients_cells_scored,
+                                       colSums))
   rownames(ppr_obj$cells_flat) <- names(all_patients_cells_scored)
   # Combine each cells column sums into a single flat matrix.
   ppr_obj$sample_flat <- matrix(colSums(ppr_obj$cells_flat), nrow = 1)
