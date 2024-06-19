@@ -32,8 +32,11 @@ ppr_predict_position <- function(sample_sce, switching_genes) {
   }
   ## The final output will be a ppr_obj (list) comprised of 3 objects.
   # Make the list of length 3, and name the objects
-  ppr_obj <- vector("list", 3)
-  names(ppr_obj) <- c("genomic_expression_traces", "cells_flat", "sample_flat")
+  ppr_obj <- vector("list", 4)
+  names(ppr_obj) <- c("genomic_expression_traces",
+                      "cells_flat",
+                      "sample_flat",
+                      "sd")
   # Assign the ppr_obj class attribute to the list
   class(ppr_obj) <- "PPR_OBJECT"
 
@@ -68,8 +71,8 @@ ppr_predict_position <- function(sample_sce, switching_genes) {
     # Build the matrix of 0's
     # which has genes as rows and pseudotime indecies as columns.
     genomic_expression_mat <- matrix(0,
-                                    nrow = number_of_switching_genes, 
-                                    ncol = 100)
+                                     nrow = number_of_switching_genes, 
+                                     ncol = 100)
 
     rownames(genomic_expression_mat) <- rownames(reduced_binary_counts_matrix)
     bin_exp_c <- reduced_binary_counts_matrix[, c]
@@ -113,6 +116,9 @@ ppr_predict_position <- function(sample_sce, switching_genes) {
   rownames(ppr_obj$cells_flat) <- names(all_patients_cells_scored)
   # Combine each cells column sums into a single flat matrix.
   ppr_obj$sample_flat <- matrix(colSums(ppr_obj$cells_flat), nrow = 1)
+
+  ## Calculate the standard deviation of the predicted position of cells.
+  ppr_obj$sd <- sd(apply(ppr_obj$cells_flat, 1, which_mid_max))
 
   return(ppr_obj)
 }
