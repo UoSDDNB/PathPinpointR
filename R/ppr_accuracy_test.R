@@ -54,18 +54,21 @@ ppr_accuracy_test <- function(sample_ppr, reference_sce, plot = TRUE) {
   accuracy$inaccuracy <- abs(accuracy$true_timeIDX - accuracy$predicted_timeIDX)
 
   if (plot) {
-    hist_plot <- hist(accuracy$inaccuracy,
-                      breaks = 100,
-                      main = "Histogram of Inaccuracy",
-                      xlab = "Inaccuracy")
-    mean_inaccuracy <- mean(accuracy$inaccuracy, na.rm = TRUE)
-    abline(v = mean_inaccuracy, col = "red", lwd = 1)
-    text(mean_inaccuracy,
-         max(hist_plot$counts) * 0.9,
-         labels = paste("Mean =", round(mean_inaccuracy, 2)),
-         adj = c(0.5, 0),
-         col = "red")
-    return(hist_plot)
+    invisible({
+      hist_plot <- hist(accuracy$inaccuracy,
+                        breaks = seq(0, max(accuracy$inaccuracy), by = 1),
+                        main = "Histogram of Inaccuracy",
+                        xlab = "Inaccuracy")
+      mean_inaccuracy <- mean(accuracy$inaccuracy, na.rm = TRUE)
+      abline(v = mean_inaccuracy, col = "red", lwd = 1)
+      text(mean_inaccuracy,
+           max(hist_plot$counts) * 0.9,
+           labels = paste("Mean =",
+                          round(mean_inaccuracy, 2)),
+           adj = c(0.5, 0),
+           col = "red")
+      hist_plot
+    })
   } else {
     return(accuracy)
   }
