@@ -1,4 +1,4 @@
-#' @title PPR Predict Position
+#' @title predict_position
 #'
 #' @description
 #' Produces an estimate for the position on trajectory of each cell of a sample.

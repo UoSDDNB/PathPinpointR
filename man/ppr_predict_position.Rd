@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict_position.R
 \name{ppr_predict_position}
 \alias{ppr_predict_position}
-\title{PPPR Predict Position}
+\title{PPR Predict Position}
 \usage{
 ppr_predict_position(sample_sce, switching_genes)
 }
