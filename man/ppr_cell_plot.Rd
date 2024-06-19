@@ -2,7 +2,7 @@
 % Please edit documentation in R/ppr_cell_plot.R
 \name{ppr_cell_plot}
 \alias{ppr_cell_plot}
-\title{PPR INDERVIDUAL CELL PLOT}
+\title{PPR INDIVIDUAL CELL PLOT}
 \usage{
 ppr_cell_plot(
   sample_ppr,
@@ -28,7 +28,7 @@ ppr_cell_plot(
 
 \item{switching_genes}{The data which includes all of the switching genes}
 
-\item{true_position}{do you wan to plot the "true position of your cell"}
+\item{true_position}{do you want to plot the "true position of your cell"}
 
 \item{accuracy_data}{dataset which contains the accuracy data}
 }
