@@ -19,7 +19,7 @@
 #' based that genes bianrized expression.
 #' @export
 #'
-ppr_predict_position <- function(sample_sce, switching_genes) {
+predict_position <- function(sample_sce, switching_genes) {
 
   # Check if sample_sce contains binarized expression data
   if (is.null(sample_sce@assays@data@listData$binary)) {
