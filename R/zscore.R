@@ -55,7 +55,7 @@ calculate_zscore <- function(sce, ppr, switching_genes, cpu = 0) {
   }
 
   # check that switching_genes is a > class(switching_genes)
-  if (is(switching_genes, "DFrame")) {
+  if (!is(switching_genes, "DFrame")) {
     cat("Warning:
       Make sure switching_genes argument is a DFrame.\n")
   }
