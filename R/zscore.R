@@ -36,7 +36,7 @@ calculate_zscore <- function(sce, ppr, switching_genes) {
     sce@assays@data$binary <- bin_mat
 
     # Perform prediction
-    random_ppr <- ppr_predict_position(sce, switching_genes)
+    random_ppr <- predict_position(sce, switching_genes)
 
     # Extract the maximum raw ppr score
     random_max_raw_ppr_scores[i] <- max(random_ppr$sample_flat)
@@ -44,6 +44,13 @@ calculate_zscore <- function(sce, ppr, switching_genes) {
 
   # calculate the distance of the max_raw_ppr_score from the mean of random_max_raw_ppr_scores
   # using standard deviations of the random samples
+
+  # check that random_max_raw_ppr_scores are normally distributed
+  # Shapiro-Wilk Test
+  norm <- shapiro.test(random_max_raw_ppr_scores)
+  if (norm$p.value < 0.05) {
+    warning("The random_max_raw_ppr_scores are not normally distributed.")
+  }
 
   # calculate the standand deviation of the random max ppr scores
   sd_random_max_raw_ppr_scores <- sd(random_max_raw_ppr_scores)
