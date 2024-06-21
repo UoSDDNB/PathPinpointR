@@ -1,12 +1,4 @@
-# Load necessary packages
-library(future)
-library(future.apply)
-library(PathPinpointR)
-
-# Set up a parallel backend using a specified number of workers (CPUs)
-future::plan(future::multisession, workers = 3)
-
-#' @title zscore
+#' @title parallel_zscore
 #'
 #' @description
 #' Calculate the zscore of the raw ppr score.
@@ -22,8 +14,18 @@ future::plan(future::multisession, workers = 3)
 #'
 #' @export
 #'
+#'
 
-calculate_zscore <- function(sce, ppr, switching_genes) {
+# Load necessary packages
+library(future)
+library(future.apply)
+library(PathPinpointR)
+
+
+# Set up a parallel backend using a specified number of workers (CPUs)
+future::plan(future::multisession, workers = 3)
+
+parallel_zscore <- function(sce, ppr, switching_genes) {
   # Find the maximum raw ppr score
   max_raw_ppr_score <- max(ppr$sample_flat)
   
