@@ -26,7 +26,7 @@ calculate_zscore <- function(sce, ppr, switching_genes, cpu = 0) {
   # Extract the binary matrix
   bin_mat <- sce@assays@data$binary
 
-  # is cpu is set to 0 use all but one available cores
+  # if cpu is set to 0 use all but one available cores
   if (cpu == 0) {
     cpu <- detectCores() - 1
   }
@@ -68,7 +68,7 @@ calculate_zscore <- function(sce, ppr, switching_genes, cpu = 0) {
   # calculate the distance of the max_raw_ppr_score from the mean of random_max_raw_ppr_scores
   # using standard deviations of the random samples
 
-  # calculate the standand deviation of the random max ppr scores
+  # calculate the standard deviation of the random max ppr scores
   sd_random_max_raw_ppr_scores <- sd(random_max_raw_ppr_scores)
 
   # calculate the z-score
