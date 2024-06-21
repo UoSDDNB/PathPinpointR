@@ -1,13 +1,15 @@
-pandoc: 3.1.1
-pkgdown: 2.0.7
+pandoc: '0'
+pkgdown: 2.0.9
 pkgdown_sha: ~
 articles:
   BreastCancer: BreastCancer.html
-  covid: covid.html
   GSS_Workflow: GSS_Workflow.html
+  blastocyst: blastocyst.html
+  blastocyst_validation: blastocyst_validation.html
+  covid: covid.html
   reprogramming_example: reprogramming_example.html
   wholeanalysis: wholeanalysis.html
-last_built: 2024-03-19T14:59Z
+last_built: 2024-06-21T10:06Z
 urls:
   reference: https://moi-taiga.github.io/GeneSwitchesScorer/reference
   article: https://moi-taiga.github.io/GeneSwitchesScorer/articles
