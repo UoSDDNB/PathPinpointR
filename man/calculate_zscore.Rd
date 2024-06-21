@@ -4,7 +4,7 @@
 \alias{calculate_zscore}
 \title{zscore}
 \usage{
-calculate_zscore(sce, ppr, switching_genes)
+calculate_zscore(sce, ppr, switching_genes, cpu = 0)
 }
 \arguments{
 \item{sce}{A Single Cell Experiment object,
@@ -15,10 +15,14 @@ using PathPinPointR::subset_switching_genes().}
 \item{ppr}{An object of class ppr, must be the same sample.}
 
 \item{switching_genes}{Genes which switch through the trajectory,}
+
+\item{cpu}{Number of cores to use for parallel processing,
+(default is one less than available cores).}
 }
 \value{
-the zscore of the raw ppr score.
+the zscore of the samples raw ppr score.
 }
 \description{
-Calculate the zscore of the raw ppr score.
+Calculate the zscore of the raw ppr score,
+by comparing to 2000 random samples.
 }
