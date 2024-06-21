@@ -30,6 +30,18 @@ predict_position <- function(sample_sce, switching_genes) {
   } else {
     reduced_binary_counts_matrix <- sample_sce@assays@data@listData$binary
   }
+
+  # check that sample_sce has
+  # more than one gene
+  # fewer or equal number of genes than switching_genes
+  if (dim(reduced_binary_counts_matrix)[1] > dim(switching_genes)[1]) {
+    stop("\n  The number of genes in the reduced binary counts matrix is
+     greater than the number of switching genes.
+     
+    Make sure you have run PathPinpointR::subset_switching_genes()")
+  }
+
+
   ## The final output will be a ppr_obj (list) comprised of 3 objects.
   # Make the list of length 3, and name the objects
   ppr_obj <- vector("list", 4)
@@ -41,8 +53,8 @@ predict_position <- function(sample_sce, switching_genes) {
   class(ppr_obj) <- "PPR_OBJECT"
 
   ## Reorder switching_genes
-  # because the code relies on the rownames and idicies of the genes,
-  # in reduced_binary_counts_matrix and switching_genes matching.
+  # because the code relies on the rownames and idicies of the genes in,
+  # reduced_binary_counts_matrix and switching_genes matching.
   switching_genes <- switching_genes[rownames(reduced_binary_counts_matrix),]
 
   ## Input values:
