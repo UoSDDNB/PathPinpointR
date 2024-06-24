@@ -4,10 +4,10 @@
 \alias{which_mid_max}
 \title{Select the middle index among multiple occurrences of the maximum value}
 \usage{
-which_mid_max(x)
+which_mid_max(n)
 }
 \arguments{
-\item{x}{Numeric vector.}
+\item{n}{Numeric vector.}
 }
 \value{
 The middle index among multiple occurrences of the maximum value.

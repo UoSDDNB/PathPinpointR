@@ -8,9 +8,11 @@
 #'  that you have already run GeneSwitches::binarize_exp(),
 #'  and GeneSwitches::find_switch_logistic_fastglm() on.
 #' @param r2_cutoff_range range of r2cutoffs to use
+#' @param plot logical, do you want to plot the precision df.
 #'
 #' @return a plot of the precision df.
 #' @importFrom GeneSwitches filter_switchgenes
+#' 
 #'
 #' @export
 ppr_precision <- function(sce,
@@ -46,14 +48,14 @@ ppr_precision <- function(sce,
     ##Follow the GS and PPR steps.
 
     # Filter the switching genes
-    switching_genes <- filter_switchgenes(sce, allgenes = TRUE, r2cutoff = i)
+    switching_genes <- subset_switching_genes()(sce, allgenes = TRUE, r2cutoff = i)
 
     # Reduce the binary counts matricies of the query data,
     # to only include the selection of switching genes from the reference.
     sample_reduced <- subset_switching_genes(sce, switching_genes)
 
     #
-    sample_ppr <- ppr_predict_position(sample_reduced, switching_genes)
+    sample_ppr <- predict_position(sample_reduced, switching_genes)
 
     #
     accuracy <- ppr_accuracy_test(sample_ppr = sample_ppr,

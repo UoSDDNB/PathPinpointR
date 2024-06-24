@@ -63,7 +63,7 @@ calculate_zscore <- function(sce, ppr, switching_genes, cpu = 0) {
   # if cpu is set to 0 or is larger or equal to than the number available.
   # use all but one available cores
   if (cpu == 0 || cpu >= detectCores()) {
-    cpu <- paralell::detectCores() - 1
+    cpu <- detectCores() - 1
   }
 
   # Find the maximum raw ppr score.
@@ -76,10 +76,10 @@ calculate_zscore <- function(sce, ppr, switching_genes, cpu = 0) {
   n_iterations <- 2000
 
   # Create a cluster for parallel processing
-  cl <- parallel::makeCluster(cpu)
+  cl <- makeCluster(cpu)
 
   # Cluster setup
-  parallel::clusterExport(cl,
+  clusterExport(cl,
                           c("predict_position",
                             "switching_genes",
                             "which_mid_max",

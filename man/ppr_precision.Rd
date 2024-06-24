@@ -12,6 +12,8 @@ that you have already run GeneSwitches::binarize_exp(),
 and GeneSwitches::find_switch_logistic_fastglm() on.}
 
 \item{r2_cutoff_range}{range of r2cutoffs to use}
+
+\item{plot}{logical, do you want to plot the precision df.}
 }
 \value{
 a plot of the precision df.

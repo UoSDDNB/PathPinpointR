@@ -3,7 +3,7 @@ title: "blastocyst_validation"
 author: "Moi T. Nicholas"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{blastocyst}
+  %\VignetteIndexEntry{blastocyst_validation}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

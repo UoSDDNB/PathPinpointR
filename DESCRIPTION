@@ -22,4 +22,6 @@ Imports:
     ggplot2,
     ggrepel,
     fastglm,
-    GeneSwitches
+    GeneSwitches,
+    parallel
+

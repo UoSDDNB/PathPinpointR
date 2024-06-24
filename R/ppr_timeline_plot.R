@@ -85,7 +85,7 @@ ppr_timeline_plot <- function(switching_genes,
   if (genomic_expression_traces) {
 
     if (is.character(cell_id)) {
-      cell_idx <- which(colnames(reference_reduced) == cell_id)
+      cell_idx <- which(colnames(reduced_sce) == cell_id)
     } else if (is.numeric(cell_id)) {
       # Convert numeric to integer if needed
       cell_idx <- as.integer(cell_id)
