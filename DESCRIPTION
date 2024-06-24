@@ -21,7 +21,19 @@ Imports:
     Seurat,
     ggplot2,
     ggrepel,
-    GeneSwitches,
     fastglm,
-    parallel
-
+    parallel,
+    Biobase,
+    SingleCellExperiment,
+    monocle,
+    plyr,
+    RColorBrewer,
+    ggridges,
+    gridExtra,
+    devtools,
+    mixtools
+Remotes: 
+    SGDDNB/GeneSwitches,
+    r-lib/BiocManager
+Config/Needs/website:
+    GeneSwitches
