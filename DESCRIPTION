@@ -21,7 +21,7 @@ Imports:
     Seurat,
     ggplot2,
     ggrepel,
-    fastglm,
     GeneSwitches,
+    fastglm,
     parallel
 

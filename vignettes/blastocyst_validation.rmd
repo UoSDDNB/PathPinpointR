@@ -30,7 +30,7 @@ library(ggplot2)
 library(SingleCellExperiment)
 library(slingshot)
 library(RColorBrewer)
-library(GeneSwitches)
+#library(GeneSwitches)
 library(devtools)
 devtools::load_all()
 ```
