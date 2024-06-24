@@ -15,7 +15,7 @@
 #' If plot = TRUE, returns a the accuracy data frame.
 #' @importFrom graphics abline hist text
 #' @export
-ppr_accuracy_test <- function(sample_ppr, reference_sce, plot = TRUE) {
+accuracy_test <- function(sample_ppr, reference_sce, plot = TRUE) {
   # Create a data frame to store the accuracy results
   accuracy <- data.frame(
     # Cell names from reference_sce

@@ -1,4 +1,4 @@
-#' ppr_precision
+#' precision
 #'
 #' @description
 #' Used to find the optimum r2cutoff to use,
@@ -15,7 +15,7 @@
 #' 
 #'
 #' @export
-ppr_precision <- function(sce,
+precision <- function(sce,
                           r2_cutoff_range = seq(0.0, 0.5, 0.1),
                           plot = TRUE) {
 
@@ -58,7 +58,7 @@ ppr_precision <- function(sce,
     sample_ppr <- predict_position(sample_reduced, switching_genes)
 
     #
-    accuracy <- ppr_accuracy_test(sample_ppr = sample_ppr,
+    accuracy <- accuracy_test(sample_ppr = sample_ppr,
                                   reference_sce = sce, plot = FALSE)
 
     #

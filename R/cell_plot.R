@@ -16,7 +16,7 @@
 #' @importFrom graphics segments text lines
 #' @export
 #'
-ppr_cell_plot <- function(sample_ppr,
+cell_plot <- function(sample_ppr,
                           cell_idx = 1,
                           col = "red",
                           overlay = FALSE,

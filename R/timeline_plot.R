@@ -17,7 +17,7 @@
 #'
 #'
 #' @export
-ppr_timeline_plot <- function(switching_genes,
+timeline_plot <- function(switching_genes,
                               genomic_expression_traces = FALSE,
                               reduced_sce = NULL,
                               cell_id = 1) {
