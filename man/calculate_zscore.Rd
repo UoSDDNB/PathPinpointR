@@ -10,7 +10,7 @@ calculate_zscore(sce, ppr, switching_genes, cpu = 0)
 \item{sce}{A Single Cell Experiment object,
 containing a matrix of your samples binary gene expression,
 which has been filtered to only include switching genes,
-using PathPinPointR::subset_switching_genes().}
+using PathPinpointR::subset_switching_genes().}
 
 \item{ppr}{An object of class ppr, must be the same sample.}
 
