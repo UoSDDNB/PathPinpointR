@@ -31,7 +31,8 @@ Imports:
     ggridges,
     gridExtra,
     devtools,
-    mixtools
+    mixtools,
+    GeneSwitches
 Remotes: 
     SGDDNB/GeneSwitches,
     r-lib/BiocManager
