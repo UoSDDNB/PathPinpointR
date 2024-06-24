@@ -29,9 +29,10 @@ jobs:
           extra-packages: BiocManager, any::pkgdown, local::., devtools
       - name: Install GeneSwitches dependencies
         run: |
-          Rscript -e 'BiocManager::install(c("SingleCellExperiment", "Biobase", "monocle"))'
-          Rscript -e 'install.packages(c("fastglm", "ggplot2", "plyr", "RColorBrewer", "ggrepel", "ggridges", "gridExtra", "mixtools"))'
-          Rscript -e 'devtools::install_github("SGDDNB/GeneSwitches")'
+          Rscript -e "BiocManager::install(c('SingleCellExperiment', 'Biobase', 'monocle'))"
+          Rscript -e "install.packages(c('fastglm', 'ggplot2', 'plyr', 'RColorBrewer', 'ggrepel', 'ggridges', 'gridExtra', 'mixtools'))"
+          Rscript -e "devtools::install_github('SGDDNB/GeneSwitches')"
+          
         shell: Rscript {0}
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
