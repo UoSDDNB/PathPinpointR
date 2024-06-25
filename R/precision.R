@@ -48,7 +48,7 @@ precision <- function(sce,
     ##Follow the GS and PPR steps.
 
     # Filter the switching genes
-    switching_genes <- subset_switching_genes()(sce, allgenes = TRUE, r2cutoff = i)
+    switching_genes <- filter_switchgenes(sce, allgenes = TRUE, r2cutoff = i)
 
     # Reduce the binary counts matricies of the query data,
     # to only include the selection of switching genes from the reference.
