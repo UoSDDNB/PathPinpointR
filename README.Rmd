@@ -54,35 +54,33 @@ library(RColorBrewer)
 library(GeneSwitches)
 library(Parallel)
 library(devtools)
-devtools::load_all()
 ```
 
 
 ### Here we use this Reprogramming dataset as the reference 
 ```{r}
-seu <- readRDS("~/data/blastocyst.rds")
+seu <- readRDS("./data/blastocyst.rds")
 ```
 
 #### View the reference UMAP
 ```{r}
 DimPlot(object = seu,
-             reduction = "umap",
-             group.by = "orig.ident",
-             label = TRUE) +
-     ggtitle("Reference")
+        reduction = "umap",
+        group.by = "orig.ident",
+        label = TRUE) +
+  ggtitle("Reference")
 ```
 
 
 ### We use subsets of the Reprogramming dataset as queries.
 ```{r}
-# Split the reference data into samples
+## Split the reference data into samples
 
 # Make a list of the unique sample names
 sample_names <- unique(seu@meta.data$orig.ident)
 
 # Make an empty list to store the samples
 samples_seu <- list()
-
 # Iterate through each sample name, make a list of subsets.
 for (sample in sample_names){
   sample_seu <- subset(x = seu, subset = orig.ident %in% sample)
@@ -96,9 +94,16 @@ sce    <- SingleCellExperiment(assays = list(expdata = seu@assays$RNA$counts))
 colData(sce) <- DataFrame(seu@meta.data)
 reducedDims(sce)$UMAP <- seu@reductions$umap@cell.embeddings
 
-for (sample in sample_names){
-  sample.sce <- SingleCellExperiment(assays = list(expdata = get(paste0(sample, ".seu"))@assays$RNA$counts))
-  assign(paste0(sample, ".sce"), sample.sce)
+# create an empty list to tstore the sce objects 
+samples_sce <- list()
+
+#
+for (sample_name in names(samples_seu)){
+  sample_seu <- samples_seu[[sample_name]]
+  # convert each sample to a SingleCellExperiment object
+  sample_sce <- SingleCellExperiment(assays = list(expdata = sample_seu@assays$RNA$counts))
+  # Store the result in the new list
+  samples_sce[[sample_name]] <- sample_sce
 }
 ```
 
@@ -119,79 +124,58 @@ colData(sce)$Pseudotime <- sce$slingPseudotime_1
 # Generate colors
 colors <- colorRampPalette(brewer.pal(11, 'Spectral')[-6])(100)
 plotcol <- colors[cut(sce$slingPseudotime_1, breaks = 100)]
-
-
 # Plot the data
 plot(reducedDims(sce)$UMAP, col = plotcol, pch = 16, asp = 1)
 lines(SlingshotDataSet(sce), lwd = 2, col = 'black')
-
 ```
 
 
 ## GeneSwitches
 ###  Choose a Binerization cutoff
 ```{r}
-# hist(as.matrix(assays(sce)$expdata),
-#            breaks = 1e6)
-#  hist(as.matrix(seu@assays$RNA$counts), breaks = 1e6)
-#  
-#  hist(as.matrix(assays(sce)$expdata),
-#            breaks = 1e6,
-#            xlim = c(0, 50))
-#  
-#  hist(as.matrix(seu@assays$RNA$counts), breaks = 1e6, xlim =c(0, 50))
-#  
-#  trimmed_expdata <- assays(sce)$expdata[assays(sce)$expdata < 10]
-#  hist(as.matrix(trimmed_expdata))
-#  abline(v=1, col = "blue")
-#  
-#  trimmed_expdata <- seu@assays$RNA$counts[seu@assays$RNA$counts < 10]
-#  hist(as.matrix(trimmed_expdata))
-#  abline(v=1, col = "blue")
-#cutoff =1
- 
+trimmed_expdata <- assays(sce)$expdata[assays(sce)$expdata < 10]
+hist(as.matrix(trimmed_expdata))
+abline(v= 1, col = "blue")
+
+# cutoff = 1
 ```
 
 ### Binarize
-```{r}
-#sce    <- binarize_exp(sce, fix_cutoff = TRUE, binarize_cutoff = 1, ncores = 64)
-#Mole21a.sce   <- binarize_exp(Mole21a.sce, fix_cutoff = TRUE, binarize_cutoff = 1, ncores = 64)
-#sce <- binarize_exp(sce, ncores = 64)
-#Mole21a.sce   <- binarize_exp(Mole21a.sce, ncores = 64)
+```{r, eval=FALSE}
+# binarize the expression data of sce
+sce           <- binarize_exp(sce,
+                              fix_cutoff = TRUE,
+                              binarize_cutoff = 1,
+                              ncores = 64)
+
+# Define a list to store the binarized samples
+samples_binarized <- list()
+# Iterate through each Seurat object in the list and binarize.
+for (sample_name in names(samples_sce)){
+  sample_sce <- samples_sce[[sample_name]]
+  # binarize the expression data of the sample
+  sample_binarized <- binarize_exp(sample_sce,
+                                   fix_cutoff = TRUE,
+                                   binarize_cutoff = 1,
+                                   ncores = 64)
+  # Store the result in the new list
+  samples_binarized[[sample_name]] <- sample_binarized
+}
+# Find the swithcing point of each gene in the reference data
+sce <- find_switch_logistic_fastglm(sce,
+                                    downsample = FALSE,
+                                    show_warning = FALSE)
 ```
 
-### CHECKPOINT
-##### **with how long binerizing takes you may want to choose to save objects for future use.
-```{r}
- #save the reference and sample objects
- #saveRDS(sce   , "/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/reference.rds")
- #for (sample in sample_names){
- #       saveRDS(get(paste0(sample, ".sce")), paste0("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/binarized_", sample, "_sce.rds"))
- #}
-
-# read the reference and sample objects
-#sce <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/reference.rds")
-#sample_Mole21a_binarized <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/binarized_Mole21a_sce.rds")
-
+```{r, echo = FALSE}
 samples_binarized <- list()
 for (sample in sample_names){
-  samples_binarized[[sample]] <- readRDS(paste0("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/binarized_", sample, "_sce.rds"))
+  samples_binarized[[sample]] <- readRDS(paste0("/mainfs/ddnb/PathPinpointR/package/data/binarized_", sample, "_sce.rds"))
 }
-
+sce    <- readRDS("/mainfs/ddnb/PathPinpointR/package/data/switches_gastglm_blastocyst_reference_sce.rds")
 ```
 
-### fit logistic regression and find the switching pseudo-time point for each gene
-```{r}
-#sce <- find_switch_logistic_fastglm(sce, downsample = FALSE, show_warning = FALSE)
-```
-
-#### **This is another time consuming process, may want to choose to save objects for future use.**
-```{r}
-## saveRDS(sce   , "~/R Packages/mini_data/Binerized/reference_glm.rds")
-sce    <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/switches_gastglm_blastocyst_reference_sce.rds")
-```
-
-### Filter to only include Switching Genes
+### Filter the reference to only include Switching Genes
 ```{r}
 switching_genes <- filter_switchgenes(sce, allgenes = TRUE,r2cutoff = 0.26)
 ```
@@ -208,7 +192,7 @@ plot_timeline_ggplot(switching_genes, timedata = colData(sce)$Pseudotime, txtsiz
 
 ##### View the selected switching genes
 ```{r}
-ppr_timeline_plot(switching_genes)
+timeline_plot(switching_genes)
 ```
 
 ### Reduce the binary counts matricies of the query data to only include the selection os switching genes.
@@ -233,36 +217,26 @@ for (sample_name in names(samples_binarized)){
 
 ### Produce an estimate for the position on trajectory of each gene in each cell of a sample.
 ```{r}
-reference_ppr    <- ppr_predict_position(reference_reduced, switching_genes)
-#Mole21a_ppr      <- ppr_predict_position(Mole21a_reduced, switching_genes)
+reference_ppr    <- predict_position(reference_reduced, switching_genes)
+
 # Define a list to store the ppr objects of the samples
 samples_ppr <- list()
-
 # Iterate through each Seurat object in the predicting their positons,
 # on the reference trajectory, using PathPinpointR
 for (sample_name in names(samples_reduced)){
   sample_reduced <- samples_reduced[[sample_name]]
   # predict the position of each gene in each cell of the sample
-  sample_ppr <- ppr_predict_position(sample_reduced, switching_genes)
+  sample_ppr <- predict_position(sample_reduced, switching_genes)
   # Store the result in the new list
   samples_ppr[[sample_name]] <- sample_ppr
 }
 ```
 
 ### Accuracy
-#### *As our samples are subsets of the reference dataset we can calculate the accuracy of GSS*
+#### *As our samples are subsets of the reference dataset we can calculate the accuracy of ppr*
+#### *the accuracy varies accross the range of pseudptimes*
 ```{r}
-
-#ppr_accuracy_test(Mole21a_ppr, sce, plot = TRUE)
-ppr_accuracy_test(reference_ppr, sce, plot = TRUE)
-
-
-for (sample_name in names(samples_ppr)){
-  sample_ppr <- samples_ppr[[sample_name]]
- 
-  ppr_accuracy_test(sample, sce, plot = TRUE)
-  
-}
+accuracy_test(reference_ppr, sce, plot = TRUE)
 ```
 
 ## Plotting
@@ -270,31 +244,14 @@ for (sample_name in names(samples_ppr)){
 ### Plot the predicted position of each sample:
 #### *Optional: include the switching point of some genes of interest:*
 ```{r}
+plot_position(reference_ppr, col = "red", overlay=FALSE, label = "Reference")
 
-
-
-ppr_output_plot(reference_ppr, col = "red", overlay=FALSE, label = "Reference")
-
-
-for (sample_name in names(samples_ppr)){
-  sample_ppr <- samples_ppr[[sample_name]]
-  
-  ppr_output_plot(sample_ppr, col = "red", overlay=FALSE, label = sample_name)
-  
-}
-
-pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/samples_ppr_output.pdf")
-ppr_output_plot(samples_ppr[[1]], col = "red", overlay=FALSE, label = names(samples_ppr)[1])
-ppr_output_plot(samples_ppr[[2]], col = "blue", overlay=TRUE, label = names(samples_ppr)[2])
-ppr_output_plot(samples_ppr[[4]], col = "purple", overlay=TRUE, label = names(samples_ppr)[4])
-ppr_output_plot(samples_ppr[[5]], col = "#000000", overlay=TRUE, label = names(samples_ppr)[5])
-ppr_output_plot(samples_ppr[[8]], col = "#4dd80c", overlay=TRUE, label = names(samples_ppr)[8])
-# Close the PDF device
-dev.off()
-
+plot_position(samples_ppr[[1]], col = "red", overlay=FALSE, label = names(samples_ppr)[1])
+plot_position(samples_ppr[[2]], col = "blue", overlay=TRUE, label = names(samples_ppr)[2])
+plot_position(samples_ppr[[4]], col = "purple", overlay=TRUE, label = names(samples_ppr)[4])
+plot_position(samples_ppr[[5]], col = "#000000", overlay=TRUE, label = names(samples_ppr)[5])
+plot_position(samples_ppr[[8]], col = "#4dd80c", overlay=TRUE, label = names(samples_ppr)[8])
 ```
-
-
 
 
 #### Plot an indervidual cell.
