@@ -6,42 +6,34 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of PathPinPointR is to identify the position of a sample upon a
+The goal of PathPinpointR is to identify the position of a sample upon a
 trajectory.
 
-## Installation
+### Limitations:
 
-You can install the development version of PathPinPointR from
-[GitHub](https://github.com/) with:
-
-``` r
-# install.packages("devtools")
-devtools::install_github("moi-taiga/PathPinPointR")
-```
-
-## Example
-
-[GSS
-Workflow](https://moi-taiga.github.io/PathPinPointR/articles/GSS_Workflow.html)
-
-## Limitations:
-
-## Assumptions:
+### Assumptions:
 
 - Sample is found upon the chosen trajectory.
 - Sample is from a distinct part of the trajectory. A sample with cells
   that are evenly distributed across the trajectory will have a
   predicted location of the centre of the trajectory.
 
-This vignette will take you through running PPR.  
-The data used here is an Intregrated dataset of [blastocyst
-data](http://).  
-  
-  
+# Example Workflow
 
-## Data Pre-procesing
+#### This vignette will take you through running PPR. 
 
-#### Load neccecary packages
+##### The data used here is an intregrated data-set of [blastocyst data](http://). 
+
+## Installation
+
+You can install the development version of PathPinpointR using:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("moi-taiga/PathPinPointR")
+```
+
+### Load neccecary packages
 
 ``` r
 library(Seurat)
@@ -55,50 +47,20 @@ library(devtools)
 devtools::load_all()
 ```
 
-## SEURAT
-
 ### Here we use this Reprogramming dataset as the reference
 
 ``` r
-seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/blastocyst.rds")
-#seu <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/additional_blastocyst/full_atlas.rds")
+seu <- readRDS("~/data/blastocyst.rds")
 ```
 
 #### View the reference UMAP
 
 ``` r
-# p1 <- DimPlot(object = seu, 
-#              reduction = "umap",
-#              group.by = "orig.ident",
-#              label = TRUE) +
-#      ggtitle("Reference")
-# ggsave(filename = "/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/dimplot_orig_ident.png", plot = p1)
-
-# Plot and save the second DimPlot
-# p2 <- DimPlot(object = seu,
-#              reduction = "umap",
-#              group.by = "seurat_clusters",
-#              label = TRUE) +
-#      ggtitle("Reference")
-#ggsave(filename = "/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/dimplot_seurat_clusters.png", plot = p2)
-```
-
-### QC
-
-``` r
-#seu[["percent.mt"]] <- PercentageFeatureSet(seu, pattern = "MT-")
-# Visualize QC metrics as a violin plot
-#VlnPlot(seu, features = c("nFeature_RNA", "nCount_RNA", "pctMT"), ncol = 3)
-```
-
-### QC
-
-``` r
-#consider using double finder (has it aleady been run?)
-#seu <- subset(seu, subset = nFeature_RNA > 2500 & pctMT < 10 & nCount_RNA < 1e+07)
-#seu <- subset(seu, subset = pctMT < 11 & nCount_RNA < 1.8e+07)
-# Visualize QC metrics as a violin plot
-#VlnPlot(seu, features = c("nFeature_RNA", "nCount_RNA", "pctMT"), ncol = 3)
+DimPlot(object = seu,
+             reduction = "umap",
+             group.by = "orig.ident",
+             label = TRUE) +
+     ggtitle("Reference")
 ```
 
 ### We use subsets of the Reprogramming dataset as queries.
@@ -119,15 +81,7 @@ for (sample in sample_names){
 }
 ```
 
-### Label transfer & Re-integration
-
-####### *When doing this analysis with your own data you would more than likely need to label transfer with your referenece datatset.*
-
-####### *As we are using subsets of our reference data as “samples” this wont be necessary.*
-
-## SingeCellExperiment
-
-### Convert objects to SingleCellExperiment objects
+### Convert seurat objects to SingleCellExperiment objects
 
 ``` r
 sce    <- SingleCellExperiment(assays = list(expdata = seu@assays$RNA$counts))
@@ -139,8 +93,6 @@ for (sample in sample_names){
   assign(paste0(sample, ".sce"), sample.sce)
 }
 ```
-
-## Slingshot
 
 ### Run slingshot on the reference data to produce a reprogramming trajectory.
 
@@ -162,24 +114,15 @@ colData(sce)$Pseudotime <- sce$slingPseudotime_1
 colors <- colorRampPalette(brewer.pal(11, 'Spectral')[-6])(100)
 plotcol <- colors[cut(sce$slingPseudotime_1, breaks = 100)]
 
-# Open a PDF device to save the plot
-pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/slingshot.pdf")
 
 # Plot the data
 plot(reducedDims(sce)$UMAP, col = plotcol, pch = 16, asp = 1)
 lines(SlingshotDataSet(sce), lwd = 2, col = 'black')
-
-# Close the PDF device
-dev.off()
 ```
 
 ## GeneSwitches
 
 ### Choose a Binerization cutoff
-
-###### \*\*this would be good to automate,
-
-###### or learn how to use the other method of binarizing
 
 ``` r
 # hist(as.matrix(assays(sce)$expdata),
@@ -255,14 +198,8 @@ switching_genes <- filter_switchgenes(sce, allgenes = TRUE,r2cutoff = 0.26)
 ##### View all of the switching genes
 
 ``` r
-# Open a PDF device to save the plot
-pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/timeline_plot.pdf")
-
 # Plot the timeline using plot_timeline_ggplot
 plot_timeline_ggplot(switching_genes, timedata = colData(sce)$Pseudotime, txtsize = 3)
-
-# Close the PDF device
-dev.off()
 ```
 
 # Using PPR
@@ -317,19 +254,16 @@ for (sample_name in names(samples_reduced)){
 #### *As our samples are subsets of the reference dataset we can calculate the accuracy of GSS*
 
 ``` r
-# Open a PDF device to save the plot
-pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/reference_accuracy.pdf")
+
 #ppr_accuracy_test(Mole21a_ppr, sce, plot = TRUE)
 ppr_accuracy_test(reference_ppr, sce, plot = TRUE)
-# Close the PDF device
-dev.off()
+
 
 for (sample_name in names(samples_ppr)){
   sample_ppr <- samples_ppr[[sample_name]]
-  pdf(paste0("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/", sample_name,"_accuracy.pdf"))
+ 
   ppr_accuracy_test(sample, sce, plot = TRUE)
-  # Close the PDF device
-  dev.off()
+  
 }
 ```
 
@@ -341,18 +275,16 @@ for (sample_name in names(samples_ppr)){
 
 ``` r
 
-# Open a PDF device to save the plot
-pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/reference_ppr_output.pdf")
+
+
 ppr_output_plot(reference_ppr, col = "red", overlay=FALSE, label = "Reference")
-# Close the PDF device
-dev.off()
+
 
 for (sample_name in names(samples_ppr)){
   sample_ppr <- samples_ppr[[sample_name]]
-  pdf(paste0("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/", sample_name,"_ppr_output.pdf"))
+  
   ppr_output_plot(sample_ppr, col = "red", overlay=FALSE, label = sample_name)
-  # Close the PDF device
-  dev.off()
+  
 }
 
 pdf("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/plots/samples_ppr_output.pdf")
