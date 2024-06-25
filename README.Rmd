@@ -20,11 +20,11 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of PathPinPointR is to identify the position of a sample upon a trajectory.
+The goal of PathPinpointR is to identify the position of a sample upon a trajectory.
 
 ## Installation
 
-You can install the development version of PathPinPointR from [GitHub](https://github.com/) with:
+You can install the development version of PathPinpointR from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
