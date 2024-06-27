@@ -257,10 +257,19 @@ accuracy_test(reference_ppr, sce, plot = TRUE)
 ### Plot the predicted position of each sample:
 #### *Optional: include the switching point of some genes of interest:*
 ```{r}
-plot_position(reference_ppr, col = "red", overlay=FALSE, label = "Reference")
+plot_position(reference_ppr,
+              col = "red",
+              overlay = FALSE,
+              label = "Reference")
 
-plot_position(samples_ppr[[1]], col = "darkgreen", overlay=FALSE, label = names(samples_ppr)[1])
-plot_position(samples_ppr[[2]], col = "blue", overlay=TRUE, label = names(samples_ppr)[2])
+plot_position(samples_ppr[[1]],
+              col = "darkgreen",
+              overlay=FALSE,
+              label = names(samples_ppr)[1])
+plot_position(samples_ppr[[2]],
+              col = "blue",
+              overlay=TRUE,
+              label = names(samples_ppr)[2])
 ```
 
 
@@ -277,7 +286,7 @@ timeline_plot(switching_genes = switching_genes,
 ###### BUG! 
 ```{r}
 precision(sce, r2_cutoff_range = seq(0.255, 0.263, 0.0001))
-abline(v= 0.257, col = "blue")
+abline(v = 0.257, col = "blue")
 
 ```
 
@@ -288,29 +297,56 @@ ref_acc <- accuracy_test(reference_ppr, sce, plot = FALSE)
 
 #
 plot(ref_acc$true_timeIDX, ref_acc$inaccuracy,
-     xlab = "True Position", ylab = "Inaccuracy", main = "Inaccuracy by True Positions")
+     xlab = "True Position",
+     ylab = "Inaccuracy",
+     main = "Inaccuracy by True Positions")
 
 #
 boxplot(ref_acc$inaccuracy ~ ref_acc$true_timeIDX,
-        xlab = "True Position", ylab = "Inaccuracy", main = "Boxplots of Inaccuracy by True Positions")
+        xlab = "True Position",
+        ylab = "Inaccuracy",
+        main = "Boxplots of Inaccuracy by True Positions")
+
 true_position_bin <- cut(ref_acc$true_timeIDX,
-                             breaks = c(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80.85,90,95,100))
+                         breaks = c(0,
+                                    5,
+                                    10,
+                                    15,
+                                    20,
+                                    25,
+                                    30,
+                                    35,
+                                    40,
+                                    45,
+                                    50,
+                                    55,
+                                    60,
+                                    65,
+                                    70,
+                                    75,
+                                    80,
+                                    85,
+                                    90,
+                                    95,
+                                    100))
+
 boxplot(ref_acc$inaccuracy ~ true_position_bin,
-        xlab = "True Position", ylab = "Inaccuracy", main = "Boxplots of Inaccuracy by True Positions")
+        xlab = "True Position",
+        ylab = "Inaccuracy",
+        main = "Boxplots of Inaccuracy by True Positions")
 
 #
 plot(x = ref_acc$true_timeIDX, y = ref_acc$predicted_timeIDX,
-     xlab = "True Position", ylab = "Predicted Position", main = "Predicted Positions by True Positions")
+     xlab = "True Position",
+     ylab = "Predicted Position",
+     main = "Predicted Positions by True Positions")
 
 
 #
 boxplot(ref_acc$predicted_position_of_cells_timeIDX ~ ref_acc$true_timeIDX,
-        xlab = "True Position", ylab = "Predicted Position", main = "Boxplots of Predicted Positions by True Positions")
-segments(0,0,100,100, lwd=2, col ="green")
-segments(0,10,100,110, lwd=2, col ="blue")
-segments(0,-10,100,90, lwd=2, col ="blue")
-segments(0,40,100,140, lwd=2, col ="red")
-segments(0,-40,100,60, lwd=2, col ="red")
+        xlab = "True Position",
+        ylab = "Predicted Position",
+        main = "Boxplots of Predicted Positions by True Positions")
 ```
 
 
