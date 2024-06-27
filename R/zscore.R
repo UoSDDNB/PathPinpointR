@@ -11,7 +11,7 @@
 #' @param ppr An object of class ppr, must be the same sample.
 #' @param switching_genes Genes which switch through the trajectory,
 #' @param cpu Number of cores to use for parallel processing,
-#'  (default is one less than available cores).
+#'  (default is one less than available cores, 4 works best).
 #'
 #' @return the zscore of the samples raw ppr score.
 #'
@@ -19,7 +19,7 @@
 #' @export
 #'
 
-zscore <- function(sce, ppr, switching_genes, cpu = 0) {
+zscore <- function(sce, ppr, switching_genes, cpu = 1) {
 
   ## check
 

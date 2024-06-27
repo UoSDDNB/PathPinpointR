@@ -178,7 +178,7 @@ samples_binarized <- list()
 for (sample in sample_names){
   samples_binarized[[sample]] <- readRDS(paste0("/mainfs/ddnb/PathPinpointR/package/data/binarized_", sample, "_sce.rds"))
 }
-#sce <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/switches_gastglm_blastocyst_reference_sce.rds")
+sce <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/switches_gastglm_blastocyst_reference_sce.rds")
 ```
 
 ### Filter the reference to only include Switching Genes
@@ -239,7 +239,7 @@ for (sample_name in names(samples_reduced)){
   sample_ppr <- zscore(sce = samples_reduced[[sample_name]],
                        ppr = sample_ppr,
                        switching_genes,
-                       cpu = 8)
+                       cpu = 4)
   # Store the result in the new list
   samples_ppr[[sample_name]] <- sample_ppr
 }
