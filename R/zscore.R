@@ -19,7 +19,7 @@
 #' @export
 #'
 
-calculate_zscore <- function(sce, ppr, switching_genes, cpu = 0) {
+zscore <- function(sce, ppr, switching_genes, cpu = 0) {
 
   ## check
 

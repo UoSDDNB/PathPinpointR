@@ -52,14 +52,15 @@ library(SingleCellExperiment)
 library(slingshot)
 library(RColorBrewer)
 library(GeneSwitches)
-library(Parallel)
+library(parallel)
 library(devtools)
+devtools::load_all()
 ```
 
 
 ### Here we use this Reprogramming dataset as the reference 
 ```{r}
-seu <- readRDS("./data/blastocyst.rds")
+seu <- readRDS("./data/blastocyst_downsampled.rds")
 ```
 
 #### View the reference UMAP
@@ -74,10 +75,8 @@ DimPlot(object = seu,
 
 ### We use subsets of the Reprogramming dataset as queries.
 ```{r}
-## Split the reference data into samples
-
-# Make a list of the unique sample names
-sample_names <- unique(seu@meta.data$orig.ident)
+## Take two subsets of the reference to use as samples
+sample_names <- c("Petro16","Tyser21")
 
 # Make an empty list to store the samples
 samples_seu <- list()
@@ -135,7 +134,7 @@ lines(SlingshotDataSet(sce), lwd = 2, col = 'black')
 ```{r}
 trimmed_expdata <- assays(sce)$expdata[assays(sce)$expdata < 10]
 hist(as.matrix(trimmed_expdata))
-abline(v= 1, col = "blue")
+abline(v= 0.1, col = "blue")
 
 # cutoff = 1
 ```
@@ -146,7 +145,7 @@ abline(v= 1, col = "blue")
 sce           <- binarize_exp(sce,
                               fix_cutoff = TRUE,
                               binarize_cutoff = 1,
-                              ncores = 64)
+                              ncores = 8)
 
 # Define a list to store the binarized samples
 samples_binarized <- list()
@@ -156,7 +155,7 @@ for (sample_name in names(samples_sce)){
   # binarize the expression data of the sample
   sample_binarized <- binarize_exp(sample_sce,
                                    fix_cutoff = TRUE,
-                                   binarize_cutoff = 1,
+                                   binarize_cutoff = 0.1,
                                    ncores = 64)
   # Store the result in the new list
   samples_binarized[[sample_name]] <- sample_binarized
@@ -165,6 +164,13 @@ for (sample_name in names(samples_sce)){
 sce <- find_switch_logistic_fastglm(sce,
                                     downsample = FALSE,
                                     show_warning = FALSE)
+
+# save the binarized data
+# saveRDS(sce, file = "/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/switches_gastglm_blastocyst_reference_sce.rds")
+# for (sample in sample_names) {
+#   saveRDS(samples_binarized[[sample]], file = paste0("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/binarized_", sample, "_sce.rds"))
+# }
+
 ```
 
 ```{r, echo = FALSE}
@@ -172,18 +178,20 @@ samples_binarized <- list()
 for (sample in sample_names){
   samples_binarized[[sample]] <- readRDS(paste0("/mainfs/ddnb/PathPinpointR/package/data/binarized_", sample, "_sce.rds"))
 }
-sce    <- readRDS("/mainfs/ddnb/PathPinpointR/package/data/switches_gastglm_blastocyst_reference_sce.rds")
+#sce <- readRDS("/mainfs/ddnb/PathPinpointR/package/PathPinpointR/data/switches_gastglm_blastocyst_reference_sce.rds")
 ```
 
 ### Filter the reference to only include Switching Genes
 ```{r}
-switching_genes <- filter_switchgenes(sce, allgenes = TRUE,r2cutoff = 0.26)
+switching_genes <- filter_switchgenes(sce, allgenes = TRUE, r2cutoff = 0.257)
 ```
 
 ##### View all of the switching genes
 ```{r}
 # Plot the timeline using plot_timeline_ggplot
-plot_timeline_ggplot(switching_genes, timedata = colData(sce)$Pseudotime, txtsize = 3)
+plot_timeline_ggplot(switching_genes,
+                     timedata = colData(sce)$Pseudotime,
+                     txtsize = 3)
 
 ```
 
@@ -227,6 +235,11 @@ for (sample_name in names(samples_reduced)){
   sample_reduced <- samples_reduced[[sample_name]]
   # predict the position of each gene in each cell of the sample
   sample_ppr <- predict_position(sample_reduced, switching_genes)
+  #calculate zscore
+  sample_ppr <- zscore(sce = samples_reduced[[sample_name]],
+                       ppr = sample_ppr,
+                       switching_genes,
+                       cpu = 8)
   # Store the result in the new list
   samples_ppr[[sample_name]] <- sample_ppr
 }
@@ -246,58 +259,52 @@ accuracy_test(reference_ppr, sce, plot = TRUE)
 ```{r}
 plot_position(reference_ppr, col = "red", overlay=FALSE, label = "Reference")
 
-plot_position(samples_ppr[[1]], col = "red", overlay=FALSE, label = names(samples_ppr)[1])
+plot_position(samples_ppr[[1]], col = "darkgreen", overlay=FALSE, label = names(samples_ppr)[1])
 plot_position(samples_ppr[[2]], col = "blue", overlay=TRUE, label = names(samples_ppr)[2])
-plot_position(samples_ppr[[4]], col = "purple", overlay=TRUE, label = names(samples_ppr)[4])
-plot_position(samples_ppr[[5]], col = "#000000", overlay=TRUE, label = names(samples_ppr)[5])
-plot_position(samples_ppr[[8]], col = "#4dd80c", overlay=TRUE, label = names(samples_ppr)[8])
 ```
 
 
-#### Plot an indervidual cell.
-```{r}
-ppr_cell_plot(Mole21a_ppr, cell_idx = 1)
-```
 
 ```{r}
-ppr_timeline_plot(switching_genes,
-                  genomic_expression_traces = TRUE,
-                  reduced_binary_counts_matrix = Mole21a_reduced,
-                  cell_id = 1)
+timeline_plot(switching_genes = switching_genes,
+              genomic_expression_traces = TRUE,
+              reduced_sce = samples_reduced[[1]],
+              cell_id = 100)
 ```
 
 ### Precision
 ##### Estimate the precision of PPR by running accuracy_test at a range of values
 ###### BUG! 
 ```{r}
-ppr_precision(sce)
+precision(sce, r2_cutoff_range = seq(0.255, 0.263, 0.0001))
+abline(v= 0.257, col = "blue")
+
 ```
 
-### Investigate the predicted position of indervidual cells:
+
 ```{r}
+#more accuracy investigation:
+ref_acc <- accuracy_test(reference_ppr, sce, plot = FALSE)
+
 #
-plot(Mole21a_accuracy$true_position_of_cells_timeIDX, Mole21a_accuracy$inaccuracy,
+plot(ref_acc$true_timeIDX, ref_acc$inaccuracy,
      xlab = "True Position", ylab = "Inaccuracy", main = "Inaccuracy by True Positions")
 
 #
-boxplot(Mole21a_accuracy$inaccuracy ~ Mole21a_accuracy$true_position_of_cells_timeIDX,
+boxplot(ref_acc$inaccuracy ~ ref_acc$true_timeIDX,
         xlab = "True Position", ylab = "Inaccuracy", main = "Boxplots of Inaccuracy by True Positions")
-true_position_bin <- cut(Mole21a_accuracy$true_position_of_cells_timeIDX,
+true_position_bin <- cut(ref_acc$true_timeIDX,
                              breaks = c(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80.85,90,95,100))
-boxplot(Mole21a_accuracy$inaccuracy ~ true_position_bin,
+boxplot(ref_acc$inaccuracy ~ true_position_bin,
         xlab = "True Position", ylab = "Inaccuracy", main = "Boxplots of Inaccuracy by True Positions")
 
 #
-plot(Mole21a_accuracy$true_position_of_cells_timeIDX,Mole21a_accuracy$predicted_position_of_cells_timeIDX,
+plot(x = ref_acc$true_timeIDX, y = ref_acc$predicted_timeIDX,
      xlab = "True Position", ylab = "Predicted Position", main = "Predicted Positions by True Positions")
-segments(0,0,100,100, lwd=2, col ="green")
-segments(0,10,100,110, lwd=2, col ="blue")
-segments(0,-10,100,90, lwd=2, col ="blue")
-segments(0,40,100,140, lwd=2, col ="red")
-segments(0,-40,100,60, lwd=2, col ="red")
+
 
 #
-boxplot(Mole21a_accuracy$predicted_position_of_cells_timeIDX ~ Mole21a_accuracy$true_position_of_cells_timeIDX,
+boxplot(ref_acc$predicted_position_of_cells_timeIDX ~ ref_acc$true_timeIDX,
         xlab = "True Position", ylab = "Predicted Position", main = "Boxplots of Predicted Positions by True Positions")
 segments(0,0,100,100, lwd=2, col ="green")
 segments(0,10,100,110, lwd=2, col ="blue")
