@@ -30,7 +30,7 @@ You can install the development version of PathPinpointR using:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("moi-taiga/PathPinPointR")
+devtools::install_github("moi-taiga/PathPinpointR")
 ```
 
 ### Load neccecary packages
