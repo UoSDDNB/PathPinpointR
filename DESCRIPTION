@@ -33,8 +33,3 @@ Imports:
     devtools,
     mixtools,
     GeneSwitches
-Remotes: 
-    SGDDNB/GeneSwitches,
-    r-lib/BiocManager
-Config/Needs/website:
-    GeneSwitches
