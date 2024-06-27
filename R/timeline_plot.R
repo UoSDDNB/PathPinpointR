@@ -18,9 +18,9 @@
 #'
 #' @export
 timeline_plot <- function(switching_genes,
-                              genomic_expression_traces = FALSE,
-                              reduced_sce = NULL,
-                              cell_id = 1) {
+                          genomic_expression_traces = FALSE,
+                          reduced_sce = NULL,
+                          cell_id = 1) {
 
   # Convert switching_genes to a data frame
   switching_genes <- as.data.frame(switching_genes)
@@ -40,9 +40,8 @@ timeline_plot <- function(switching_genes,
 
   # Create the initial ggplot object with x and y aesthetics, color, and labels
   timeline_plot <- ggplot(switching_genes,
-                          aes(x = switching_genes$switch_at_timeidx,
-                              y = switching_genes$pseudoR2s *
-                                switching_genes$direction_num,
+                          aes(x = switch_at_timeidx,
+                              y = pseudoR2s * direction_num,
                               label = rownames(switching_genes))) +
     geom_point(size = 1) +
     xlab("Pseudotime-Index") +
@@ -60,9 +59,9 @@ timeline_plot <- function(switching_genes,
   # Add labels for pseudotime on the plot
   timeline_plot <- timeline_plot +
     geom_label(data = timeidx_df,
-               aes(x = timeidx_df$timeidx_range,
+               aes(x = timeidx_range,
                    y = 0,
-                   label = timeidx_df$timeidx_labs),
+                   label = timeidx_labs),
                size = (3),
                color = "black")
 
@@ -72,7 +71,8 @@ timeline_plot <- function(switching_genes,
                         y = pseudoR2s * direction_num,
                         label = rownames(switching_genes)),
                     size = 3, 
-                    show.legend = FALSE)
+                    show.legend = FALSE,
+                    max.overlaps = Inf) # Adjust max.overlaps as needed
 
   # Customize the theme and legend appearance
   timeline_plot <- timeline_plot +
