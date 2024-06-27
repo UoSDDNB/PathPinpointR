@@ -25,7 +25,6 @@ Imports:
     parallel,
     Biobase,
     SingleCellExperiment,
-    monocle,
     plyr,
     RColorBrewer,
     ggridges,
