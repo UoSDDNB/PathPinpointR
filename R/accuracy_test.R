@@ -38,8 +38,7 @@ accuracy_test <- function(sample_ppr, reference_sce, plot = TRUE) {
   steptime <- (max(ref_ptime) - min(ref_ptime)) / 100
 
   # Calculate the true time indices based on the pseudotime values
-  accuracy$true_timeIDX <- round((ref_ptime -
-                                    min(ref_ptime)) / steptime)
+  accuracy$true_timeIDX <- round((ref_ptime - min(ref_ptime)) / steptime)
 
   # Predict the time indices for the cells using the sample_ppr
   # Note:
@@ -57,8 +56,8 @@ accuracy_test <- function(sample_ppr, reference_sce, plot = TRUE) {
     invisible({
       hist_plot <- hist(accuracy$inaccuracy,
                         breaks = seq(0, max(accuracy$inaccuracy), by = 1),
-                        main = "Histogram of Inaccuracy",
-                        xlab = "Inaccuracy")
+                        main = "Histogram of Accuracy",
+                        xlab = "Distance from True Time Index",)
       mean_inaccuracy <- mean(accuracy$inaccuracy, na.rm = TRUE)
       abline(v = mean_inaccuracy, col = "red", lwd = 1)
       text(mean_inaccuracy,
