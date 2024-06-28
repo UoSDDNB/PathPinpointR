@@ -73,7 +73,7 @@ DimPlot(object = seu,
   ggtitle("Reference")
 ```
 ```{r, eval = TRUE}
-knitr::include_graphics("/man/figures/README-reference-dimplot.png")
+knitr::include_graphics("./man/figures/README-reference-dim-plot.png")
 ```
 
 ### We use subsets of the Reprogramming data-set as queries.
@@ -135,7 +135,7 @@ lines(SlingshotDataSet(sce), lwd = 2, col = 'black')
 ```
 
 ```{r, eval = TRUE}
-knitr::include_graphics("/man/figures/README-slingshot.png")
+knitr::include_graphics("./man/figures/README-slingshot.png")
 ```
 
 
@@ -205,7 +205,7 @@ plot_timeline_ggplot(switching_genes,
 ```
 
 ```{r, eval = TRUE}
-knitr::include_graphics("/man/figures/README-switching-genes")
+knitr::include_graphics("./man/figures/README-switching-genes.png")
 ```
 
 # Using PPR
@@ -263,7 +263,7 @@ accuracy_test(reference_ppr, sce, plot = TRUE)
 ```
 
 ```{r, eval = TRUE}
-knitr::include_graphics("/man/figures/README-accuracy_plot.png")
+knitr::include_graphics("./man/figures/README-accuracy_plot.png")
 ```
 
 ## Plotting
