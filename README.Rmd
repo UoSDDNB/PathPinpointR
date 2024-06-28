@@ -11,13 +11,14 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%",
   echo = TRUE,
-  eval = TRUE
+  eval = FALSE
 )
 ```
 
-# PathPinPointR
+# PathPinpointR
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 The goal of PathPinpointR is to identify the position of a sample upon a trajectory.
@@ -25,26 +26,27 @@ The goal of PathPinpointR is to identify the position of a sample upon a traject
 ### Limitations:
 
 ### Assumptions:
--  Sample is found upon the chosen trajectory. 
--  Sample is from a distinct part of the trajectory. A sample with cells that are evenly distributed across the trajectory will have a predicted location of the centre of the trajectory. 
 
+-   Sample is found upon the chosen trajectory.
+-   Sample is from a distinct part of the trajectory. A sample with cells that are evenly distributed across the trajectory will have a predicted location of the centre of the trajectory.
 
 # Example Workflow
 
-#### This vignette will take you through running PPR. \
-##### The data used here is an intregrated data-set of [blastocyst data](http://). \
+#### This vignette will take you through running PPR.
 
+##### The data used here is an integrated data-set of [blastocyst data](http://).
 
 ## Installation
 
 You can install the development version of PathPinpointR using:
 
-``` {r}
-# install.packages("devtools")
+```{r installing ppr, message=FALSE, warning=FALSE, error=FALSE}
+library(devtools)
 devtools::install_github("moi-taiga/PathPinPointR")
 ```
 
-### Load neccecary packages
+### Load necessary packages
+
 ```{r}
 library(Seurat)
 library(ggplot2)
@@ -53,17 +55,17 @@ library(slingshot)
 library(RColorBrewer)
 library(GeneSwitches)
 library(parallel)
-library(devtools)
 devtools::load_all()
 ```
 
+### Here we use this Reprogramming data-set as the reference
 
-### Here we use this Reprogramming dataset as the reference 
 ```{r}
 seu <- readRDS("./data/blastocyst_downsampled.rds")
 ```
 
 #### View the reference UMAP
+
 ```{r}
 DimPlot(object = seu,
         reduction = "umap",
@@ -72,8 +74,8 @@ DimPlot(object = seu,
   ggtitle("Reference")
 ```
 
+### We use subsets of the Reprogramming data-set as queries.
 
-### We use subsets of the Reprogramming dataset as queries.
 ```{r}
 ## Take two subsets of the reference to use as samples
 sample_names <- c("Petro16","Tyser21")
@@ -87,7 +89,8 @@ for (sample in sample_names){
 }
 ```
 
-### Convert seurat objects to SingleCellExperiment objects
+### Convert Seurat objects to SingleCellExperiment objects
+
 ```{r}
 sce    <- SingleCellExperiment(assays = list(expdata = seu@assays$RNA$counts))
 colData(sce) <- DataFrame(seu@meta.data)
@@ -107,6 +110,7 @@ for (sample_name in names(samples_seu)){
 ```
 
 ### Run slingshot on the reference data to produce a reprogramming trajectory.
+
 ```{r}
 sce  <- slingshot(sce,
                   clusterLabels = "seurat_clusters",
@@ -119,6 +123,7 @@ colData(sce)$Pseudotime <- sce$slingPseudotime_1
 ```
 
 ### Plot the slingshot trajectory.
+
 ```{r}
 # Generate colors
 colors <- colorRampPalette(brewer.pal(11, 'Spectral')[-6])(100)
@@ -128,9 +133,10 @@ plot(reducedDims(sce)$UMAP, col = plotcol, pch = 16, asp = 1)
 lines(SlingshotDataSet(sce), lwd = 2, col = 'black')
 ```
 
-
 ## GeneSwitches
-###  Choose a Binerization cutoff
+
+### Choose a Binerization cutoff
+
 ```{r}
 trimmed_expdata <- assays(sce)$expdata[assays(sce)$expdata < 10]
 hist(as.matrix(trimmed_expdata))
@@ -140,6 +146,7 @@ abline(v= 0.1, col = "blue")
 ```
 
 ### Binarize
+
 ```{r, eval=FALSE}
 # binarize the expression data of sce
 sce           <- binarize_exp(sce,
@@ -182,11 +189,13 @@ sce <- readRDS("./data/switches_gastglm_blastocyst_reference_sce.rds")
 ```
 
 ### Filter the reference to only include Switching Genes
+
 ```{r}
 switching_genes <- filter_switchgenes(sce, allgenes = TRUE, r2cutoff = 0.257)
 ```
 
 ##### View all of the switching genes
+
 ```{r}
 # Plot the timeline using plot_timeline_ggplot
 plot_timeline_ggplot(switching_genes,
@@ -195,15 +204,16 @@ plot_timeline_ggplot(switching_genes,
 
 ```
 
-
 # Using PPR
 
 ##### View the selected switching genes
+
 ```{r}
 timeline_plot(switching_genes)
 ```
 
-### Reduce the binary counts matricies of the query data to only include the selection os switching genes.
+### Reduce the binary counts matrices of the query data to only include the selection of switching genes.
+
 ```{r}
 # filter the binary counts matricies to only include the switching genes
 reference_reduced <- subset_switching_genes(sce, switching_genes)
@@ -224,6 +234,7 @@ for (sample_name in names(samples_binarized)){
 ```
 
 ### Produce an estimate for the position on trajectory of each gene in each cell of a sample.
+
 ```{r}
 reference_ppr    <- predict_position(reference_reduced, switching_genes)
 
@@ -246,8 +257,11 @@ for (sample_name in names(samples_reduced)){
 ```
 
 ### Accuracy
-#### *As our samples are subsets of the reference dataset we can calculate the accuracy of ppr*
-#### *the accuracy varies accross the range of pseudptimes*
+
+#### *As our samples are subsets of the reference data-set we can calculate the accuracy of ppr*
+
+#### *the accuracy varies across the range of pseudotimes*
+
 ```{r}
 accuracy_test(reference_ppr, sce, plot = TRUE)
 ```
@@ -255,7 +269,9 @@ accuracy_test(reference_ppr, sce, plot = TRUE)
 ## Plotting
 
 ### Plot the predicted position of each sample:
+
 #### *Optional: include the switching point of some genes of interest:*
+
 ```{r}
 plot_position(reference_ppr,
               col = "red",
@@ -272,8 +288,6 @@ plot_position(samples_ppr[[2]],
               label = names(samples_ppr)[2])
 ```
 
-
-
 ```{r}
 timeline_plot(switching_genes = switching_genes,
               genomic_expression_traces = TRUE,
@@ -282,14 +296,14 @@ timeline_plot(switching_genes = switching_genes,
 ```
 
 ### Precision
+
 ##### Estimate the precision of PPR by running accuracy_test at a range of values
-###### BUG! 
+
 ```{r}
 precision(sce, r2_cutoff_range = seq(0.255, 0.263, 0.0001))
 abline(v = 0.257, col = "blue")
 
 ```
-
 
 ```{r}
 #more accuracy investigation:
@@ -348,5 +362,3 @@ boxplot(ref_acc$predicted_timeIDX ~ ref_acc$true_timeIDX,
         ylab = "Predicted Position",
         main = "Boxplots of Predicted Positions by True Positions")
 ```
-
-
