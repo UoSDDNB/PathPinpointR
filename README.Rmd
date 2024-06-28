@@ -273,20 +273,13 @@ knitr::include_graphics("/man/figures/README-accuracy_plot.png")
 #### *Optional: include the switching point of some genes of interest:*
 
 ```{r}
-
-# Set up the PNG device
-png(filename = "./man/figures/README-sample1.png", width = 600, height = 900)
-
-
 plot_position(samples_ppr[[1]],
               col = "darkgreen",
               overlay = FALSE,
               label = names(samples_ppr)[1])
-
-dev.off()
 ```
 
-```{r}
+```{r eval = TRUE}
 knitr::include_graphics("./man/figures/README-sample1.png")
 ```
 
@@ -295,9 +288,8 @@ plot_position(samples_ppr[[2]],
               col = "blue",
               overlay = FALSE,
               label = names(samples_ppr)[2])
-
 ```
 
-```{r}
+```{r, eval = TRUE}
 knitr::include_graphics("./man/figures/README-sample2.png")
 ```
