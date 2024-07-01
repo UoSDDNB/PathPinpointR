@@ -72,7 +72,7 @@ DimPlot(object = seu,
         label = TRUE) +
   ggtitle("Reference")
 ```
-```{r, eval = TRUE}
+```{r, eval = TRUE, echo = FALSE}
 knitr::include_graphics("./man/figures/README-reference-dim-plot.png")
 ```
 
@@ -134,7 +134,7 @@ plot(reducedDims(sce)$UMAP, col = plotcol, pch = 16, asp = 1)
 lines(SlingshotDataSet(sce), lwd = 2, col = 'black')
 ```
 
-```{r, eval = TRUE}
+```{r, eval = TRUE, echo = FALSE}
 knitr::include_graphics("./man/figures/README-slingshot.png")
 ```
 
@@ -191,7 +191,7 @@ precision(sce, r2_cutoff_range = seq(0.17, 0.34, 0.005))
 abline(v = 0.257, col = "blue")
 ```
 
-```{r, eval = TRUE}
+```{r, eval = TRUE, echo = FALSE}
 knitr::include_graphics("./man/figures/README-precision_plot.png")
 ```
 
@@ -204,7 +204,7 @@ plot_timeline_ggplot(switching_genes,
 
 ```
 
-```{r, eval = TRUE}
+```{r, eval = TRUE, echo = FALSE}
 knitr::include_graphics("./man/figures/README-switching-genes.png")
 ```
 
@@ -261,7 +261,7 @@ for (sample_name in names(samples_reduced)){
 accuracy_test(reference_ppr, sce, plot = TRUE)
 ```
 
-```{r, eval = TRUE}
+```{r, eval = TRUE, echo = FALSE}
 knitr::include_graphics("./man/figures/README-accuracy_plot.png")
 ```
 
@@ -289,7 +289,7 @@ plot_position(samples_ppr[[2]],
               label = names(samples_ppr)[2])
 ```
 
-```{r, eval = TRUE}
+```{r, eval = TRUE, echo = FALSE}
 knitr::include_graphics("./man/figures/README-sample2.png")
 ```
 

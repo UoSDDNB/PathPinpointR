@@ -61,10 +61,6 @@ DimPlot(object = seu,
   ggtitle("Reference")
 ```
 
-``` r
-knitr::include_graphics("./man/figures/README-reference-dim-plot.png")
-```
-
 <img src="./man/figures/README-reference-dim-plot.png" width="100%" />
 
 ### We use subsets of the Reprogramming data-set as queries.
@@ -126,10 +122,6 @@ plot(reducedDims(sce)$UMAP, col = plotcol, pch = 16, asp = 1)
 lines(SlingshotDataSet(sce), lwd = 2, col = 'black')
 ```
 
-``` r
-knitr::include_graphics("./man/figures/README-slingshot.png")
-```
-
 <img src="./man/figures/README-slingshot.png" width="100%" />
 
 ## GeneSwitches
@@ -141,7 +133,7 @@ knitr::include_graphics("./man/figures/README-slingshot.png")
 sce           <- binarize_exp(sce,
                               fix_cutoff = TRUE,
                               binarize_cutoff = 0.1,
-                              ncores = 8)
+                              ncores = 16)
 
 # Define a list to store the binarized samples
 samples_binarized <- list()
@@ -152,7 +144,7 @@ for (sample_name in names(samples_sce)){
   sample_binarized <- binarize_exp(sample_sce,
                                    fix_cutoff = TRUE,
                                    binarize_cutoff = 0.1,
-                                   ncores = 64)
+                                   ncores = 16)
   # Store the result in the new list
   samples_binarized[[sample_name]] <- sample_binarized
 }
@@ -162,7 +154,15 @@ sce <- find_switch_logistic_fastglm(sce,
                                     show_warning = FALSE)
 ```
 
-# remove this chunk after testing
+# remove this chunk after testing (it is only here to save time)
+
+``` r
+samples_binarized <- list()
+for (sample in sample_names){
+  samples_binarized[[sample]] <- readRDS(paste0("./data/binarized_", sample, "_sce.rds"))
+}
+sce <- readRDS("./data/switches_gastglm_blastocyst_reference_sce.rds")
+```
 
 ### Filter the reference to only include Switching Genes
 
@@ -172,7 +172,7 @@ switching_genes <- filter_switchgenes(sce, allgenes = TRUE, r2cutoff = 0.257)
 
 ##### in order to find the optimum r2cutoff for the previosu command
 
-##### use the precision function or PathPinPointR
+##### use the precision function of PathPinPointR
 
 ###### Start with a wide range and large steps,
 
@@ -181,10 +181,6 @@ switching_genes <- filter_switchgenes(sce, allgenes = TRUE, r2cutoff = 0.257)
 ``` r
 precision(sce, r2_cutoff_range = seq(0.17, 0.34, 0.005))
 abline(v = 0.257, col = "blue")
-```
-
-``` r
-knitr::include_graphics("./man/figures/README-precision_plot.png")
 ```
 
 <img src="./man/figures/README-precision_plot.png" width="100%" />
@@ -196,10 +192,6 @@ knitr::include_graphics("./man/figures/README-precision_plot.png")
 plot_timeline_ggplot(switching_genes,
                      timedata = colData(sce)$Pseudotime,
                      txtsize = 3)
-```
-
-``` r
-knitr::include_graphics("./man/figures/README-switching-genes.png")
 ```
 
 <img src="./man/figures/README-switching-genes.png" width="100%" />
@@ -258,10 +250,6 @@ for (sample_name in names(samples_reduced)){
 accuracy_test(reference_ppr, sce, plot = TRUE)
 ```
 
-``` r
-knitr::include_graphics("./man/figures/README-accuracy_plot.png")
-```
-
 <img src="./man/figures/README-accuracy_plot.png" width="100%" />
 
 ## Plotting
@@ -271,30 +259,49 @@ knitr::include_graphics("./man/figures/README-accuracy_plot.png")
 #### *Optional: include the switching point of some genes of interest:*
 
 ``` r
-
-# Set up the PNG device
-png(filename = "./man/figures/README-sample1.png", width = 600, height = 900)
-
-
 plot_position(samples_ppr[[1]],
               col = "darkgreen",
               overlay = FALSE,
               label = names(samples_ppr)[1])
-
-dev.off()
 ```
 
 ``` r
 knitr::include_graphics("./man/figures/README-sample1.png")
 ```
 
+<img src="./man/figures/README-sample1.png" width="100%" />
+
 ``` r
 plot_position(samples_ppr[[2]],
               col = "blue",
-              overlay = FALSE,
+              overlay = TRUE,
               label = names(samples_ppr)[2])
 ```
 
+<img src="./man/figures/README-sample2.png" width="100%" />
+
+## View the Standard Deviation and Z-Score of the predicted positions
+
 ``` r
-knitr::include_graphics("./man/figures/README-sample2.png")
+samples_ppr[[2]] <- zscore(sce = samples_reduced[[2]],
+                           ppr = samples_ppr[[2]],
+                           switching_genes,
+                           cpu = 4)
+
+print(samples_ppr[[2]])
+# This is an object of class 'PPR_OBJECT'
+# It contains 5 elements:
+
+# Element 1 : genomic_expression_traces 
+#  A List of 126 matrices
+#  Each of dimensions 109 x 100 
+
+# Element 2 : cells_flat 
+#  A Matrix with dimensions of 126 x 100 
+
+# Element 3 : sample_flat 
+#  A Matrix with dimensions of 1 x 100 
+
+# Standard Deviation =  2.877786 
+# Z-Score            =  12.85064 
 ```
