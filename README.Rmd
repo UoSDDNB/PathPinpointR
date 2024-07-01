@@ -301,4 +301,19 @@ samples_ppr[[2]] <- zscore(sce = samples_reduced[[2]],
                            cpu = 4)
 
 print(samples_ppr[[2]])
+# This is an object of class 'PPR_OBJECT'
+# It contains 5 elements:
+
+# Element 1 : genomic_expression_traces 
+#  A List of 126 matrices
+#  Each of dimensions 109 x 100 
+
+# Element 2 : cells_flat 
+#  A Matrix with dimensions of 126 x 100 
+
+# Element 3 : sample_flat 
+#  A Matrix with dimensions of 1 x 100 
+
+# Standard Deviation =  2.877786 
+# Z-Score            =  12.85064 
 ```
