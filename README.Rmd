@@ -146,7 +146,7 @@ knitr::include_graphics("./man/figures/README-slingshot.png")
 sce           <- binarize_exp(sce,
                               fix_cutoff = TRUE,
                               binarize_cutoff = 0.1,
-                              ncores = 8)
+                              ncores = 16)
 
 # Define a list to store the binarized samples
 samples_binarized <- list()
@@ -157,7 +157,7 @@ for (sample_name in names(samples_sce)){
   sample_binarized <- binarize_exp(sample_sce,
                                    fix_cutoff = TRUE,
                                    binarize_cutoff = 0.1,
-                                   ncores = 64)
+                                   ncores = 16)
   # Store the result in the new list
   samples_binarized[[sample_name]] <- sample_binarized
 }
@@ -168,8 +168,8 @@ sce <- find_switch_logistic_fastglm(sce,
 
 ```
 
-# remove this chunk after testing
-```{r, echo = FALSE}
+# remove this chunk after testing (it is only here to save time)
+```{r, echo = TRUE}
 samples_binarized <- list()
 for (sample in sample_names){
   samples_binarized[[sample]] <- readRDS(paste0("./data/binarized_", sample, "_sce.rds"))
@@ -183,7 +183,7 @@ switching_genes <- filter_switchgenes(sce, allgenes = TRUE, r2cutoff = 0.257)
 ```
 
 ##### in order to find the optimum r2cutoff for the previosu command 
-##### use the precision function or PathPinPointR
+##### use the precision function of PathPinPointR
 ###### Start with a wide range and large steps,
 ###### then narrow down the range and decrease the step size.
 ```{r}
@@ -255,7 +255,6 @@ for (sample_name in names(samples_reduced)){
 ### Accuracy
 
 #### *As our samples are subsets of the reference data-set we can calculate the accuracy of ppr*
-
 #### *the accuracy varies across the range of pseudotimes*
 
 ```{r}
@@ -286,10 +285,20 @@ knitr::include_graphics("./man/figures/README-sample1.png")
 ```{r}
 plot_position(samples_ppr[[2]],
               col = "blue",
-              overlay = FALSE,
+              overlay = TRUE,
               label = names(samples_ppr)[2])
 ```
 
 ```{r, eval = TRUE}
 knitr::include_graphics("./man/figures/README-sample2.png")
+```
+
+## View the Standard Deviation and Z-Score of the predicted positions
+```{r}
+samples_ppr[[2]] <- zscore(sce = samples_reduced[[2]],
+                           ppr = samples_ppr[[2]],
+                           switching_genes,
+                           cpu = 4)
+
+print(samples_ppr[[2]])
 ```
