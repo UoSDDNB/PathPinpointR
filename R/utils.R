@@ -32,7 +32,7 @@ print.PPR_OBJECT <- function(x) {
       cat(" A Matrix with dimensions of", paste(dim(x[[e]]), collapse = " x "), "\n\n")
     } else if (names(x)[e] == "sd") {
       cat("Standard Deviation = ", x[[e]], "\n")
-    } else if (names(x)[e] == "zscore") {
+    } else if (names(x)[e] == "z_score") {
       cat("Z-Score            = ", x[[e]], "\n\n")
     } else {
       cat("Element", e, ":", names(x[e]), "\n")
