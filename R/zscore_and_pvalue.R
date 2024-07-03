@@ -13,13 +13,13 @@
 #' @param cpu Number of cores to use for parallel processing,
 #'  (default is one less than available cores, 4 works best).
 #'
-#' @return the zscore of the samples raw ppr score.
+#' @return the zscore_and_pvalue of the samples raw ppr score.
 #'
 #' @importFrom parallel clusterExport makeCluster parLapply stopCluster detectCores
 #' @export
 #'
 
-zscore <- function(sce, ppr, switching_genes, cpu = 1) {
+zscore_and_pvalue <- function(sce, ppr, switching_genes, cpu = 1) {
 
   ## checks
 

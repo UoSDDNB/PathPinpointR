@@ -260,11 +260,11 @@ for (sample_name in names(samples_reduced)){
   sample_reduced <- samples_reduced[[sample_name]]
   # predict the position of each gene in each cell of the sample
   sample_ppr <- predict_position(sample_reduced, switching_genes)
-  #calculate zscore
-  sample_ppr <- zscore(sce = samples_reduced[[sample_name]],
-                       ppr = sample_ppr,
-                       switching_genes,
-                       cpu = 4)
+  #calculate zscore_and_pvalue
+  sample_ppr <- zscore_and_pvalue(sce = samples_reduced[[sample_name]],
+                                  ppr = sample_ppr,
+                                  switching_genes,
+                                  cpu = 4)
   # Store the result in the new list
   samples_ppr[[sample_name]] <- sample_ppr
 }
