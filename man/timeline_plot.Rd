@@ -18,7 +18,7 @@ timeline_plot(
 Do you want lines which indicate the predicted position of the selected cell.}
 
 \item{reduced_sce}{a SingleCellExperiment object,
-that you have already run PathPinPointR::subset_switching_genes() on.}
+that you have already run PathPinpointR::subset_switching_genes() on.}
 
 \item{cell_id}{The index or name of the cell of interest}
 }
