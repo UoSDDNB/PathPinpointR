@@ -63,6 +63,8 @@ You can install the development version of PathPinpointR using:
 devtools::install_github("moi-taiga/PathPinpointR")
 ```
 
+
+
 ## Load the reference data
 The reference dataset is a Seurat object of a blastocyst dataset.
 ```{r}
@@ -205,9 +207,6 @@ switching_genes <- filter_switchgenes(sce, allgenes = TRUE, r2cutoff = 0.257)
 Note: The choice of r2cutoff significantly affects the accuracy of PPR. 
 The PathPinpointR package includes precision() to help you find an optimum.
 
-```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("./man/figures/README-precision_plot.png")
-```
 
 ## Visualise the switching genes
 ```{r}
@@ -348,3 +347,8 @@ precision(sce, r2_cutoff_range = seq(0.17, 0.34, 0.005))
 abline(v = 0.257, col = "blue")
 ```
 Do narrow down your search or you wont find the most opimum r2cutoff.
+
+
+```{r, eval = TRUE, echo = FALSE}
+knitr::include_graphics("./man/figures/README-precision_plot.png")
+```
