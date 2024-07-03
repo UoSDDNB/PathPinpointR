@@ -8,7 +8,7 @@ Description: This package identifies the progression of a sample on a trajectory
 License: GPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 URL: https://github.com/moi-taiga/PathPinpointR,
     https://moi-taiga.github.io/PathPinpointR/
 BugReports: https://github.com/moi-taiga/PathPinpointR/issues
