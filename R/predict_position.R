@@ -7,7 +7,7 @@
 #' @param sample_sce A Single Cell Experiment object,
 #' containing a matrix of your samples binary gene expression,
 #' which has been filtered to only include switching genes,
-#' using PathPinPointR::subset_switching_genes().
+#' using PathPinpointR::subset_switching_genes().
 #' @param switching_genes Genes which switch through the trajectory,
 #' as identified by GeneSwitches.
 #'

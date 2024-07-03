@@ -7,7 +7,7 @@
 #' @param genomic_expression_traces Logical,
 #' Do you want lines which indicate the predicted position of the selected cell.
 #' @param reduced_sce a SingleCellExperiment object,
-#' that you have already run PathPinPointR::subset_switching_genes() on.
+#' that you have already run PathPinpointR::subset_switching_genes() on.
 #' @param cell_id The index or name of the cell of interest
 #'
 #' @return Timeline plot of selected cell
