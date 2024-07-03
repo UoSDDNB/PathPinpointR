@@ -1,7 +1,7 @@
-#' @title zscore
+#' @title zscore_and_pvalue
 #'
 #' @description
-#' Calculate the zscore of the raw ppr score,
+#' Calculate the zscore and the p-value of the raw ppr score,
 #'  by comparing to 2000 random samples.
 #'
 #' @param sce A Single Cell Experiment object,
@@ -21,7 +21,7 @@
 
 zscore <- function(sce, ppr, switching_genes, cpu = 1) {
 
-  ## check
+  ## checks
 
   # check that sce is a SingleCellExperiment object
   if (!is(sce, "SingleCellExperiment")) {
@@ -116,6 +116,16 @@ zscore <- function(sce, ppr, switching_genes, cpu = 1) {
   # assign Z-score to the ppr object
   ppr$z_score <- z_score
   
+  # calculate how many values in random_max_raw_ppr_scores,
+  # are greater than max_raw_ppr_score
+  p_value <- sum(random_max_raw_ppr_scores > max_raw_ppr_score) / n_iterations
+  # if p_value is 0, set it to "<0.0005"
+  if (p_value == 0) {
+    p_value <- "<0.0005"
+  }
+  # assign p-value to the ppr object
+  ppr$p_value <- p_value
+
   #return the ppr object
   return(ppr)
 }
