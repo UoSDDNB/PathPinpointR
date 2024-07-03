@@ -33,7 +33,9 @@ print.PPR_OBJECT <- function(x) {
     } else if (names(x)[e] == "sd") {
       cat("Standard Deviation = ", x[[e]], "\n")
     } else if (names(x)[e] == "z_score") {
-      cat("Z-Score            = ", x[[e]], "\n\n")
+      cat("Z-Score            = ", x[[e]], "\n")
+    } else if (names(x)[e] == "p_value") {
+      cat("p-Value            = ", x[[e]], "\n\n")
     } else {
       cat("Element", e, ":", names(x[e]), "\n")
       cat("Type:", class(x[[e]]), "\n\n")
