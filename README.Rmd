@@ -190,8 +190,12 @@ Note: both binatize_exp() and find_switch_logistic_fastglm(),
 are time consuming processes and may take tens of minutes, or hours, to run.
 
 
-# **remove this chunk after testing (it is only here to save time)**
+# **remove this chunk after testing** 
+# *(it is only here to save time)*
+# Load binarized data
 ```{r, echo = TRUE}
+sample_names <- c("Petro16", "Tyser21")
+
 samples_binarized <- list()
 for (sample in sample_names){
   samples_binarized[[sample]] <- readRDS(paste0("./data/binarized_", sample, "_sce.rds"))
