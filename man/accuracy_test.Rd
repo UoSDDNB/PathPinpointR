@@ -4,17 +4,22 @@
 \alias{accuracy_test}
 \title{accuracy_test}
 \usage{
-accuracy_test(sample_ppr, reference_sce, plot = TRUE)
+accuracy_test(ppr, reference_sce, plot = TRUE, random = FALSE)
 }
 \arguments{
-\item{sample_ppr}{A "PPR_OBJECT" which originates from the reference,
+\item{ppr}{A "PPR_OBJECT" which originates from the reference,
 Or a subet of the reference.}
 
 \item{reference_sce}{A SingleCellExperiment object,
-containing Pseudotime, binarized and found switching genes.}
+containing Pseudotime, binarized and found switching genes,
+originating from the reference data.}
 
 \item{plot}{Logical value. Default is FALSE.
 If TRUE, a histogram of inaccuracy will be plotted.}
+
+\item{random}{Logical value. Default is TRUE.
+If TRUE, a histogram of random inaccuracy will be plotted.
+random_inncauracy is the difference of true_time_idx to a random prediction.}
 }
 \value{
 If plot = FALSE, returns a data frame containing accuracy results.
