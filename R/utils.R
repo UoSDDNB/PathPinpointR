@@ -75,7 +75,7 @@ print.PPR_OBJECT <- function(x) {
 setMethod("print", "PPR_OBJECT", print.PPR_OBJECT)
 
 
-#' Select the middle index among multiple occurrences of the maximum value
+#' @title Select the middle index among multiple occurrences of the maximum value
 #'
 #' @param n Numeric vector.
 #' @return The middle index among multiple occurrences of the maximum value.
@@ -84,4 +84,33 @@ which_mid_max <- function(n) {
   max_indices <- which(n == max(n))
   middle_index <- ceiling(length(max_indices) / 2)
   max_indices[middle_index]
+}
+
+
+#' @title get_example_data
+#'
+#' @description downloads example data from dropbox
+#'
+#' @return example data is saved to the current working directory
+#'
+#' @export
+#'
+get_example_data <- function() {
+  dest_file <- "./reference.rds"
+  if (!file.exists(dest_file)) {
+    dropbox_url <- "https://www.dropbox.com/scl/fi/t9gaxkxb97adoxgemou9o/binarized_Petro16_sce.rds?rlkey=f3rm20bk0s41138wq7422y55p&dl=1"
+    download_command <- paste("curl -L -o",
+                              shQuote(dest_file),
+                              shQuote(dropbox_url))
+
+    exit_status <- system(download_command)
+
+    if (exit_status == 0) {
+      print(paste("File successfully downloaded to", dest_file))
+    } else {
+      print("Error: Failed to download the file.")
+    }
+  } else {
+    print(paste("File already exists at", dest_file))
+  }
 }
