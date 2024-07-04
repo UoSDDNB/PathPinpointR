@@ -35,9 +35,9 @@ accuracy_test <- function(ppr, reference_sce, plot = TRUE, random = FALSE) {
     # Place holder for random prediction
     random_prediction = NA,
     # Placeholder for random inncauracy
-    random_inaccuracy = NA 
+    random_inaccuracy = NA
   )
-  
+
   # Get the pseudotime values from the reference
   ref_ptime <- reference_sce@colData$Pseudotime
 
@@ -57,7 +57,7 @@ accuracy_test <- function(ppr, reference_sce, plot = TRUE, random = FALSE) {
                                                which_mid_max)),
                                    accuracy$cell_names)] <- apply(ppr$cells_flat,
                                                                   1,
-                                                                  which_mid_max) 
+                                                                  which_mid_max)
   # Faster method which only works with reference being used as sample.
   #accuracy$predicted_timeIDX <- max.col(ppr$cells_flat, "first")
 
@@ -66,24 +66,24 @@ accuracy_test <- function(ppr, reference_sce, plot = TRUE, random = FALSE) {
   accuracy$inaccuracy <- abs(accuracy$true_timeIDX - accuracy$predicted_timeIDX)
 
   if (random) {
-  ### Calculate the accuracy of a random prediction
-  # produce random prediction values
-  accuracy$random_prediction <- c(sample(0:100,
+    ### Calculate the accuracy of a random prediction
+    # produce random prediction values
+    accuracy$random_prediction <- c(sample(0:100,
                                          nrow(ppr$cells_flat),
                                          replace = TRUE),
-                                  rep(NA, nrow(accuracy) - nrow(ppr$cells_flat))
-                                  )
+      rep(NA, nrow(accuracy) - nrow(ppr$cells_flat))
+    )
 
 
-  # calculate the inncauracy of the random prediction
-  accuracy$random_inaccuracy <- abs(accuracy$true_timeIDX - accuracy$random_prediction)
+    # calculate the inncauracy of the random prediction
+    accuracy$random_inaccuracy <- abs(accuracy$true_timeIDX - accuracy$random_prediction)
   }
 
   if (plot) {
     invisible({
       hist_plot <- hist(accuracy$inaccuracy,
                         breaks = seq(0, 100, by = 1),
-                        col = rgb(1,0,0,0.5),
+                        col = rgb(1, 0 ,0 , 0.5),
                         main = "Histogram of Accuracy",
                         xlab = "Distance from True Time Index",)
       mean_inaccuracy <- mean(accuracy$inaccuracy, na.rm = TRUE)
@@ -96,26 +96,25 @@ accuracy_test <- function(ppr, reference_sce, plot = TRUE, random = FALSE) {
            col = "black")
       if (random) {
         hist(accuracy$random_inaccuracy,
-             col = rgb(0,0,1,0.4),
+             col = rgb(0, 0, 1, 0.4),
              breaks = seq(0, 100, by = 1),
              add = TRUE)
-        legend_colors <- c(rgb(0,0,1,0.4))      
-        legend_labels <- c("Inncacuracy of Random predictions") 
+        legend_colors <- c(rgb(1, 0, 0, 1), rgb(0, 0, 1, 0.4))
+        legend_labels <- c("PathPinpointR predicitons", "Random predictions")
         mean_random_inaccuracy <- mean(accuracy$random_inaccuracy, na.rm = TRUE)
         abline(v = mean_random_inaccuracy,
-                        col = "black",
-                        lwd = 1)
+               col = "black",
+               lwd = 1)
         text(mean_random_inaccuracy,
-           max(hist_plot$counts) * 0.85,
-           labels = paste("Mean =",
-                          round(mean_random_inaccuracy, 2)),
-           adj = c(-0.1, 0),
-           col = "black")
+             max(hist_plot$counts) * 0.85,
+             labels = paste("Mean =",
+                            round(mean_random_inaccuracy, 2)),
+             adj = c(-0.1, 0),
+             col = "black")
         legend("topright", # Position of the legend
-             legend = legend_labels, # Labels
-             fill = legend_colors) # Colors
+               legend = legend_labels, # Labels
+               fill = legend_colors) # Colors
       }
-      
       hist_plot
     })
   } else {
