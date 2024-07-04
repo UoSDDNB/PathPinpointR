@@ -68,10 +68,9 @@ devtools::install_github("moi-taiga/PathPinpointR")
 ## Load the reference data
 The reference dataset is a Seurat object of a blastocyst dataset.
 ```{r}
-data_path <- paste0(.libPaths(),
-                    "/PathPinpointR/data/blastocyst_downsampled.rds")
+get_example_data()
 
-seu <- readRDS(data_path[1])
+seu <- readRDS("./reference.rds")
 ```
 
 #### View the reference UMAP plot
