@@ -63,7 +63,15 @@ You can install the development version of PathPinpointR using:
 devtools::install_github("moi-taiga/PathPinpointR")
 ```
 
-
+### Load the required packages
+```{r}
+library(PathPinpointR)
+library(Seurat)
+library(SingleCellExperiment)
+library(slingshot)
+library(RColorBrewer)
+library(GeneSwitches)
+```
 
 ## Load the reference data
 The reference dataset is a Seurat object of a blastocyst dataset.
@@ -197,15 +205,17 @@ sample_names <- c("Petro16", "Tyser21")
 
 samples_binarized <- list()
 for (sample in sample_names){
-  samples_binarized[[sample]] <- readRDS(paste0("./data/binarized_", sample, "_sce.rds"))
+  samples_binarized[[sample]] <- readRDS(paste0("../data/binarized_",
+                                                sample,
+                                                "_sce.rds"))
 }
-sce <- readRDS("./data/switches_gastglm_blastocyst_reference_sce.rds")
+sce <- readRDS("../data/switches_gastglm_blastocyst_reference_sce.rds")
 ```
 
 ## Produce a matrix of switching genes
 The switching genes change their expression pattern along the trajectory.
 ```{r}
-switching_genes <- filter_switchgenes(sce, allgenes = TRUE, r2cutoff = 0.257)
+switching_genes <- filter_switchgenes(sce, allgenes = TRUE, r2cutoff = 0.274)
 ```
 Note: The choice of r2cutoff significantly affects the accuracy of PPR. 
 The PathPinpointR package includes precision() to help you find an optimum.
@@ -217,6 +227,7 @@ The PathPinpointR package includes precision() to help you find an optimum.
 plot_timeline_ggplot(switching_genes,
                      timedata = colData(sce)$Pseudotime,
                      txtsize = 3)
+
 ```
 
 ```{r, eval = TRUE, echo = FALSE}
@@ -301,7 +312,7 @@ knitr::include_graphics("./man/figures/README-sample1.png")
 ```{r}
 plot_position(samples_ppr[[2]],
               col = "blue",
-              overlay = TRUE,
+              overlay = FALSE,
               label = names(samples_ppr)[2])
 ```
 
@@ -346,8 +357,8 @@ print(samples_ppr[[2]])
 
 this function runs PathPinpointR many times untill
 ```{r}
-precision(sce, r2_cutoff_range = seq(0.17, 0.34, 0.005))
-abline(v = 0.257, col = "blue")
+precision(sce, r2_cutoff_range = seq(0.271, 0.279, 0.0001))
+abline(v = 0.274, col = "blue")
 ```
 Do narrow down your search or you wont find the most opimum r2cutoff.
 
