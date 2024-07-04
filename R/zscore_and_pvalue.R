@@ -82,10 +82,10 @@ zscore_and_pvalue <- function(sce, ppr, switching_genes, cpu = 1) {
 
   # Cluster setup
   clusterExport(cl,
-                          c("predict_position",
-                            "switching_genes",
-                            "which_mid_max",
-                            "sce"))
+                c("predict_position",
+                  "switching_genes",
+                  "which_mid_max",
+                  "sce"))
 
   # Parallel loop using parLapply
   random_max_raw_ppr_scores <- parLapply(cl, 1:n_iterations, function(i) {
