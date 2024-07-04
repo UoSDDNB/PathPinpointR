@@ -98,7 +98,7 @@ which_mid_max <- function(n) {
 get_example_data <- function() {
   dest_file <- "./reference.rds"
   if (!file.exists(dest_file)) {
-    dropbox_url <- "https://www.dropbox.com/scl/fi/t9gaxkxb97adoxgemou9o/binarized_Petro16_sce.rds?rlkey=f3rm20bk0s41138wq7422y55p&dl=1"
+    dropbox_url <- "https://www.dropbox.com/scl/fi/bfklckyfsxv6tswejhk9u/blastocyst_downsampled.rds?rlkey=lwnccfuhf8beq3viupg1l41lv&st=w9ncvlt9&dl=1"
     download_command <- paste("curl -L -o",
                               shQuote(dest_file),
                               shQuote(dropbox_url))
