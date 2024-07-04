@@ -24,21 +24,49 @@ print.PPR_OBJECT <- function(x) {
 
   for (e in seq_along(x)) {
     if (is.list(x[[e]])) {
-      cat("Element",e, ":", names(x[e]), "\n")
-      cat(" A List of", length(x[[e]]),  "matrices\n")
-      cat(" Each of dimensions", paste(dim(x[[e]][[1]]), collapse = " x "), "\n\n")
+      cat("Element",
+          e,
+          ":",
+          names(x[e]),
+          "\n")
+      cat(" A List of",
+          length(x[[e]]),
+          "matrices\n")
+      cat(" Each of dimensions",
+          paste(dim(x[[e]][[1]]),
+          collapse = " x "),
+          "\n\n")
     } else if (is.matrix(x[[e]])) {
-      cat("Element", e, ":", names(x[e]), "\n")
-      cat(" A Matrix with dimensions of", paste(dim(x[[e]]), collapse = " x "), "\n\n")
+      cat("Element",
+          e,
+          ":",
+          names(x[e]),
+          "\n")
+      cat(" A Matrix with dimensions of",
+          paste(dim(x[[e]]),
+          collapse = " x "),
+          "\n\n")
     } else if (names(x)[e] == "sd") {
-      cat("Standard Deviation = ", x[[e]], "\n")
+      cat("Standard Deviation = ",
+          x[[e]],
+          "\n")
     } else if (names(x)[e] == "z_score") {
-      cat("Z-Score            = ", x[[e]], "\n")
+      cat("Z-Score            = ",
+          x[[e]],
+          "\n")
     } else if (names(x)[e] == "p_value") {
-      cat("p-Value            = ", x[[e]], "\n\n")
+      cat("p-Value            = ",
+          x[[e]],
+          "\n\n")
     } else {
-      cat("Element", e, ":", names(x[e]), "\n")
-      cat("Type:", class(x[[e]]), "\n\n")
+      cat("Element",
+          e,
+          ":",
+          names(x[e]),
+          "\n")
+      cat("Type:",
+          class(x[[e]]),
+          "\n\n")
     }
   }
 }
