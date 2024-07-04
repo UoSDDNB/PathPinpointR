@@ -17,6 +17,9 @@
 #' the rows represent genes,
 #' values indicate a likely position of the cell upon the trajectory,
 #' based that genes bianrized expression.
+#' 
+#' @importFrom stats sd
+#' 
 #' @export
 #'
 predict_position <- function(sample_sce, switching_genes) {

@@ -16,6 +16,8 @@
 #' @return the zscore_and_pvalue of the samples raw ppr score.
 #'
 #' @importFrom parallel clusterExport makeCluster parLapply stopCluster detectCores
+#' @importFrom stats sd
+#' @importFrom methods is
 #' @export
 #'
 

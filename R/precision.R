@@ -12,6 +12,8 @@
 #'
 #' @return a plot of the precision df.
 #' @importFrom GeneSwitches filter_switchgenes
+#' @importFrom graphics points grid legend
+#' @importFrom methods is
 #' 
 #'
 #' @export
@@ -58,8 +60,9 @@ precision <- function(sce,
     sample_ppr <- predict_position(sample_reduced, switching_genes)
 
     #
-    accuracy <- accuracy_test(sample_ppr = sample_ppr,
-                                  reference_sce = sce, plot = FALSE)
+    accuracy <- accuracy_test(ppr = sample_ppr,
+                              reference_sce = sce,
+                              plot = FALSE)
 
     #
     precision$n_sg[nrow_precision] <- dim(switching_genes)[1]

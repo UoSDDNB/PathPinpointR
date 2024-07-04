@@ -31,4 +31,5 @@ Imports:
     gridExtra,
     devtools,
     mixtools,
-    GeneSwitches
+    GeneSwitches,
+    methods
