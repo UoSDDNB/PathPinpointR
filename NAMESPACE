@@ -3,6 +3,7 @@
 export(accuracy_test)
 export(calculate_variance)
 export(cell_plot)
+export(get_example_data)
 export(plot_position)
 export(precision)
 export(predict_position)
