@@ -360,8 +360,11 @@ to the distribution of 2000 random samples.
 
 ```{r}
 samples_ppr[[1]]$sd
+# 5.813048
 samples_ppr[[1]]$z_score
+# 12.76796
 samples_ppr[[1]]$p_value
+# "<0.0005"
 ```
 
 
