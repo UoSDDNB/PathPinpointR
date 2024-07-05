@@ -311,7 +311,7 @@ plot_position(samples_ppr[[1]],
               label = names(samples_ppr)[1])
 ```
 
-```{r eval = TRUE}
+```{r eval = TRUE, echo = FALSE}
 knitr::include_graphics("./man/figures/README-sample1.png")
 ```
 
@@ -335,22 +335,9 @@ This is done through comparing the distribution of the predicted position,
 to the distribution of 2000 random samples.
 
 ```{r}
-print(samples_ppr[[2]])
-# This is an object of class 'PPR_OBJECT'
-# It contains 5 elements:
-
-# Element 1 : genomic_expression_traces 
-#  A List of 126 matrices
-#  Each of dimensions 109 x 100 
-
-# Element 2 : cells_flat 
-#  A Matrix with dimensions of 126 x 100 
-
-# Element 3 : sample_flat 
-#  A Matrix with dimensions of 1 x 100 
-
-# Standard Deviation =  2.877786 
-# Z-Score            =  12.85064 
+samples_ppr[[1]]$sd
+samples_ppr[[1]]$z_score
+samples_ppr[[1]]$p_value
 ```
 
 
@@ -363,7 +350,7 @@ print(samples_ppr[[2]])
 
 this function runs PathPinpointR many times untill
 ```{r}
-precision(sce, r2_cutoff_range = seq(0.271, 0.279, 0.0001))
+precision(sce, r2_cutoff_range = seq(0.271, 0.279, 0.001))
 abline(v = 0.274, col = "blue")
 ```
 Do narrow down your search or you wont find the most opimum r2cutoff.
