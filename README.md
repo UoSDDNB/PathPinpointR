@@ -205,9 +205,9 @@ consuming processes and may take tens of minutes, or hours, to run.
 
 # **remove this chunk after testing**
 
-# *(it is only here to save time)*
+### *(it is only here to save time)*
 
-# Load binarized data
+### Load binarized data
 
 ``` r
 sample_names <- c("Petro16", "Tyser21")
@@ -224,15 +224,17 @@ sce <- readRDS("../data/switches_gastglm_blastocyst_reference_sce.rds")
 ## Produce a matrix of switching genes
 
 The switching genes change their expression pattern along the
-trajectory.
+trajectory. use r2cutoff to select the number of switching genes.
 
 ``` r
 switching_genes <- filter_switchgenes(sce, allgenes = TRUE, r2cutoff = 0.274)
 ```
 
 Note: The choice of r2cutoff significantly affects the accuracy of PPR.
-The PathPinpointR package includes precision() to help you find an
-optimum.
+too many switching genes will reduce the accuracy of the prediction by
+including uninformative genes/noise. too few switching genes will reduce
+the accuracy of the prediction by excluding informative genes. The
+PathPinpointR package includes precision() to help you find an optimum.
 
 ## Visualise the switching genes
 
