@@ -217,6 +217,27 @@ sce <- readRDS("../data/switches_gastglm_blastocyst_reference_sce.rds")
 
 ## Produce a matrix of switching genes
 The switching genes change their expression pattern along the trajectory.
+
+First identify an optimum number of switching genes to include. 
+Using the PPR function precision():
+```{r}
+precision(sce)
+```
+
+```{r, eval = TRUE, echo = FALSE}
+knitr::include_graphics("./man/figures/README-precision1_plot.png")
+```
+
+Narrow down your search or you wont find the most opimum r2cutoff.
+```{r}
+precision(sce, n_sg_range = seq(125, 175, 1))
+```
+
+```{r, eval = TRUE, echo = FALSE}
+knitr::include_graphics("./man/figures/README-precision2_plot.png")
+```
+
+
 ```{r}
 switching_genes <- filter_switchgenes(sce,
                                       allgenes = TRUE,
@@ -227,6 +248,7 @@ Note: The number of switching genes significantly affects the accuracy of PPR.
   too many will reduce the accuracy by including uninformative genes/noise.
   too few will reduce the accuracy by excluding informative genes.
 The PathPinpointR package includes precision() to help you find an optimum.
+
 
 
 ## Visualise the switching genes
@@ -343,21 +365,5 @@ samples_ppr[[1]]$p_value
 ```
 
 
-# Further detail: to be included in another vignette?
-
-##### in order to find the optimum r2cutoff for the previosu command 
-##### use the precision function of PathPinpointR
-###### Start with a wide range and large steps,
-###### then narrow down the range and decrease the step size.
-
-this function runs PathPinpointR many times untill
-```{r}
-precision(sce, r2_cutoff_range = seq(0.271, 0.279, 0.001))
-abline(v = 0.274, col = "blue")
-```
-Do narrow down your search or you wont find the most opimum r2cutoff.
 
 
-```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("./man/figures/README-precision_plot.png")
-```
