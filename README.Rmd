@@ -201,8 +201,8 @@ are time consuming processes and may take tens of minutes, or hours, to run.
 
 
 # **remove this chunk after testing** 
-### *(it is only here to save time)*
-### Load binarized data
+#### *(it is only here to save time)*
+###### Load binarized data
 ```{r, echo = TRUE}
 sample_names <- c("Petro16", "Tyser21")
 
@@ -244,10 +244,10 @@ switching_genes <- filter_switchgenes(sce,
                                       r2cutoff = 0,
                                       topnum = 133)
 ```
-Note: The number of switching genes significantly affects the accuracy of PPR.
-  too many will reduce the accuracy by including uninformative genes/noise.
-  too few will reduce the accuracy by excluding informative genes.
-The PathPinpointR package includes precision() to help you find an optimum.
+Note: The number of switching genes significantly affects the accuracy of PPR.\
+  too many will reduce the accuracy by including uninformative genes/noise. \
+  too few will reduce the accuracy by excluding informative genes. \
+The using precision() we have found 133 to be the optimum, for this data. \
 
 
 
@@ -360,10 +360,11 @@ to the distribution of 2000 random samples.
 
 ```{r}
 samples_ppr[[1]]$sd
+# 5.813048
 samples_ppr[[1]]$z_score
+# 12.76796
 samples_ppr[[1]]$p_value
+# "<0.0005"
 ```
-
-
 
 
