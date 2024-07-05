@@ -59,6 +59,7 @@ devtools::install_github("moi-taiga/PathPinpointR")
 ``` r
 library(PathPinpointR)
 library(Seurat)
+library(ggplot2)
 library(SingleCellExperiment)
 library(slingshot)
 library(RColorBrewer)
@@ -70,8 +71,10 @@ library(GeneSwitches)
 The reference dataset is a Seurat object of a blastocyst dataset.
 
 ``` r
+# download the example data
 get_example_data()
 
+# Load the reference data to the environment
 seu <- readRDS("./reference.rds")
 ```
 
@@ -176,7 +179,7 @@ of 1.
 sce           <- binarize_exp(sce,
                               fix_cutoff = TRUE,
                               binarize_cutoff = 1,
-                              ncores = 8)
+                              ncores = 4)
 
 # Define a list to store the binarized samples
 samples_binarized <- list()
@@ -187,7 +190,7 @@ for (sample_name in names(samples_sce)){
   sample_binarized <- binarize_exp(sample_sce,
                                    fix_cutoff = TRUE,
                                    binarize_cutoff = 1,
-                                   ncores = 8)
+                                   ncores = 4)
   # Store the result in the new list
   samples_binarized[[sample_name]] <- sample_binarized
 }
