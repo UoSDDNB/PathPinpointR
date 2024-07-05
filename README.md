@@ -205,9 +205,9 @@ consuming processes and may take tens of minutes, or hours, to run.
 
 # **remove this chunk after testing**
 
-### *(it is only here to save time)*
+#### *(it is only here to save time)*
 
-### Load binarized data
+###### Load binarized data
 
 ``` r
 sample_names <- c("Petro16", "Tyser21")
@@ -224,17 +224,39 @@ sce <- readRDS("../data/switches_gastglm_blastocyst_reference_sce.rds")
 ## Produce a matrix of switching genes
 
 The switching genes change their expression pattern along the
-trajectory. use r2cutoff to select the number of switching genes.
+trajectory.
+
+First identify an optimum number of switching genes to include. Using
+the PPR function precision():
 
 ``` r
-switching_genes <- filter_switchgenes(sce, allgenes = TRUE, r2cutoff = 0.274)
+precision(sce)
 ```
 
-Note: The choice of r2cutoff significantly affects the accuracy of PPR.
-too many switching genes will reduce the accuracy of the prediction by
-including uninformative genes/noise. too few switching genes will reduce
-the accuracy of the prediction by excluding informative genes. The
-PathPinpointR package includes precision() to help you find an optimum.
+<img src="./man/figures/README-precision1_plot.png" width="100%" />
+
+Narrow down your search or you wont find the most opimum r2cutoff.
+
+``` r
+precision(sce, n_sg_range = seq(125, 175, 1))
+```
+
+<img src="./man/figures/README-precision2_plot.png" width="100%" />
+
+``` r
+switching_genes <- filter_switchgenes(sce,
+                                      allgenes = TRUE,
+                                      r2cutoff = 0,
+                                      topnum = 133)
+```
+
+Note: The number of switching genes significantly affects the accuracy
+of PPR.  
+too many will reduce the accuracy by including uninformative
+genes/noise.  
+too few will reduce the accuracy by excluding informative genes.  
+The using precision() we have found 133 to be the optimum, for this
+data.  
 
 ## Visualise the switching genes
 
@@ -319,10 +341,6 @@ plot_position(samples_ppr[[1]],
               label = names(samples_ppr)[1])
 ```
 
-``` r
-knitr::include_graphics("./man/figures/README-sample1.png")
-```
-
 <img src="./man/figures/README-sample1.png" width="100%" />
 
 ``` r
@@ -344,41 +362,10 @@ position. This is done through comparing the distribution of the
 predicted position, to the distribution of 2000 random samples.
 
 ``` r
-print(samples_ppr[[2]])
-# This is an object of class 'PPR_OBJECT'
-# It contains 5 elements:
-
-# Element 1 : genomic_expression_traces 
-#  A List of 126 matrices
-#  Each of dimensions 109 x 100 
-
-# Element 2 : cells_flat 
-#  A Matrix with dimensions of 126 x 100 
-
-# Element 3 : sample_flat 
-#  A Matrix with dimensions of 1 x 100 
-
-# Standard Deviation =  2.877786 
-# Z-Score            =  12.85064 
+samples_ppr[[1]]$sd
+# 5.813048
+samples_ppr[[1]]$z_score
+# 12.76796
+samples_ppr[[1]]$p_value
+# "<0.0005"
 ```
-
-# Further detail: to be included in another vignette?
-
-##### in order to find the optimum r2cutoff for the previosu command
-
-##### use the precision function of PathPinpointR
-
-###### Start with a wide range and large steps,
-
-###### then narrow down the range and decrease the step size.
-
-this function runs PathPinpointR many times untill
-
-``` r
-precision(sce, r2_cutoff_range = seq(0.271, 0.279, 0.0001))
-abline(v = 0.274, col = "blue")
-```
-
-Do narrow down your search or you wont find the most opimum r2cutoff.
-
-<img src="./man/figures/README-precision_plot.png" width="100%" />
