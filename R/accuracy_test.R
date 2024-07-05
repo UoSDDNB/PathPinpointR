@@ -20,6 +20,7 @@
 #' @importFrom graphics abline hist text
 #' @export
 accuracy_test <- function(ppr, reference_sce, plot = TRUE, random = FALSE) {
+
   # Create a data frame to store the accuracy results
   accuracy <- data.frame(
     # Cell names from reference_sce
@@ -94,11 +95,6 @@ accuracy_test <- function(ppr, reference_sce, plot = TRUE, random = FALSE) {
                           round(mean_inaccuracy, 2)),
            adj = c(-0.1, 0),
            col = "black")
-      text(x = mean_inaccuracy,
-           max(hist_plot$counts) * 0.92,
-           labels = paste("Sum =", sum(accuracy$inaccuracy)),
-           adj = c(-0.1, 0),
-           col = "black")
       if (random) {
         hist(accuracy$random_inaccuracy,
              col = rgb(0, 0, 1, 0.4),
@@ -118,12 +114,19 @@ accuracy_test <- function(ppr, reference_sce, plot = TRUE, random = FALSE) {
              col = "black")
         text(x = mean_random_inaccuracy,
              max(hist_plot$counts) * 0.87,
-             labels = paste("Sum =", sum(accuracy$random_inaccuracy)),
+             labels = paste("Sum =",
+                            sum(accuracy$random_inaccuracy, na.rm = TRUE)),
              adj = c(-0.1, 0),
              col = "black")
         legend("topright", # Position of the legend
                legend = legend_labels, # Labels
                fill = legend_colors) # Colors
+        text(x = mean_inaccuracy,
+             max(hist_plot$counts) * 0.92,
+             labels = paste("Sum =",
+                            sum(accuracy$inaccuracy, na.rm = TRUE)),
+             adj = c(-0.1, 0),
+             col = "black")
       }
       hist_plot
     })
