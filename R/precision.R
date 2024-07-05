@@ -14,12 +14,16 @@
 #' @importFrom GeneSwitches filter_switchgenes
 #' @importFrom graphics points grid legend
 #' @importFrom methods is
-#' 
 #'
 #' @export
 precision <- function(sce,
-                          r2_cutoff_range = seq(0.0, 0.5, 0.1),
-                          plot = TRUE) {
+                      r2_cutoff_range = seq(0.0, 0.5, 0.1),
+                      plot = "r2") {
+
+  # Check that a suitable plot has been selected
+  if (!plot %in% c("r2", "n_sg", FALSE)) {
+    stop("plot must be either 'r2' or 'n_sg'")
+  }
 
   # Check if sce is a SingleCellExperiment object
   if (!is(sce, "SingleCellExperiment")) {
@@ -41,7 +45,7 @@ precision <- function(sce,
   precision <- data.frame(
     r2cutoff = r2_cutoff_range,      # R2cutoff used.
     n_sg = NA,                   # Number of switching genes
-    inaccuracy_mean = NA
+    inaccuracy = NA
   )
 
   nrow_precision <- 1
@@ -66,7 +70,7 @@ precision <- function(sce,
 
     #
     precision$n_sg[nrow_precision] <- dim(switching_genes)[1]
-    precision$inaccuracy_mean[nrow_precision] <- summary(accuracy$inaccuracy)[4]
+    precision$inaccuracy[nrow_precision] <- summary(accuracy$inaccuracy)[4]
 
     #
     cat(nrow_precision, " ", i, " done \n")
@@ -77,24 +81,35 @@ precision <- function(sce,
 
 
 
-  if (plot) {
-    # Plotting inaccuracy_mean
-    plot(precision$r2cutoff, precision$inaccuracy_mean, type = "l",
-         xlab = "R-squared Cutoff", ylab = "Mean Inaccuracy",
-         main = "Mean Inaccuracy vs R-squared Cutoff")
+  if (plot == "r2" || plot == "n_sg") {
+    if (plot == "r2") {
+      # Plot r2 by inaccuracy
+      plot(precision$r2cutoff,
+           precision$inaccuracy,
+           type = "l",
+           xlab = "R-squared Cutoff",
+           ylab = "Mean Inaccuracy",
+           main = "Mean Inaccuracy vs R-squared Cutoff")
+      # Adding points
+      points(precision$r2cutoff, precision$inaccuracy, pch = 16)
+    } else if (plot == "n_sg") {
+      # Plot n_sg by inaccuracy
+      plot(precision$n_sg, precision$inaccuracy, type = "l",
+           xlab = "Number of Switching Genes", ylab = "Mean Inaccuracy",
+           main = "Mean Inaccuracy by Number of Switching Genes")
+      # Adding points
+      points(precision$n_sg, precision$inaccuracy, pch = 16)
 
-    # Adding points
-    points(precision$r2cutoff, precision$inaccuracy_mean, pch = 16)
+      # label the point at the lowest inaccuracy
+      text(x = precision$n_sg[which.min(precision$inaccuracy)],
+           y = precision$inaccuracy[which.min(precision$inaccuracy)],
+           labels = paste("R^2 =",
+                          precision$r2cutoff[which.min(precision$inaccuracy)]),
+           pos = 1)
+    }
 
     # Adding grid
     grid()
-
-    # Adding a legend
-    legend("topright",
-           legend = "Inaccuracy Mean",
-           pch = 16,
-           col = "black",
-           bty = "n")
 
     # Save the plot as an object
     myplot <- recordPlot()
