@@ -18,8 +18,7 @@ PathPinpointR identifies the position of a sample upon a trajectory.
 # Example Workflow
 
 This vignette will take you through the basics running PPR. The data
-used here is an integrated data-set of blastocyst data available
-[here](http://).
+used here is an integrated data-set of blastocyst data.
 
 ## Installation
 
@@ -55,15 +54,25 @@ You can install the development version of PathPinpointR using:
 devtools::install_github("moi-taiga/PathPinpointR")
 ```
 
+### Load the required packages
+
+``` r
+library(PathPinpointR)
+library(Seurat)
+library(SingleCellExperiment)
+library(slingshot)
+library(RColorBrewer)
+library(GeneSwitches)
+```
+
 ## Load the reference data
 
 The reference dataset is a Seurat object of a blastocyst dataset.
 
 ``` r
-data_path <- paste0(.libPaths(),
-                    "/PathPinpointR/data/blastocyst_downsampled.rds")
+get_example_data()
 
-seu <- readRDS(data_path[1])
+seu <- readRDS("./reference.rds")
 ```
 
 #### View the reference UMAP plot
@@ -191,14 +200,22 @@ sce <- find_switch_logistic_fastglm(sce,
 Note: both binatize_exp() and find_switch_logistic_fastglm(), are time
 consuming processes and may take tens of minutes, or hours, to run.
 
-# **remove this chunk after testing (it is only here to save time)**
+# **remove this chunk after testing**
+
+# *(it is only here to save time)*
+
+# Load binarized data
 
 ``` r
+sample_names <- c("Petro16", "Tyser21")
+
 samples_binarized <- list()
 for (sample in sample_names){
-  samples_binarized[[sample]] <- readRDS(paste0("./data/binarized_", sample, "_sce.rds"))
+  samples_binarized[[sample]] <- readRDS(paste0("../data/binarized_",
+                                                sample,
+                                                "_sce.rds"))
 }
-sce <- readRDS("./data/switches_gastglm_blastocyst_reference_sce.rds")
+sce <- readRDS("../data/switches_gastglm_blastocyst_reference_sce.rds")
 ```
 
 ## Produce a matrix of switching genes
@@ -207,7 +224,7 @@ The switching genes change their expression pattern along the
 trajectory.
 
 ``` r
-switching_genes <- filter_switchgenes(sce, allgenes = TRUE, r2cutoff = 0.257)
+switching_genes <- filter_switchgenes(sce, allgenes = TRUE, r2cutoff = 0.274)
 ```
 
 Note: The choice of r2cutoff significantly affects the accuracy of PPR.
@@ -263,11 +280,11 @@ for (sample_name in names(samples_reduced)){
   sample_reduced <- samples_reduced[[sample_name]]
   # predict the position of each gene in each cell of the sample
   sample_ppr <- predict_position(sample_reduced, switching_genes)
-  #calculate zscore
-  sample_ppr <- zscore(sce = samples_reduced[[sample_name]],
-                       ppr = sample_ppr,
-                       switching_genes,
-                       cpu = 4)
+  #calculate zscore_and_pvalue
+  sample_ppr <- zscore_and_pvalue(sce = samples_reduced[[sample_name]],
+                                  ppr = sample_ppr,
+                                  switching_genes,
+                                  cpu = 4)
   # Store the result in the new list
   samples_ppr[[sample_name]] <- sample_ppr
 }
@@ -306,7 +323,7 @@ knitr::include_graphics("./man/figures/README-sample1.png")
 ``` r
 plot_position(samples_ppr[[2]],
               col = "blue",
-              overlay = TRUE,
+              overlay = FALSE,
               label = names(samples_ppr)[2])
 ```
 
@@ -353,8 +370,8 @@ print(samples_ppr[[2]])
 this function runs PathPinpointR many times untill
 
 ``` r
-precision(sce, r2_cutoff_range = seq(0.17, 0.34, 0.005))
-abline(v = 0.257, col = "blue")
+precision(sce, r2_cutoff_range = seq(0.271, 0.279, 0.0001))
+abline(v = 0.274, col = "blue")
 ```
 
 Do narrow down your search or you wont find the most opimum r2cutoff.

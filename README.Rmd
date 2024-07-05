@@ -31,7 +31,7 @@ PathPinpointR identifies the position of a sample upon a trajectory.
 # Example Workflow
 
 This vignette will take you through the basics running PPR.
-The data used here is an integrated data-set of blastocyst data available [here](http://).
+The data used here is an integrated data-set of blastocyst data.
 
 ## Installation
 
