@@ -1,13 +1,13 @@
 #' precision
 #'
 #' @description
-#' Used to find the optimum r2cutoff to use,
+#' Used to find the optimum topnum value to use,
 #' #' based on using reference as your sample.
 #'
 #' @param sce SingleCellExperiement object,
 #'  that you have already run GeneSwitches::binarize_exp(),
 #'  and GeneSwitches::find_switch_logistic_fastglm() on.
-#' @param r2_cutoff_range range of r2cutoffs to use
+#' @param n_sg_range range of topnum values to use
 #' @param plot logical, do you want to plot the precision df.
 #'
 #' @return a plot of the precision df.
@@ -17,13 +17,8 @@
 #'
 #' @export
 precision <- function(sce,
-                      r2_cutoff_range = seq(0.0, 0.5, 0.1),
-                      plot = "r2") {
-
-  # Check that a suitable plot has been selected
-  if (!plot %in% c("r2", "n_sg", FALSE)) {
-    stop("plot must be either 'r2' or 'n_sg'")
-  }
+                      n_sg_range = seq(0, 500, 25),
+                      plot = TRUE) {
 
   # Check if sce is a SingleCellExperiment object
   if (!is(sce, "SingleCellExperiment")) {
@@ -43,18 +38,20 @@ precision <- function(sce,
 
   # Build a DF to store accuracy data.
   precision <- data.frame(
-    r2cutoff = r2_cutoff_range,      # R2cutoff used.
-    n_sg = NA,                   # Number of switching genes
+    n_sg = n_sg_range,   # number of switching genes
     inaccuracy = NA
   )
 
   nrow_precision <- 1
 
-  for (i in r2_cutoff_range){
+  for (i in n_sg_range){
     ##Follow the GS and PPR steps.
 
     # Filter the switching genes
-    switching_genes <- filter_switchgenes(sce, allgenes = TRUE, r2cutoff = i)
+    switching_genes <- filter_switchgenes(sce,
+                                          allgenes = TRUE,
+                                          r2cutoff = 0,
+                                          topnum = i)
 
     # Reduce the binary counts matricies of the query data,
     # to only include the selection of switching genes from the reference.
@@ -81,32 +78,19 @@ precision <- function(sce,
 
 
 
-  if (plot == "r2" || plot == "n_sg") {
-    if (plot == "r2") {
-      # Plot r2 by inaccuracy
-      plot(precision$r2cutoff,
-           precision$inaccuracy,
-           type = "l",
-           xlab = "R-squared Cutoff",
-           ylab = "Mean Inaccuracy",
-           main = "Mean Inaccuracy vs R-squared Cutoff")
-      # Adding points
-      points(precision$r2cutoff, precision$inaccuracy, pch = 16)
-    } else if (plot == "n_sg") {
-      # Plot n_sg by inaccuracy
-      plot(precision$n_sg, precision$inaccuracy, type = "l",
-           xlab = "Number of Switching Genes", ylab = "Mean Inaccuracy",
-           main = "Mean Inaccuracy by Number of Switching Genes")
-      # Adding points
-      points(precision$n_sg, precision$inaccuracy, pch = 16)
+  if (plot) {
+    # Plot n_sg by inaccuracy
+    plot(precision$n_sg, precision$inaccuracy, type = "l",
+         xlab = "Number of Switching Genes", ylab = "Mean Inaccuracy",
+         main = "Mean Inaccuracy by Number of Switching Genes")
+    # Adding points
+    points(precision$n_sg, precision$inaccuracy, pch = 16)
 
-      # label the point at the lowest inaccuracy
-      text(x = precision$n_sg[which.min(precision$inaccuracy)],
-           y = precision$inaccuracy[which.min(precision$inaccuracy)],
-           labels = paste("R^2 =",
-                          precision$r2cutoff[which.min(precision$inaccuracy)]),
-           pos = 1)
-    }
+    # label the point at the lowest inaccuracy
+    text(x = precision$n_sg[which.min(precision$inaccuracy)],
+         y = precision$inaccuracy[which.min(precision$inaccuracy)],
+         labels = precision$n_sg[which.min(precision$inaccuracy)],
+         pos = 1)
 
     # Adding grid
     grid()
