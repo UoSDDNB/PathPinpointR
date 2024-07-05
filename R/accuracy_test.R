@@ -55,11 +55,10 @@ accuracy_test <- function(ppr, reference_sce, plot = TRUE, random = FALSE) {
   accuracy$predicted_timeIDX[match(names(apply(ppr$cells_flat,
                                                1,
                                                which_mid_max)),
-                                   accuracy$cell_names)] <- apply(ppr$cells_flat,
-                                                                  1,
-                                                                  which_mid_max)
-  # Faster method which only works with reference being used as sample.
-  #accuracy$predicted_timeIDX <- max.col(ppr$cells_flat, "first")
+                                   accuracy$cell_names)] <-
+    apply(ppr$cells_flat,
+          1,
+          which_mid_max)
 
   # Calculate the accuracy
   # (the absolute difference between the true and predicted time indices)
@@ -69,14 +68,15 @@ accuracy_test <- function(ppr, reference_sce, plot = TRUE, random = FALSE) {
     ### Calculate the accuracy of a random prediction
     # produce random prediction values
     accuracy$random_prediction <- c(sample(0:100,
-                                         nrow(ppr$cells_flat),
-                                         replace = TRUE),
+                                           nrow(ppr$cells_flat),
+                                           replace = TRUE),
       rep(NA, nrow(accuracy) - nrow(ppr$cells_flat))
     )
 
 
     # calculate the inncauracy of the random prediction
-    accuracy$random_inaccuracy <- abs(accuracy$true_timeIDX - accuracy$random_prediction)
+    accuracy$random_inaccuracy <-
+      abs(accuracy$true_timeIDX - accuracy$random_prediction)
   }
 
   if (plot) {
@@ -85,13 +85,18 @@ accuracy_test <- function(ppr, reference_sce, plot = TRUE, random = FALSE) {
                         breaks = seq(0, 100, by = 1),
                         col = rgb(1, 0 ,0 , 0.5),
                         main = "Histogram of Accuracy",
-                        xlab = "Distance from True Time Index",)
+                        xlab = "Distance from True Time Index")
       mean_inaccuracy <- mean(accuracy$inaccuracy, na.rm = TRUE)
       abline(v = mean_inaccuracy, col = "black", lwd = 1)
-      text(mean_inaccuracy,
+      text(x = mean_inaccuracy,
            max(hist_plot$counts) * 0.9,
            labels = paste("Mean =",
                           round(mean_inaccuracy, 2)),
+           adj = c(-0.1, 0),
+           col = "black")
+      text(x = mean_inaccuracy,
+           max(hist_plot$counts) * 0.92,
+           labels = paste("Sum =", sum(accuracy$inaccuracy)),
            adj = c(-0.1, 0),
            col = "black")
       if (random) {
@@ -105,10 +110,15 @@ accuracy_test <- function(ppr, reference_sce, plot = TRUE, random = FALSE) {
         abline(v = mean_random_inaccuracy,
                col = "black",
                lwd = 1)
-        text(mean_random_inaccuracy,
+        text(x = mean_random_inaccuracy,
              max(hist_plot$counts) * 0.85,
              labels = paste("Mean =",
                             round(mean_random_inaccuracy, 2)),
+             adj = c(-0.1, 0),
+             col = "black")
+        text(x = mean_random_inaccuracy,
+             max(hist_plot$counts) * 0.87,
+             labels = paste("Sum =", sum(accuracy$random_inaccuracy)),
              adj = c(-0.1, 0),
              col = "black")
         legend("topright", # Position of the legend
