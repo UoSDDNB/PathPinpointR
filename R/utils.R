@@ -94,7 +94,6 @@ which_mid_max <- function(n) {
 #' @return example data is saved to the current working directory
 #'
 #' @export
-#'
 get_example_data <- function() {
   dest_file <- "./reference.rds"
   if (!file.exists(dest_file)) {
