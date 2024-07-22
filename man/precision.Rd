@@ -4,14 +4,14 @@
 \alias{precision}
 \title{precision}
 \usage{
-precision(sce, r2_cutoff_range = seq(0, 0.5, 0.1), plot = TRUE)
+precision(sce, n_sg_range = seq(0, 500, 25), plot = TRUE)
 }
 \arguments{
 \item{sce}{SingleCellExperiement object,
 that you have already run GeneSwitches::binarize_exp(),
 and GeneSwitches::find_switch_logistic_fastglm() on.}
 
-\item{r2_cutoff_range}{range of r2cutoffs to use}
+\item{n_sg_range}{range of topnum values to use}
 
 \item{plot}{logical, do you want to plot the precision df.}
 }
@@ -19,6 +19,6 @@ and GeneSwitches::find_switch_logistic_fastglm() on.}
 a plot of the precision df.
 }
 \description{
-Used to find the optimum r2cutoff to use,
+Used to find the optimum topnum value to use,
 #' based on using reference as your sample.
 }
