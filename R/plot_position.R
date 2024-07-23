@@ -66,7 +66,12 @@ plot_position <- function(sample_ppr,
     }
 
     if (!overlay) {
-      ylim <- if (raw_values) range(y_vals) else c(0, 110)
+      ylim <- if (raw_values) {
+        c(min(y_vals), (max(y_vals) + max(y_vals) * 0.05))
+      } else {
+        c(0, 110)
+      }
+
       plot(x = x_vals, y = y_vals, ylim = ylim, xlim = c(0, 100),
            pch = 20, cex = 0.8, col = col, type = "l",
            xlab = "Pseudo-Time Index",
@@ -102,19 +107,19 @@ plot_position <- function(sample_ppr,
       #add metrics to the plot
       mid_max_idx <- which_mid_max(colSums(sample_flat))
       text(x = mid_max_idx,
-           y = y_vals[mid_max_idx] + 6,
+           y = y_vals[mid_max_idx] + max(y_vals) * 0.06,
            labels = paste("SD = ", round(sample_ppr$sd, 2)),
            cex = 0.8,
            col = col,
            pos = 1)
       text(x = mid_max_idx,
-           y = y_vals[mid_max_idx] + 5,
+           y = y_vals[mid_max_idx] + max(y_vals) * 0.05,
            labels = paste("Z = ", round(sample_ppr$z_score, 2)),
            cex = 0.8,
            col = col,
            pos = 1)
       text(x = mid_max_idx,
-           y = y_vals[mid_max_idx] +4,
+           y = y_vals[mid_max_idx] + max(y_vals) * 0.04,
            labels = paste("p = ", sample_ppr$p_value),
            cex = 0.8,
            col = col,
