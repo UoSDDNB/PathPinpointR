@@ -7,6 +7,8 @@
 #' @param col The colour that you'd like
 #' @param overlay TRUE if you would like this plot to overlay a previous plot.
 #' @param label string that you would like to assign as the label to the line.
+#' @param metrics logical,
+#' TRUE to include zscore pvalue and SD in the plot.
 #' @param genes_of_interest character,
 #' The names of any genes that you'd like to include the switching point of.
 #' @param switching_genes a matrix containing the switching gene information,
@@ -18,14 +20,20 @@
 #' on your trajectory.
 #' @importFrom graphics segments text lines
 #' @export
-#'
+
 plot_position <- function(sample_ppr,
                           col = "red",
                           overlay = FALSE,
                           label = "sample name",
+                          metrics = FALSE,
                           genes_of_interest = NULL,
                           switching_genes,
                           raw_values = FALSE) {
+
+  # check that sample_ppr is a PPR_OBJECT
+  if (class(sample_ppr) != "PPR_OBJECT") {
+    stop("sample_ppr must be a PPR_OBJECT")
+  }
 
   sample_flat <- sample_ppr$sample_flat
 
@@ -52,7 +60,7 @@ plot_position <- function(sample_ppr,
   plot_sample <- function(sample_flat, col, label, overlay, raw_values) {
     x_vals <- 1:100
     y_vals <- if (raw_values) {
-      sample_flat 
+      sample_flat
     } else {
       (sample_flat / max(sample_flat) * 100)
     }
@@ -81,6 +89,37 @@ plot_position <- function(sample_ppr,
          labels = label,
          col = col,
          pos = 3)
+
+    # Add metrics if requested
+    if (metrics) {
+      # produce a warning if any metrics are not available
+      if (is.null(sample_ppr$sd) ||
+            is.null(sample_ppr$z_score) ||
+            is.null(sample_ppr$p_value)) {
+        warning("One or more metrics are not available for this sample,
+                please ensure you have run zscore_and_pvalue().")
+      }
+      #add metrics to the plot
+      mid_max_idx <- which_mid_max(colSums(sample_flat))
+      text(x = mid_max_idx,
+           y = y_vals[mid_max_idx] + 6,
+           labels = paste("SD = ", round(sample_ppr$sd, 2)),
+           cex = 0.8,
+           col = col,
+           pos = 1)
+      text(x = mid_max_idx,
+           y = y_vals[mid_max_idx] + 5,
+           labels = paste("Z = ", round(sample_ppr$z_score, 2)),
+           cex = 0.8,
+           col = col,
+           pos = 1)
+      text(x = mid_max_idx,
+           y = y_vals[mid_max_idx] +4,
+           labels = paste("p = ", sample_ppr$p_value),
+           cex = 0.8,
+           col = col,
+           pos = 1)
+    }
   }
 
   # Main plotting
@@ -90,4 +129,6 @@ plot_position <- function(sample_ppr,
   if (!is.null(genes_of_interest) && length(genes_of_interest) > 0) {
     add_gene_segments(genes_of_interest, switching_genes)
   }
+
+
 }
