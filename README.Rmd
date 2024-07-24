@@ -342,7 +342,7 @@ knitr::include_graphics("./man/figures/README-sample1.png")
 ```{r}
 plot_position(samples_ppr[[2]],
               col = "blue",
-              overlay = FALSE,
+              overlay = TRUE,
               label = names(samples_ppr)[2])
 ```
 
