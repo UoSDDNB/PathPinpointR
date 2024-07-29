@@ -113,3 +113,14 @@ get_example_data <- function() {
     print(paste("File already exists at", dest_file))
   }
 }
+
+#' @title welcome_to_PPR
+#'
+#' @description prints a welcome message when the package is loaded
+#'
+#' @return "Welcome to PathPinpointR!"
+#'
+#' @export
+.onAttach <- function(libname, pkgname) {
+  packageStartupMessage("Welcome to PathPinpointR!")
+}
