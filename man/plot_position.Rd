@@ -9,6 +9,7 @@ plot_position(
   col = "red",
   overlay = FALSE,
   label = "sample name",
+  metrics = FALSE,
   genes_of_interest = NULL,
   switching_genes,
   raw_values = FALSE
@@ -23,14 +24,21 @@ plot_position(
 
 \item{label}{string that you would like to assign as the label to the line.}
 
-\item{genes_of_interest}{The names of any genes that you'd like to include the switching point of.}
+\item{metrics}{logical,
+TRUE to include zscore pvalue and SD in the plot.}
 
-\item{switching_genes}{a matrix containing the switching gene information as produced by GeneSwitches.}
+\item{genes_of_interest}{character,
+The names of any genes that you'd like to include the switching point of.}
 
-\item{raw_values}{TRUE if you want to plot the raw values instead of percentages.}
+\item{switching_genes}{a matrix containing the switching gene information,
+as produced by GeneSwitches.}
+
+\item{raw_values}{logical,
+TRUE if you want to plot the raw values instead of percentages.}
 }
 \value{
-a plot which highlights the probable position of your sample on your trajectory.
+a plot which highlights the probable position of your sample,
+on your trajectory.
 }
 \description{
 Plots the predicted position of your sample.
