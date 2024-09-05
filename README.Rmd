@@ -192,7 +192,7 @@ for (sample_name in names(samples_sce)){
 }
 # Find the swithcing point of each gene in the reference data
 sce <- find_switch_logistic_fastglm(sce,
-                                    downsample = FALSE,
+                                    downsample = TRUE,
                                     show_warning = FALSE)
 
 ```
@@ -231,7 +231,7 @@ knitr::include_graphics("./man/figures/README-precision1_plot.png")
 
 Narrow down your search or you wont find the optimum number of switching genes.
 ```{r}
-precision(sce, n_sg_range = seq(125, 175, 1))
+precision(sce, n_sg_range = seq(75, 135, 1))
 ```
 
 ```{r, eval = TRUE, echo = FALSE}
