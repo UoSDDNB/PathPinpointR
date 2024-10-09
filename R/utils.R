@@ -95,22 +95,27 @@ which_mid_max <- function(n) {
 #'
 #' @export
 get_example_data <- function() {
-  dest_file <- "./reference.rds"
-  if (!file.exists(dest_file)) {
-    dropbox_url <- "https://www.dropbox.com/scl/fi/bfklckyfsxv6tswejhk9u/blastocyst_downsampled.rds?rlkey=lwnccfuhf8beq3viupg1l41lv&st=w9ncvlt9&dl=1"
-    download_command <- paste("curl -L -o",
-                              shQuote(dest_file),
-                              shQuote(dropbox_url))
+  dest_files <- c("./reference.rds", "./LW120.rds", "./LW122.rds")
+  dropbox_urls <- c("https://www.dropbox.com/scl/fi/bfklckyfsxv6tswejhk9u/blastocyst_downsampled.rds?rlkey=lwnccfuhf8beq3viupg1l41lv&st=w9ncvlt9&dl=1", # nolint: line_length_linter.
+                    "https://www.dropbox.com/scl/fi/eo397e2whn4gb6wasn66l/LW120_seu.rds?rlkey=hr2ihl8iul4tye1tccznb62yn&st=00jmtbzz&dl=1", # nolint: line_length_linter.
+                    "https://www.dropbox.com/scl/fi/088eocoyn5xrxc1ngvo4d/LW122_seu.rds?rlkey=cxfhlg835324gl00bh4yidl57&st=t5vdapbj&dl=1") # nolint: line_length_linter.
 
-    exit_status <- system(download_command)
+  for (i in seq_along(dest_files)) {
+    if (!file.exists(dest_files[i])) {
+      download_command <- paste("curl -L -o",
+                                shQuote(dest_files[i]),
+                                shQuote(dropbox_urls[i]))
 
-    if (exit_status == 0) {
-      print(paste("File successfully downloaded to", dest_file))
+      exit_status <- system(download_command)
+
+      if (exit_status == 0) {
+        print(paste("File successfully downloaded to", dest_files[i]))
+      } else {
+        print("Error: Failed to download the file.")
+      }
     } else {
-      print("Error: Failed to download the file.")
+      print(paste("File already exists at", dest_files[i]))
     }
-  } else {
-    print(paste("File already exists at", dest_file))
   }
 }
 
