@@ -9,4 +9,4 @@
 docs
 inst/doc
 scripts_iridis
-reference.rds
+*.rds
