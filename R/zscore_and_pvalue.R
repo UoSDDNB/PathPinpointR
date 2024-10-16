@@ -85,7 +85,8 @@ zscore_and_pvalue <- function(sce, ppr, switching_genes, cpu = 1) {
                 c("predict_position",
                   "switching_genes",
                   "which_mid_max",
-                  "sce"))
+                  "sce"),
+                  envir = environment())
 
   # Parallel loop using parLapply
   random_max_raw_ppr_scores <- parLapply(cl, 1:n_iterations, function(i) {
