@@ -216,7 +216,7 @@ the PPR function precision():
 Narrow down your search or you wont find the optimum number of switching
 genes.
 
-    precision(reference_sce, n_sg_range = seq(1, 250, 1))
+    precision(reference_sce, n_sg_range = seq(50, 150, 1))
 
 <img src="./man/figures/README-precision2_plot.png" width="100%" />
 

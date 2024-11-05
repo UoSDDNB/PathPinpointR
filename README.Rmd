@@ -234,7 +234,7 @@ knitr::include_graphics("./man/figures/README-precision1_plot.png")
 
 Narrow down your search or you wont find the optimum number of switching genes.
 ```{r}
-precision(reference_sce, n_sg_range = seq(1, 250, 1))
+precision(reference_sce, n_sg_range = seq(50, 150, 1))
 ```
 
 ```{r, eval = TRUE, echo = FALSE}
