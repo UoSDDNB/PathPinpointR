@@ -328,3 +328,4 @@ switching_times(c("TKTL1", "CYYR1", "KHDC1L"), switching_genes)
 knitr::include_graphics("./man/figures/README-sample1.png")
 ```
 
+# END

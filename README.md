@@ -291,3 +291,5 @@ the centre of the trajectory are more accurately predicted.
     switching_times(c("TKTL1", "CYYR1", "KHDC1L"), switching_genes)
 
 <img src="./man/figures/README-sample1.png" width="100%" />
+
+# END
