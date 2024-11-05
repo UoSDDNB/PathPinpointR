@@ -142,14 +142,14 @@ of 1.
     reference_sce <- binarize_exp(reference_sce,
                                   fix_cutoff = TRUE,
                                   binarize_cutoff = 1,
-                                  ncores = 8)
+                                  ncores = 1)
 
     # binarize the expression data of the samples
     samples_binarized <- lapply(samples_sce,
                                 binarize_exp,
                                 fix_cutoff = TRUE,
                                 binarize_cutoff = 1,
-                                ncores = 8)
+                                ncores = 1)
 
     # Find the switching point of each gene in the reference data
     reference_sce <- find_switch_logistic_fastglm(reference_sce,
