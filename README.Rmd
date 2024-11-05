@@ -98,8 +98,7 @@ DimPlot(object = reference_seu,
   ggtitle("Reference")
 ```
 ```{r, eval = TRUE, echo = FALSE}
-# Needs UPDATE
-#knitr::include_graphics("./man/figures/README-reference-dim-plot.png")
+knitr::include_graphics("./man/figures/README-reference-dim-plot.png")
 ```
 The plot shows the development of the epiblast cells.
 Some labels are a mix of samples from differnt days.
@@ -326,15 +325,6 @@ switching_times(c("TKTL1", "CYYR1", "KHDC1L"), switching_genes)
 ```
 
 ```{r eval = TRUE, echo = FALSE}
-######## UPDATE
-#knitr::include_graphics("./man/figures/README-sample1.png")
+knitr::include_graphics("./man/figures/README-sample1.png")
 ```
-
-```{r, eval = TRUE, echo = FALSE}
-
-## UPDATE
-#knitr::include_graphics("./man/figures/README-sample2.png")
-```
-
-
 
