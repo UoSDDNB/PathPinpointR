@@ -51,7 +51,7 @@ You can install the development version of PathPinpointR using:
 
 ### Load the required packages
 
-    #library(PathPinpointR)
+    library(PathPinpointR)
     library(Seurat)
     library(ggplot2)
     library(SingleCellExperiment)
@@ -85,7 +85,7 @@ Plot the reference data, colored by the day of development.
 
 <img src="./man/figures/README-reference-dim-plot.png" width="100%" />
 The plot shows the development of the epiblast cells. Some labels are a
-mix of samples from differnt days.
+mix of samples from different days.
 
 ## Convert to SingleCellExperiment objects.
 
@@ -106,8 +106,7 @@ Seurat objects to SingleCellExperiment objects.
 
 ## Run slingshot
 
-Run slingshot on the reference data to produce pseudotime for each cell,
-within the trajectory of blastocyst development.
+Run slingshot on the reference data to produce pseudotime for each cell.
 
     reference_sce  <- slingshot(reference_sce,
                                 clusterLabels = "seurat_clusters",
@@ -139,9 +138,6 @@ Using the package
 gene expression data of the reference and query data-sets, with a cutoff
 of 1.
 
-    # #start timer 
-    # start_time <- Sys.time()
-
     # binarize the expression data of the reference
     reference_sce <- binarize_exp(reference_sce,
                                   fix_cutoff = TRUE,
@@ -160,65 +156,27 @@ of 1.
                                                   downsample = TRUE,
                                                   show_warning = FALSE)
 
-    # # end timer
-    # end_time <- Sys.time()
-    # end_time - start_time
-
 Note: both binatize\_exp() and find\_switch\_logistic\_fastglm(), are
-time consuming processes and may take tens of minutes, or hours, to run.
+time consuming processes and may take tens of minutes to run.
 
-# **remove this chunk after testing**
+## Select a number of switching genes
 
-#### *(it is only here to save time)*
-
-###### Load binarized data
-
-    # sample_names <- c("Petro16", "Tyser21")
-    # #,"Mole21a","Mole21b","Sozen21","Xiang20", "Yanag21", "Zhou19")
-
-    # samples_binarized <- list()
-    # for (sample in sample_names){
-    #   samples_binarized[[sample]] <- readRDS(paste0("../data/binarized_",
-    #                                                 sample,
-    #                                                 "_sce.rds"))
-    # }
-
-    library(Seurat)
-    library(ggplot2)
-    library(SingleCellExperiment)
-    library(slingshot)
-    library(RColorBrewer)
-    library(GeneSwitches)
-    library(devtools)
-    load_all()
-
-    reference_sce <- readRDS("../data/README_sce_log_bin.rds")
-
-    ###
-    sample_names <- c("LW120", "LW122")
-    samples_binarized <- list()
-    for (sample_name in sample_names){
-      samples_binarized[[sample_name]] <- readRDS(paste0("/mainfs/ddnb/PathPinpointR/package/data/additional_blastocyst/binarized_", sample_name, "_sce.rds"))
-    }
-
-## Produce a matrix of switching genes
-
-The switching genes change their expression pattern along the
-trajectory.
-
-First identify an optimum number of switching genes to include. Using
-the PPR function precision():
+Using the PPR function precision():
 
     precision(reference_sce)
 
 <img src="./man/figures/README-precision1_plot.png" width="100%" />
 
-Narrow down your search or you wont find the optimum number of switching
-genes.
+Narrow down the search to find the optimum number of switching genes.
 
     precision(reference_sce, n_sg_range = seq(50, 150, 1))
 
 <img src="./man/figures/README-precision2_plot.png" width="100%" />
+
+## Produce a matrix of switching genes
+
+The switching genes change their expression pattern along the
+trajectory.
 
     switching_genes <- filter_switchgenes(reference_sce,
                                           allgenes = TRUE,
@@ -230,8 +188,7 @@ of PPR.
 too many will reduce the accuracy by including uninformative
 genes/noise.  
 too few will reduce the accuracy by excluding informative genes.  
-The using precision() we have found 114 to be the optimum, for this
-data.  
+The using precision(), 114 is found to be the optimum for this data.  
 
 ## Visualise the switching genes
 
@@ -268,12 +225,9 @@ prediction is stored as a PPR\_OBJECT.
 
 ## Measure accuracy
 
-As our samples are subsets of the reference data-set, we can calculate
-the accuracy of the prediction by, comparing each predicted position to
-their pseudotimes, as defined by slingshot.
-
-The accuracy varies across the range of pseudotimes, generally cells at
-the centre of the trajectory are more accurately predicted.
+We can calculate the accuracy of PPR in the given trajectory by
+comparing the predicted position of the reference cells to their
+pseudotimes defined by slingshot.
 
     accuracy_test(reference_ppr, reference_sce, plot = TRUE)
 
@@ -281,7 +235,8 @@ the centre of the trajectory are more accurately predicted.
 
 ## Plotting the predicted position of each sample:
 
-    # Run the code
+plot the predicted position of each sample on the reference trajectory.
+
     ppr_plot() +
       reference_idents(reference_sce, "time") +
       sample_prediction(samples_ppr[[1]], label = "red", col = "red")
