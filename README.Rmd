@@ -266,9 +266,9 @@ plot the predicted position of each sample on the reference trajectory.
 ```{r}
 ppr_plot() +
   reference_idents(reference_sce, "time") +
-  sample_prediction(samples_ppr[[1]], label = "red", col = "red")
+  sample_prediction(samples_ppr[[1]], label = "Sample 1", col = "red")
 
-sample_prediction(samples_ppr[[2]], label = "blue", col = "blue")
+sample_prediction(samples_ppr[[2]], label = "Sample 2", col = "blue")
 
 switching_times(c("TKTL1", "CYYR1", "KHDC1L"), switching_genes)
 
