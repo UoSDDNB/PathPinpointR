@@ -222,30 +222,15 @@ plot_timeline_ggplot(switching_genes,
 knitr::include_graphics("./man/figures/README-switching-genes.png")
 ```
 
-
-## Reduce the binarized counts matrices 
-As the first step of running PathPinpointR reduce the binarized counts matrices,
-to only include the selection of switching genes.
-```{r}
-# filter the binary counts matricies to only include the switching genes
-reference_reduced <- subset_switching_genes(reference_sce, switching_genes)
-
-# Susbet each sample to only include the switching genes
-samples_reduced <- lapply(samples_binarized,
-                          subset_switching_genes,
-                          switching_genes)
-
-```
-
 ## Predict Position
 Produce an estimate for the position of each cell in each sample.
 The prediction is stored as a PPR_OBJECT.
 ```{r}
-reference_ppr <- predict_position(reference_reduced, switching_genes)
+reference_ppr <- predict_position(reference_sce, switching_genes)
 
 # Iterate through each Seurat object in the predicting their positons,
 # on the reference trajectory, using PathPinpointR.
-samples_ppr <- lapply(samples_reduced, predict_position, switching_genes)
+samples_ppr <- lapply(samples_binarized, predict_position, switching_genes)
 ```
 
 ## Measure accuracy

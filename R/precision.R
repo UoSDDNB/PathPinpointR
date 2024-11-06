@@ -53,12 +53,8 @@ precision <- function(sce,
                                           r2cutoff = 0,
                                           topnum = i)
 
-    # Reduce the binary counts matricies of the query data,
-    # to only include the selection of switching genes from the reference.
-    sample_reduced <- subset_switching_genes(sce, switching_genes)
-
     #
-    sample_ppr <- predict_position(sample_reduced, switching_genes)
+    sample_ppr <- predict_position(sce, switching_genes)
 
     #
     accuracy <- accuracy_test(ppr = sample_ppr,
