@@ -8,9 +8,7 @@ predict_position(sample_sce, switching_genes)
 }
 \arguments{
 \item{sample_sce}{A Single Cell Experiment object,
-containing a matrix of your samples binary gene expression,
-which has been filtered to only include switching genes,
-using PathPinpointR::subset_switching_genes().}
+containing a matrix of your samples binary gene expression.}
 
 \item{switching_genes}{Genes which switch through the trajectory,
 as identified by GeneSwitches.}
