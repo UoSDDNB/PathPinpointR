@@ -69,17 +69,24 @@ predict_position <- function(sample_sce, switching_genes) {
   all_patients_cells_scored <- vector("list", number_of_cells)
   names(all_patients_cells_scored) <- colnames(reduced_binary_counts_matrix)
 
+  # build genomic_expression_traces outside of loop for speed.
+  # Build the matrix of 0's
+  # which has genes as rows and pseudotime indecies as columns.
+  empty_genomic_expression_mat <- matrix(0,
+                                         nrow = number_of_switching_genes, 
+                                         ncol = 100)
+  # Set the rownames of the matrix to the gene names.
+  rownames(empty_genomic_expression_mat) <- rownames(reduced_binary_counts_matrix)
+
+
   # Loop through all cells,
   # making matrices for each, which represent likely position of a cell (c),
   # on a trajectory based on the expression of each gene.
   for (c in 1:number_of_cells) {
-    # Build the matrix of 0's
-    # which has genes as rows and pseudotime indecies as columns.
-    genomic_expression_mat <- matrix(0,
-                                     nrow = number_of_switching_genes, 
-                                     ncol = 100)
+    # no need to rest the matrix to 0's, as it is done outside the loop.
+    genomic_expression_mat <- empty_genomic_expression_mat
 
-    rownames(genomic_expression_mat) <- rownames(reduced_binary_counts_matrix)
+    
     bin_exp_c <- reduced_binary_counts_matrix[, c]
 
     up_indices <- which(bin_exp_c == 1 & switching_direction == "up")
