@@ -37,11 +37,11 @@ predict_position <- function(sample_sce, switching_genes) {
 
   ## The final output will be a ppr_obj (list) comprised of 3 objects.
   # Make the list of length 3, and name the objects
-  ppr_obj <- vector("list", 4)
+  ppr_obj <- vector("list", 3)
   names(ppr_obj) <- c("genomic_expression_traces",
                       "cells_flat",
                       "sample_flat")
-                      
+
   # Assign the ppr_obj class attribute to the list
   class(ppr_obj) <- "PPR_OBJECT"
 
