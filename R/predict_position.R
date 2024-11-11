@@ -64,9 +64,12 @@ predict_position <- function(sample_sce, switching_genes) {
   switching_time <- as.numeric(switching_genes$switch_at_timeidx)
   switching_direction <- switching_genes$direction
 
-  # Building an empty genomic_expression_traces list.
-  # (faster than building it dynamically.)
-  all_patients_cells_scored <- vector("list", number_of_cells)
+  # Building an empty genomic_expression_traces list of empty matrices.
+  # Pre-allocate a list of matrices, each of size 9000 x 100
+  all_patients_cells_scored <- lapply(1:number_of_cells, function(x) matrix(0,
+                                                                            nrow = number_of_switching_genes,
+                                                                            ncol = 100))
+  # set the names of the list to the cell names.
   names(all_patients_cells_scored) <- colnames(reduced_binary_counts_matrix)
 
   # build genomic_expression_traces outside of loop for speed.
