@@ -40,8 +40,8 @@ predict_position <- function(sample_sce, switching_genes) {
   ppr_obj <- vector("list", 4)
   names(ppr_obj) <- c("genomic_expression_traces",
                       "cells_flat",
-                      "sample_flat",
-                      "sd")
+                      "sample_flat")
+                      
   # Assign the ppr_obj class attribute to the list
   class(ppr_obj) <- "PPR_OBJECT"
 
@@ -65,7 +65,7 @@ predict_position <- function(sample_sce, switching_genes) {
   switching_direction <- switching_genes$direction
 
   # Building an empty genomic_expression_traces list of empty matrices.
-  # Pre-allocate a list of matrices, each of size 9000 x 100
+  # Pre-allocate a list of matrices.
   all_patients_cells_scored <- lapply(1:number_of_cells, function(x) matrix(0,
                                                                             nrow = number_of_switching_genes,
                                                                             ncol = 100))
@@ -81,10 +81,10 @@ predict_position <- function(sample_sce, switching_genes) {
   # Set the rownames of the matrix to the gene names.
   rownames(empty_genomic_expression_mat) <- rownames(reduced_binary_counts_matrix)
 
-
   # Loop through all cells,
   # making matrices for each, which represent likely position of a cell (c),
   # on a trajectory based on the expression of each gene.
+  # Loop through all cells, reusing the empty matrix for each cell
   for (c in 1:number_of_cells) {
     # no need to rest the matrix to 0's, as it is done outside the loop.
     genomic_expression_mat <- empty_genomic_expression_mat
@@ -133,7 +133,8 @@ predict_position <- function(sample_sce, switching_genes) {
   ppr_obj$sample_flat <- matrix(colSums(ppr_obj$cells_flat), nrow = 1)
 
   ## Calculate the standard deviation of the predicted position of cells.
-  ppr_obj$sd <- sd(apply(ppr_obj$cells_flat, 1, which_mid_max))
+  #ppr_obj$sd <- sd(apply(ppr_obj$cells_flat, 1, which_mid_max))
+  # commented for computational efficiency
 
   return(ppr_obj)
 }
