@@ -10,4 +10,5 @@ docs
 inst/doc
 scripts_iridis
 *.rds
-*.pdf
+Rplots.pdf
+TMP*.png
