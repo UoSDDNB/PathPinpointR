@@ -32,9 +32,6 @@ predict_position <- function(sample_sce, switching_genes) {
     reduced_binary_counts_matrix <- sample_sce@assays@data@listData$binary
   }
 
-  switching_genes_idx <- which(rownames(sample_sce) %in% switching_genes[, 1])
-  sample_sce <- sample_sce[switching_genes_idx, , drop = FALSE]
-
   ## The final output will be a ppr_obj (list) comprised of 3 objects.
   # Make the list of length 3, and name the objects
   ppr_obj <- vector("list", 3)

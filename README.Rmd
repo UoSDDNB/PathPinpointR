@@ -161,13 +161,6 @@ reference_sce <- binarize_exp(reference_sce,
                               binarize_cutoff = 1,
                               ncores = 1)
 
-# binarize the expression data of the samples
-samples_binarized <- lapply(samples_sce,
-                            binarize_exp,
-                            fix_cutoff = TRUE,
-                            binarize_cutoff = 1,
-                            ncores = 1)
-
 # Find the switching point of each gene in the reference data
 reference_sce <- find_switch_logistic_fastglm(reference_sce,
                                               downsample = TRUE,
@@ -220,6 +213,20 @@ plot_timeline_ggplot(switching_genes,
 
 ```{r, eval = TRUE, echo = FALSE}
 knitr::include_graphics("./man/figures/README-switching-genes.png")
+```
+
+## Binarize the sample data
+Binarize the gene expression data of the samples.
+```{r}
+# First reduce the sample data to only include the switching genes.
+samples_sce <- lapply(samples_sce, reduce_counts_matrix, switching_genes)
+
+# binarize the expression data of the samples
+samples_binarized <- lapply(samples_sce,
+                            binarize_exp,
+                            fix_cutoff = TRUE,
+                            binarize_cutoff = 1,
+                            ncores = 1)
 ```
 
 ## Predict Position
