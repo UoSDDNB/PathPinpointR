@@ -174,9 +174,7 @@ Note: The number of switching genes significantly affects the accuracy of PPR.\
 ## Select a number of switching genes
 Using the PPR function precision() an optimum number of switching genes can be found. 
 ```{r}
-png("./man/figures/SLING-precision1_plot.png")
 precision(reference_sce, n_sg_range = seq(0, 800, 100))
-dev.off()
 ```
 
 ```{r, eval = TRUE, echo = FALSE}
@@ -185,9 +183,7 @@ knitr::include_graphics("./man/figures/SLING-precision1_plot.png")
 
 Narrow down the search to find the optimum number of switching genes.
 ```{r}
-png("./man/figures/SLING-precision2_plot.png")
 precision(reference_sce, n_sg_range = seq(700, 822, 2))
-dev.off()
 ```
 
 ```{r, eval = TRUE, echo = FALSE}
@@ -207,13 +203,10 @@ switching_genes <- filter_switchgenes(reference_sce,
 
 ## Visualise the filtered switching genes
 ```{r}
-png("./man/figures/SLING-timeline-plot2.png")
 # Plot the timeline using plot_timeline_ggplot
 plot_timeline_ggplot(switching_genes,
                      timedata = colData(reference_sce)$Pseudotime,
                      txtsize = 3)
-dev.off()
-
 ```
 
 ```{r, eval = TRUE, echo = FALSE}
@@ -250,9 +243,7 @@ We can calculate the accuracy of PPR in the given trajectory by comparing the
 predicted position of the reference cells to their pseudotimes defined by slingshot.
 
 ```{r}
-png("./man/figures/SLING-accuracy_plot.png")
 accuracy_test(reference_ppr, reference_sce, plot = TRUE)
-dev.off()
 ```
 
 ```{r, eval = TRUE, echo = FALSE}
@@ -263,7 +254,6 @@ knitr::include_graphics("./man/figures/SLING-accuracy_plot.png")
 ## Plotting the predicted position of each sample:
 plot the predicted position of each sample on the reference trajectory.
 ```{r}
-png("./man/figures/Sling-PPR.png")
 # show the predicted position of the first sample
 # include the position of cells in the reference data, by a given label.
 ppr_plot() +
@@ -275,7 +265,6 @@ sample_prediction(samples_ppr[[2]], label = "Sample 2", col = "blue")
 
 # show the points at which selected genes switch.
 switching_times(c("G1172", "G1346", "G901"), switching_genes)
-dev.off()
 ```
 
 ```{r eval = TRUE, echo = FALSE}
