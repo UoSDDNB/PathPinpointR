@@ -1,19 +1,5 @@
----
-output: github_document
----
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%",
-  echo = TRUE,
-  eval = FALSE
-)
-```
 
 # PathPinpointR
 
@@ -24,20 +10,26 @@ knitr::opts_chunk$set(
 PathPinpointR identifies the position of a sample upon a trajectory.
 
 ##### *Assumptions:*
--   Sample is found upon the chosen trajectory.
--   Sample is from a distinct part of the trajectory. A sample with cells that are evenly distributed across the trajectory will have a predicted location of the centre of the trajectory.
 
+- Sample is found upon the chosen trajectory.
+- Sample is from a distinct part of the trajectory. A sample with cells
+  that are evenly distributed across the trajectory will have a
+  predicted location of the centre of the trajectory.
 
 # Example Workflow
 
-This vignette will take you through the basics running PPR.
-The data used here is generated in a similar fasion to the [Slingshot vignette](https://bioconductor.org/packages/devel/bioc/vignettes/slingshot/inst/doc/vignette.html).
+This vignette will take you through the basics running PPR. The data
+used here is generated in a similar fasion to the [Slingshot
+vignette](https://bioconductor.org/packages/devel/bioc/vignettes/slingshot/inst/doc/vignette.html).
 
 ## Installation
 
 #### Check and install required packages
-Run the following code to load all packages neccecary for PPR & this vignette.
-```{r}
+
+Run the following code to load all packages neccecary for PPR & this
+vignette.
+
+``` r
 required_packages <- c("SingleCellExperiment", "Biobase", "fastglm", "ggplot2",
                        "monocle", "plyr", "RColorBrewer", "ggrepel", "ggridges",
                        "gridExtra", "devtools", "mixtools", "Seurat",
@@ -56,15 +48,17 @@ if(length(new_packages)) BiocManager::install(new_packages)
 devtools::install_github("SGDDNB/GeneSwitches")
 ```
 
-
 #### install PathPinpointR
+
 You can install the development version of PathPinpointR using:
-```{r}
+
+``` r
 devtools::install_github("moi-taiga/PathPinpointR")
 ```
 
 ### Load the required packages
-```{r}
+
+``` r
 library(PathPinpointR)
 library(Seurat)
 library(ggplot2)
@@ -76,9 +70,12 @@ library(mclust)
 ```
 
 ## Generate the data
-The data is generated in a similar fasion to the [Slingshot vignette](https://bioconductor.org/packages/devel/bioc/vignettes/slingshot/inst/doc/vignette.html).
+
+The data is generated in a similar fasion to the [Slingshot
+vignette](https://bioconductor.org/packages/devel/bioc/vignettes/slingshot/inst/doc/vignette.html).
 A subset of the reference data is used as a proxy for the sample data.
-```{r}
+
+``` r
 load_all()
 ### Genertate the reference data
 reference_sce <- get_synthetic_data()
@@ -88,8 +85,10 @@ samples_sce <- list(reference_sce[,c(20:45)], reference_sce[,c(90:128)])
 ```
 
 #### View the PCA plot from the reference data
+
 Plot the reference data, colored by cluster.
-```{r}
+
+``` r
 plot(reducedDims(reference_sce)$PCA,
                  col = brewer.pal(9,"Set1")[colData(reference_sce)$GMM],
                  pch=16, asp = 1)
@@ -98,14 +97,15 @@ legend("topright",
        legend = levels(colData(reference_sce)$clust_names),
        fill = brewer.pal(9,"Set1"))
 ```
-```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("./man/figures/SLING-reference-PCA-plot.png")
-```
+
+<img src="./man/figures/SLING-reference-PCA-plot.png" width="100%" />
 The plot shows the development of the cells.
 
-## Run slingshot 
+## Run slingshot
+
 Run slingshot on the reference data to produce pseudotime for each cell.
-```{r}
+
+``` r
 # Slingshot
 reference_sce <- slingshot(reference_sce,
                  clusterLabels = 'GMM',
@@ -116,7 +116,8 @@ colData(reference_sce)$Pseudotime <- reference_sce$slingPseudotime_1
 ```
 
 #### Plot the slingshot trajectory.
-```{r}
+
+``` r
 # Generate colors
 colors <- colorRampPalette(brewer.pal(11, "Spectral")[-6])(100)
 plotcol <- colors[cut(reference_sce$slingPseudotime_1, breaks = 100)]
@@ -125,16 +126,17 @@ plot(reducedDims(reference_sce)$PCA, col = plotcol, pch=16, asp = 1)
 lines(SlingshotDataSet(reference_sce), lwd = 2, col = "black")
 ```
 
-```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("./man/figures/SLING-slingshot.png")
-```
-The plot shows the trajectory of the reference data,
-with cells colored by pseudotime.
+<img src="./man/figures/SLING-slingshot.png" width="100%" /> The plot
+shows the trajectory of the reference data, with cells colored by
+pseudotime.
 
 ## Binarize the reference Expression Data
-Using the package [GeneSwitches](https://github.com/SGDDNB/GeneSwitches),
-binarize the gene expression data of the reference data.
-```{r, eval=FALSE}
+
+Using the package
+[GeneSwitches](https://github.com/SGDDNB/GeneSwitches), binarize the
+gene expression data of the reference data.
+
+``` r
 # binarize the expression data of the reference
 reference_sce <- binarize_exp(reference_sce,
                               fix_cutoff = TRUE,
@@ -146,12 +148,16 @@ reference_sce <- find_switch_logistic_fastglm(reference_sce,
                                               downsample = TRUE,
                                               show_warning = FALSE)
 ```
-Note: both binatize_exp() and find_switch_logistic_fastglm()
-are time consuming processes and may take tens of minutes to run.
+
+Note: both binatize_exp() and find_switch_logistic_fastglm() are time
+consuming processes and may take tens of minutes to run.
 
 ## Visualise the switching genes
-generate a list of switching genes, and visualise them on a pseudo timeline.
-```{r}
+
+generate a list of switching genes, and visualise them on a pseudo
+timeline.
+
+``` r
 switching_genes <- filter_switchgenes(reference_sce,
                                       allgenes = TRUE,
                                       r2cutoff = 0)
@@ -162,43 +168,46 @@ plot_timeline_ggplot(switching_genes,
                      txtsize = 3)
 ```
 
-```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("./man/figures/SLING-timeline-plot1.png")
-```
-The distribution of the switching genes along the trajectory is shown. \
-Due to the nature of this syntheic data the switching gnenes are not evenly distributed.\
-Note: The number of switching genes significantly affects the accuracy of PPR.\
-  too many will reduce the accuracy by including uninformative genes/noise. \
-  too few will reduce the accuracy by excluding informative genes. \
+<img src="./man/figures/SLING-timeline-plot1.png" width="100%" /> The
+distribution of the switching genes along the trajectory is shown.  
+Due to the nature of this syntheic data the switching gnenes are not
+evenly distributed.  
+Note: The number of switching genes significantly affects the accuracy
+of PPR.  
+too many will reduce the accuracy by including uninformative
+genes/noise.  
+too few will reduce the accuracy by excluding informative genes.  
 
 ## Select a number of switching genes
-Using the PPR function precision() an optimum number of switching genes can be found. 
-```{r}
+
+Using the PPR function precision() an optimum number of switching genes
+can be found.
+
+``` r
 png("./man/figures/SLING-precision1_plot.png")
 precision(reference_sce, n_sg_range = seq(0, 800, 100))
 dev.off()
 ```
 
-```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("./man/figures/SLING-precision1_plot.png")
-```
+<img src="./man/figures/SLING-precision1_plot.png" width="100%" />
 
 Narrow down the search to find the optimum number of switching genes.
-```{r}
+
+``` r
 png("./man/figures/SLING-precision2_plot.png")
 precision(reference_sce, n_sg_range = seq(700, 822, 2))
 dev.off()
 ```
 
-```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("./man/figures/SLING-precision2_plot.png")
-```
+<img src="./man/figures/SLING-precision2_plot.png" width="100%" />
 
 ## Produce a filtered matrix of switching genes
-The using precision(), 772 is found to be the optimum for this data. \
-When using true biological data, the optimum number is likely to be lower. \
 
-```{r}
+The using precision(), 772 is found to be the optimum for this data.  
+When using true biological data, the optimum number is likely to be
+lower.  
+
+``` r
 switching_genes <- filter_switchgenes(reference_sce,
                                       allgenes = TRUE,
                                       r2cutoff = 0,
@@ -206,23 +215,23 @@ switching_genes <- filter_switchgenes(reference_sce,
 ```
 
 ## Visualise the filtered switching genes
-```{r}
+
+``` r
 png("./man/figures/SLING-timeline-plot2.png")
 # Plot the timeline using plot_timeline_ggplot
 plot_timeline_ggplot(switching_genes,
                      timedata = colData(reference_sce)$Pseudotime,
                      txtsize = 3)
 dev.off()
-
 ```
 
-```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("./man/figures/SLING-timeline-plot2.png")
-```
+<img src="./man/figures/SLING-timeline-plot2.png" width="100%" />
 
 ## Binarize the sample data
+
 Binarize the gene expression data of the samples.
-```{r}
+
+``` r
 # First reduce the sample data to only include the switching genes.
 samples_sce <- lapply(samples_sce, reduce_counts_matrix, switching_genes)
 
@@ -235,9 +244,11 @@ samples_binarized <- lapply(samples_sce,
 ```
 
 ## Predict Position
-Produce an estimate for the position of each cell in each sample.
-The prediction is stored as a PPR_OBJECT.
-```{r}
+
+Produce an estimate for the position of each cell in each sample. The
+prediction is stored as a PPR_OBJECT.
+
+``` r
 reference_ppr <- predict_position(reference_sce, switching_genes)
 
 # Iterate through each Seurat object in the predicting their positons,
@@ -246,23 +257,24 @@ samples_ppr <- lapply(samples_binarized, predict_position, switching_genes)
 ```
 
 ## Measure accuracy
-We can calculate the accuracy of PPR in the given trajectory by comparing the 
-predicted position of the reference cells to their pseudotimes defined by slingshot.
 
-```{r}
+We can calculate the accuracy of PPR in the given trajectory by
+comparing the predicted position of the reference cells to their
+pseudotimes defined by slingshot.
+
+``` r
 png("./man/figures/SLING-accuracy_plot.png")
 accuracy_test(reference_ppr, reference_sce, plot = TRUE)
 dev.off()
 ```
 
-```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("./man/figures/SLING-accuracy_plot.png")
-```
-
+<img src="./man/figures/SLING-accuracy_plot.png" width="100%" />
 
 ## Plotting the predicted position of each sample:
+
 plot the predicted position of each sample on the reference trajectory.
-```{r}
+
+``` r
 png("./man/figures/Sling-PPR.png")
 # show the predicted position of the first sample
 # include the position of cells in the reference data, by a given label.
@@ -278,6 +290,4 @@ switching_times(c("G1172", "G1346", "G901"), switching_genes)
 dev.off()
 ```
 
-```{r eval = TRUE, echo = FALSE}
-knitr::include_graphics("./man/figures/Sling-PPR.png")
-```
+<img src="./man/figures/Sling-PPR.png" width="100%" />
