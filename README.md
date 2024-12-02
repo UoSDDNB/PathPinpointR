@@ -152,6 +152,22 @@ of 1.
 Note: both binatize\_exp() and find\_switch\_logistic\_fastglm(), are
 time consuming processes and may take tens of minutes to run.
 
+## Visualise the switching genes
+
+generate a list of switching genes, and visualise them on a pseudo
+timeline.
+
+    switching_genes <- filter_switchgenes(reference_sce,
+                                          allgenes = TRUE,
+                                          r2cutoff = 0)
+
+    # Plot the timeline using plot_timeline_ggplot
+    plot_timeline_ggplot(switching_genes,
+                         timedata = colData(reference_sce)$Pseudotime,
+                         txtsize = 3)
+
+<img src="./man/figures/README-timeline-plot1.png" width="100%" />
+
 ## Select a number of switching genes
 
 Using the PPR function precision():
@@ -166,10 +182,7 @@ Narrow down the search to find the optimum number of switching genes.
 
 <img src="./man/figures/README-precision2_plot.png" width="100%" />
 
-## Produce a matrix of switching genes
-
-The switching genes change their expression pattern along the
-trajectory.
+## Filter and re-visualise the switching genes.
 
     switching_genes <- filter_switchgenes(reference_sce,
                                           allgenes = TRUE,
@@ -183,14 +196,12 @@ genes/noise.
 too few will reduce the accuracy by excluding informative genes.  
 The using precision(), 114 is found to be the optimum for this data.  
 
-## Visualise the switching genes
-
     # Plot the timeline using plot_timeline_ggplot
     plot_timeline_ggplot(switching_genes,
                          timedata = colData(reference_sce)$Pseudotime,
                          txtsize = 3)
 
-<img src="./man/figures/README-switching-genes.png" width="100%" />
+<img src="./man/figures/README-timeline-plot2.png" width="100%" />
 
 ## Binarize the sample data
 
@@ -231,12 +242,16 @@ pseudotimes defined by slingshot.
 
 plot the predicted position of each sample on the reference trajectory.
 
+    # show the predicted position of the first sample
+    # include the position of cells in the reference data, by a given label.
     ppr_plot() +
       reference_idents(reference_sce, "time") +
       sample_prediction(samples_ppr[[1]], label = "Sample 1", col = "red")
 
+    # show the predicted position of the second sample
     sample_prediction(samples_ppr[[2]], label = "Sample 2", col = "blue")
 
+    # show the points at which selected genes switch.
     switching_times(c("TKTL1", "CYYR1", "KHDC1L"), switching_genes)
 
 <img src="./man/figures/README-sample1.png" width="100%" />
