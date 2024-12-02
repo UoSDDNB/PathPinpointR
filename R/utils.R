@@ -119,6 +119,134 @@ get_example_data <- function() {
   }
 }
 
+#' @title get_synthetic_data
+#'
+#' @description genetates a synthetic trajectory,
+#' and generates two subsets of the trajectory to be used as example samples.
+#'
+#' @return a list of three single cell experiment objects;
+#' reference_sce, sample 1 and sample 2.
+#' 
+#' @importFrom SingleCellExperiment SingleCellExperiment
+#'
+#' @export
+get_synthetic_data <- function() {
+  # number of cells 
+  n_cells <- 300
+
+  # generate the means of the gene expression
+  means <- rbind(
+      # non-DE genes
+      matrix(rep(rep(c(0.1,0.5,1,2,3), each = n_cells),100),
+          ncol = n_cells, byrow = TRUE),
+      # deactivation 1
+      matrix(rep((exp(atan((n_cells:1) - 295) * 4)), 150), ncol = n_cells, byrow = TRUE),
+      # deactivation 2
+      matrix(rep(exp(atan(((n_cells:1) - 290) * 2)), 100), ncol = n_cells, byrow = TRUE),
+      # deactivation 3
+      matrix(rep(exp(atan(((n_cells:1) - 280) / 2)), 50), ncol = n_cells, byrow = TRUE),
+      # deactivation 4
+      matrix(rep(exp(atan(((n_cells:1) - 250) / 10)), 50), ncol = n_cells, byrow = TRUE),
+      # deactivation 5
+      matrix(rep(exp(atan(((n_cells:1) - 200) / 50)), 50), ncol = n_cells, byrow = TRUE),
+      # deactivation 6
+      matrix(rep(exp(atan(((n_cells:1) - 150) / 50)), 50), ncol = n_cells, byrow = TRUE),
+      # deactivation 7
+      matrix(rep(exp(atan(((n_cells:1) - 100) / 50)), 50), ncol = n_cells, byrow = TRUE),
+      # deactivation 8
+      matrix(rep(exp(atan(((n_cells:1) - 50) / 50)), 50), ncol = n_cells, byrow = TRUE),
+      # deactivation 9
+      matrix(rep(exp(atan(((n_cells:1) - 25) / 50)), 50), ncol = n_cells, byrow = TRUE),
+      # deactivation 10
+      matrix(rep(exp(atan(((n_cells:1)) - 0 / 50)), 50), ncol = n_cells, byrow = TRUE),
+
+      # activation 1
+      matrix(rep(exp(atan(((1:n_cells) - 10) / 50 )), 50), ncol = n_cells, byrow = TRUE),
+      # activation 2
+      matrix(rep(exp(atan(((1:n_cells) - 50) / 50 )), 50), ncol = n_cells, byrow = TRUE),
+      # activation 3
+      matrix(rep(exp(atan(((1:n_cells) - 100) / 50 )), 50), ncol = n_cells, byrow = TRUE),
+      # activation 4
+      matrix(rep(exp(atan(((1:n_cells) - 150) / 50 )), 50), ncol = n_cells, byrow = TRUE),
+      # activation 5
+      matrix(rep(exp(atan(((1:n_cells) - 200) / 50 )), 50), ncol = n_cells, byrow = TRUE),
+      # activation 6
+      matrix(rep(exp(atan(((1:n_cells) - 250) / 50 )), 50), ncol = n_cells, byrow = TRUE),
+      # activation 7
+      matrix(rep(exp(atan(((1:n_cells) - 270) / 10 )), 50), ncol = n_cells, byrow = TRUE),
+      # activation 8
+      matrix(rep(exp(atan(((1:n_cells) - 280) / 2 )), 50), ncol = n_cells, byrow = TRUE),
+      # activation 9
+      matrix(rep(exp(atan(((1:n_cells) - 290) * 2  )), 100), ncol = n_cells, byrow = TRUE),
+      # activation 10
+      matrix(rep(exp(atan(((1:n_cells) - 295) * 4  )), 150), ncol = n_cells, byrow = TRUE),
+
+      # transient
+      matrix(rep(exp(atan( c((1:100)/33, rep(3,100), (100:1)/33) )),55), 
+        ncol = n_cells, byrow = TRUE)
+    )
+
+  # set seed for reproducaibility
+  set.seed(2)
+
+  # simulate a counts matrix
+  counts <- apply(means,2,function(cell_means){
+      # total number of counts
+      total <- rnbinom(1, mu = 7500, size = 4)
+      # simulate counts
+      rmultinom(1, total, cell_means)
+  })
+
+  # name the genes and cells G and c respectively
+  rownames(counts) <- paste0('G',1:dim(means)[1] )
+  colnames(counts) <- paste0('c',1:n_cells )
+
+  # assign the counts to a SingleCellExperiment object
+  reference_sce <- SingleCellExperiment(assays = List(counts = counts))
+
+  # filter out lowly expressed genes 
+  geneFilter <- apply(assays(reference_sce)$counts,1,function(x){
+      sum(x >= 3) >= 10
+  })
+  reference_sce <- reference_sce[geneFilter, ]
+
+  # normalize the data
+  FQnorm <- function(counts){
+      rk <- apply(counts,2,rank,ties.method='min')
+      counts.sort <- apply(counts,2,sort)
+      refdist <- apply(counts.sort,1,median)
+      norm <- apply(rk,2,function(r){ refdist[r] })
+      rownames(norm) <- rownames(counts)
+      return(norm)
+  }
+  assays(reference_sce)$norm <- FQnorm(assays(reference_sce)$counts)
+  # rename for compatability with GS
+  assays(sce)$expdata <- assays(sce)$norm
+
+  # PCA
+  pca <- prcomp(t(log1p(assays(reference_sce)$norm)), scale. = FALSE)
+  rd1 <- pca$x[,1:2]
+  reducedDims(reference_sce) <- SimpleList(PCA = rd1)
+
+  # clustering 
+  cl1 <- Mclust(rd1)$classification
+  colData(reference_sce)$GMM <- cl1
+
+  # name the clusters
+  cluster_names <- c("Later",
+                    "Late",
+                    "Middle",
+                    "Early",
+                    "Earlier",
+                    "Earliest")
+                    
+  colData(reference_sce)$clust_names <- factor(cluster_names[colData(reference_sce)$GMM],
+                                              levels = cluster_names)
+
+  # return the reference sce
+  return(reference_sce)
+}
+
 #' @title welcome_to_PPR
 #'
 #' @description prints a welcome message when the package is loaded
