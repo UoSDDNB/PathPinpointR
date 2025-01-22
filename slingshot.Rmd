@@ -25,7 +25,7 @@ PathPinpointR identifies the position of a sample upon a trajectory.
 
 ##### *Assumptions:*
 -   Sample is found upon the chosen trajectory.
--   Sample is from a distinct part of the trajectory. A sample with cells that are evenly distributed across the trajectory will have a predicted location of the centre of the trajectory.
+-   Sample is from a distinct part of the trajectory. A sample with cells that are evenly distributed across the trajectory will have a predicted location at the centre of the trajectory.
 
 
 # Example Workflow
@@ -35,7 +35,7 @@ The data used here is generated in a similar fasion to the [Slingshot vignette](
 
 ## Installation
 
-#### Check and install required packages
+#### Install required packages
 Run the following code to load all packages neccecary for PPR & this vignette.
 ```{r}
 required_packages <- c("SingleCellExperiment", "Biobase", "fastglm", "ggplot2",
@@ -43,16 +43,17 @@ required_packages <- c("SingleCellExperiment", "Biobase", "fastglm", "ggplot2",
                        "gridExtra", "devtools", "mixtools", "Seurat",
                        "parallel", "RColorBrewer", "mclust")
 
-## for package "fastglm", "ggplot2", "plyr", "RColorBrewer",
+## for packages "fastglm", "ggplot2", "plyr", "RColorBrewer",
 # "ggrepel", "ggridges", "gridExtra", "mixtools"
 new_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
 if(length(new_packages)) install.packages(new_packages)
 
-## for package "SingleCellExperiment", "Biobase", "slingshot".
+## for packages "SingleCellExperiment", "Biobase", "slingshot".
 if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
 new_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
 if(length(new_packages)) BiocManager::install(new_packages)
 
+# for package "GeneSwitches"
 devtools::install_github("SGDDNB/GeneSwitches")
 ```
 
@@ -76,11 +77,10 @@ library(mclust)
 ```
 
 ## Generate the data
-The data is generated in a similar fasion to the [Slingshot vignette](https://bioconductor.org/packages/devel/bioc/vignettes/slingshot/inst/doc/vignette.html).
-A subset of the reference data is used as a proxy for the sample data.
+The data for this vignette is generated in a similar fasion to the [Slingshot vignette](https://bioconductor.org/packages/devel/bioc/vignettes/slingshot/inst/doc/vignette.html).
+A subset of the reference data is used as a proxy for the sample data. 
 ```{r}
-load_all()
-### Genertate the reference data
+### Genertate the reference data (can take a few minutes)
 reference_sce <- get_synthetic_data()
 # Generate the sample data by subsetting the reference data
 # in one sample inlcude c20-c45, in the other c90-c128.
@@ -90,6 +90,7 @@ samples_sce <- list(reference_sce[,c(20:45)], reference_sce[,c(90:128)])
 #### View the PCA plot from the reference data
 Plot the reference data, colored by cluster.
 ```{r}
+# save as png
 plot(reducedDims(reference_sce)$PCA,
                  col = brewer.pal(9,"Set1")[colData(reference_sce)$GMM],
                  pch=16, asp = 1)
@@ -101,7 +102,7 @@ legend("topright",
 ```{r, eval = TRUE, echo = FALSE}
 knitr::include_graphics("./man/figures/SLING-reference-PCA-plot.png")
 ```
-The plot shows the development of the cells.
+The plot shows the development of the cells, through the clusters.
 
 ## Run slingshot 
 Run slingshot on the reference data to produce pseudotime for each cell.
@@ -174,7 +175,7 @@ Note: The number of switching genes significantly affects the accuracy of PPR.\
 ## Select a number of switching genes
 Using the PPR function precision() an optimum number of switching genes can be found. 
 ```{r}
-precision(reference_sce, n_sg_range = seq(0, 800, 100))
+precision(reference_sce, n_sg_range = seq(0, 900, 100))
 ```
 
 ```{r, eval = TRUE, echo = FALSE}
@@ -183,7 +184,7 @@ knitr::include_graphics("./man/figures/SLING-precision1_plot.png")
 
 Narrow down the search to find the optimum number of switching genes.
 ```{r}
-precision(reference_sce, n_sg_range = seq(700, 822, 2))
+precision(reference_sce, n_sg_range = seq(722, 822,2))
 ```
 
 ```{r, eval = TRUE, echo = FALSE}
@@ -254,11 +255,11 @@ knitr::include_graphics("./man/figures/SLING-accuracy_plot.png")
 ## Plotting the predicted position of each sample:
 plot the predicted position of each sample on the reference trajectory.
 ```{r}
-# show the predicted position of the first sample
-# include the position of cells in the reference data, by a given label.
 ppr_plot() +
-  reference_idents(reference_sce, "clust_names") +
-  sample_prediction(samples_ppr[[1]], label = "Sample 1", col = "red")
+  # show the predicted position of the first sample
+  sample_prediction(samples_ppr[[1]], label = "Sample 1", col = "red") +
+  # inlcude the position of cells in the reference data, by they cluster labels.
+  reference_idents(reference_sce, "clust_names")
 
 # show the predicted position of the second sample
 sample_prediction(samples_ppr[[2]], label = "Sample 2", col = "blue")
