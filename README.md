@@ -12,7 +12,7 @@ PathPinpointR identifies the position of a sample upon a trajectory.
 -   Sample is found upon the chosen trajectory.
 -   Sample is from a distinct part of the trajectory. A sample with
     cells that are evenly distributed across the trajectory will have a
-    predicted location of the centre of the trajectory.
+    predicted location at the centre of the trajectory.
 
 # Example Workflow
 
@@ -21,7 +21,7 @@ used here is an integrated data-set of blastocyst data.
 
 ## Installation
 
-#### Check and install required packages
+#### Install required packages
 
 Run the following code to load all packages neccecary for PPR & this
 vignette.
@@ -31,16 +31,17 @@ vignette.
                            "gridExtra", "devtools", "mixtools", "Seurat",
                            "parallel", "RColorBrewer")
 
-    ## for package "fastglm", "ggplot2", "plyr", "RColorBrewer",
+    ## for packages "fastglm", "ggplot2", "plyr", "RColorBrewer",
     # "ggrepel", "ggridges", "gridExtra", "mixtools"
     new_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
     if(length(new_packages)) install.packages(new_packages)
 
-    ## for package "SingleCellExperiment", "Biobase", "slingshot".
+    ## for packages "SingleCellExperiment", "Biobase", "slingshot".
     if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
     new_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
     if(length(new_packages)) BiocManager::install(new_packages)
 
+    # for package "GeneSwitches"
     devtools::install_github("SGDDNB/GeneSwitches")
 
 #### install PathPinpointR
