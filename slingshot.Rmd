@@ -31,12 +31,12 @@ PathPinpointR identifies the position of a sample upon a trajectory.
 # Example Workflow
 
 This vignette will take you through the basics running PPR.
-The data used here is generated in a similar fasion to the [Slingshot vignette](https://bioconductor.org/packages/devel/bioc/vignettes/slingshot/inst/doc/vignette.html).
+The data used here is generated in a similar fashion to the [Slingshot vignette](https://bioconductor.org/packages/devel/bioc/vignettes/slingshot/inst/doc/vignette.html).
 
 ## Installation
 
 #### Install required packages
-Run the following code to load all packages neccecary for PPR & this vignette.
+Run the following code to load all packages necessary for PPR & this vignette.
 ```{r}
 required_packages <- c("SingleCellExperiment", "Biobase", "fastglm", "ggplot2",
                        "monocle", "plyr", "RColorBrewer", "ggrepel", "ggridges",
@@ -147,7 +147,7 @@ reference_sce <- find_switch_logistic_fastglm(reference_sce,
                                               downsample = TRUE,
                                               show_warning = FALSE)
 ```
-Note: both binatize_exp() and find_switch_logistic_fastglm()
+Note: both binarize_exp() and find_switch_logistic_fastglm()
 are time consuming processes and may take tens of minutes to run.
 
 ## Visualise the switching genes
@@ -271,3 +271,14 @@ switching_times(c("G1172", "G1346", "G901"), switching_genes)
 ```{r eval = TRUE, echo = FALSE}
 knitr::include_graphics("./man/figures/Sling-PPR.png")
 ```
+
+### Conclusion
+By following this workflow, you will have: \ 
+- generated a synthetic dataset, representing a developmental trajectory. \
+- subset the data to generate two proxy samples. \
+- run slingshot to produce pseudotime for each cell. \
+- binarized the gene expression data of the reference data. \
+- found the switching genes along the trajectory. \
+- predicted the position of the sample data on the reference trajectory. \
+- measured the accuracy of the prediction. \
+- visualised the predicted position of the samples on the reference trajectory. \
