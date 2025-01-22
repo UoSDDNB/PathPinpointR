@@ -221,7 +221,7 @@ get_synthetic_data <- function() {
   }
   assays(reference_sce)$norm <- FQnorm(assays(reference_sce)$counts)
   # rename for compatability with GS
-  assays(sce)$expdata <- assays(sce)$norm
+  assays(reference_sce)$expdata <- assays(reference_sce)$norm
 
   # PCA
   pca <- prcomp(t(log1p(assays(reference_sce)$norm)), scale. = FALSE)
@@ -233,12 +233,12 @@ get_synthetic_data <- function() {
   colData(reference_sce)$GMM <- cl1
 
   # name the clusters
-  cluster_names <- c("Later",
-                    "Late",
-                    "Middle",
-                    "Early",
-                    "Earlier",
-                    "Earliest")
+  cluster_names <- c("1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6")
                     
   colData(reference_sce)$clust_names <- factor(cluster_names[colData(reference_sce)$GMM],
                                               levels = cluster_names)
