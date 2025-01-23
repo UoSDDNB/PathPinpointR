@@ -12,3 +12,5 @@ scripts_iridis
 *.rds
 Rplots.pdf
 TMP*.png
+*.html
+.vscode
