@@ -7,8 +7,8 @@
 get_example_data()
 }
 \value{
-example data is saved to the current working directory
+Example data saved to the current working directory.
 }
 \description{
-downloads example data from dropbox
+Downloads example data from Dropbox.
 }

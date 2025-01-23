@@ -2,6 +2,7 @@
 
 #' PPR_OBJECT Class Definition
 #'
+#' This class is used within PathPinpointR to store and manage predicted positions.
 #' @export
 setClass("PPR_OBJECT")
 
@@ -9,6 +10,7 @@ setClass("PPR_OBJECT")
 #'
 #' @description
 #' Make calling the PPR_OBJECT nicer by printing a summary of its contents.
+#' This function can be used to quickly inspect the structure of your results.
 #'
 #' @param x An object of class 'PPR_OBJECT' to be summarized.
 #'
@@ -75,7 +77,10 @@ print.PPR_OBJECT <- function(x) {
 setMethod("print", "PPR_OBJECT", print.PPR_OBJECT)
 
 
-#' @title Select the middle index among multiple occurrences of the maximum value
+#' @title Select the mid index among multiple occurrences of the max value.
+#'
+#' @description This helper function is used within PathPinpointR to resolve ties when
+#' multiple values are equal to the maximum.
 #'
 #' @param n Numeric vector.
 #' @return The middle index among multiple occurrences of the maximum value.
@@ -89,10 +94,9 @@ which_mid_max <- function(n) {
 
 #' @title get_example_data
 #'
-#' @description downloads example data from dropbox
+#' @description Downloads example data from Dropbox. 
 #'
-#' @return example data is saved to the current working directory
-#'
+#' @return Example data saved to the current working directory.
 #' @export
 get_example_data <- function() {
   dest_files <- c("./reference.rds", "./LW120.rds", "./LW122.rds")
@@ -121,11 +125,10 @@ get_example_data <- function() {
 
 #' @title get_synthetic_data
 #'
-#' @description genetates a synthetic trajectory,
-#' and generates two subsets of the trajectory to be used as example samples.
+#' @description Generates a synthetic trajectory and two subsets of the trajectory
+#' to be used as example samples.
 #'
-#' @return a list of three single cell experiment objects;
-#' reference_sce, sample 1 and sample 2.
+#' @return A list of three SingleCellExperiment objects: one reference and two samples.
 #' 
 #' @importFrom SingleCellExperiment SingleCellExperiment
 #'
@@ -252,7 +255,6 @@ get_synthetic_data <- function() {
 #' @description prints a welcome message when the package is loaded
 #'
 #' @return "Welcome to PathPinpointR!"
-#'
 #' @export
 .onAttach <- function(libname, pkgname) {
   packageStartupMessage("Welcome to PathPinpointR!")

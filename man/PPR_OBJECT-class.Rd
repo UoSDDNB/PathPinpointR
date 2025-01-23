@@ -5,5 +5,5 @@
 \alias{PPR_OBJECT-class}
 \title{PPR_OBJECT Class Definition}
 \description{
-PPR_OBJECT Class Definition
+This class is used within PathPinpointR to store and manage predicted positions.
 }

@@ -7,10 +7,9 @@
 get_synthetic_data()
 }
 \value{
-a list of three single cell experiment objects;
-reference_sce, sample 1 and sample 2.
+A list of three SingleCellExperiment objects: one reference and two samples.
 }
 \description{
-genetates a synthetic trajectory,
-and generates two subsets of the trajectory to be used as example samples.
+Generates a synthetic trajectory and two subsets of the trajectory
+to be used as example samples.
 }

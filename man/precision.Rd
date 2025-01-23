@@ -19,6 +19,7 @@ and GeneSwitches::find_switch_logistic_fastglm() on.}
 a plot of the precision df.
 }
 \description{
-Used to find the optimum topnum value to use,
-#' based on using reference as your sample.
+Used to find the optimum number of switching genes. This function is often
+iterated over in the PathPinpointR pipeline. Refer to "README.Rmd" for an
+example workflow using different topnum values.
 }

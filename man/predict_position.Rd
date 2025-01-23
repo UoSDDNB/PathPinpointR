@@ -19,7 +19,7 @@ A matrix for each cell:
 the columns represent progress through a trajectory,
 the rows represent genes,
 values indicate a likely position of the cell upon the trajectory,
-based that genes bianrized expression.
+based on that gene's binarized expression.
 }
 \description{
 Produces an estimate for the position on trajectory of each cell of a sample.

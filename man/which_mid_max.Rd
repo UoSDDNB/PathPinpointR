@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{which_mid_max}
 \alias{which_mid_max}
-\title{Select the middle index among multiple occurrences of the maximum value}
+\title{Select the mid index among multiple occurrences of the max value.}
 \usage{
 which_mid_max(n)
 }
@@ -13,5 +13,6 @@ which_mid_max(n)
 The middle index among multiple occurrences of the maximum value.
 }
 \description{
-Select the middle index among multiple occurrences of the maximum value
+This helper function is used within PathPinpointR to resolve ties when
+multiple values are equal to the maximum.
 }

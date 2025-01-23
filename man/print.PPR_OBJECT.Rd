@@ -14,4 +14,5 @@ A summary of the contents of the object.
 }
 \description{
 Make calling the PPR_OBJECT nicer by printing a summary of its contents.
+This function can be used to quickly inspect the structure of your results.
 }
