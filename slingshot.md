@@ -88,9 +88,7 @@ distinct developmental stages or conditions.
 
 #### View the PCA plot from the reference data
 
-Plot the reference data, colored by cluster.
-
-    # save as png
+    # Plot the reference data, colored by cluster.
     plot(reducedDims(reference_sce)$PCA,
                      col = brewer.pal(9,"Set1")[colData(reference_sce)$GMM],
                      pch=16, asp = 1)
@@ -176,7 +174,7 @@ too few will reduce the accuracy by excluding informative genes.
 Using the PPR function precision() an optimum number of switching genes
 can be found.
 
-    precision(reference_sce, n_sg_range = seq(0, 900, 100))
+    precision(reference_sce, n_sg_range = seq(2650, 2761, 10))
 
 <img src="./man/figures/SLING-precision1_plot.png" width="100%" />
 
