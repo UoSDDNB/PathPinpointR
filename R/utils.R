@@ -259,3 +259,33 @@ get_synthetic_data <- function() {
 .onAttach <- function(libname, pkgname) {
   packageStartupMessage("Welcome to PathPinpointR!")
 }
+
+#' @title ppr2seu
+#'
+#' @description This wrapper function extracts the predicted position of each 
+#' cell from a ppr object and adds it to the metdata of a Seurat object.
+#'
+#' @param ppr A ppr object.
+#' @param seurat A Seurat object.
+#' @param colname The name of the column to add to the Seurat object.
+#' 
+#' @return The Seurat object with the predicted position added to the metadata.
+#' 
+#' @importFrom Seurat AddMetaData
+#' 
+#' @export
+ppr2seu <- function(ppr, seu, colname = "PPR_pseudotime_idx") {
+    # use apply and which_mid_max to find the index of the max value in each row
+    predicted_ptime <- apply(ppr$cells_flat, 1, which_mid_max)
+    # predicted_ptime is an integer with names corresponding to the cell names
+
+    # Ensure that all cell names in predicted_ptime exist in the Seurat object
+        if (!identical(names(predicted_ptime), colnames(seu))) {
+            stop("Mismatch between cell names in PPR and Seurat object")
+        }
+
+    # add the predicted positions to the metadata of the seurat object
+    seu <- AddMetaData(seu, predicted_ptime, colname)
+
+    return(seu)
+}
