@@ -1,15 +1,15 @@
-#' @title ppr_boxplot
+#' @title ppr_vioplot
 #'
-#' @description Creates a boxplot showing the predicted pseudotime
-#' positions for each cell in a sample. As well as boxplots of reference cells,
+#' @description Creates a violin plot showing the predicted pseudotime
+#' positions for each cell in a sample. As well as violin plots of reference cells,
 #' subset by ident.
 #'
 #' @param samples_ppr A list of PPR objects or a single PPR object.
 #' @param reference_sce A SingleCellExperiemnt object of the ref trajectory.
 #' @param ident selected column from reference_sce colData.
 #' 
-#' @return Creates a boxplot showing the predicted pseudotime
-#' positions for each cell in a sample. As well as boxplots of reference cells,
+#' @return Creates a violin plot showing the predicted pseudotime
+#' positions for each cell in a sample. As well as violin plots of reference cells,
 #' subset by ident.
 #'
 #' @importFrom SummarizedExperiment colData
@@ -18,7 +18,7 @@
 #' @export
 #'
 
-ppr_boxplot <- function(samples_ppr, reference_sce, ident) {
+ppr_vioplot <- function(samples_ppr, reference_sce, ident) {
 
     ### CHECKS
 
@@ -50,7 +50,7 @@ ppr_boxplot <- function(samples_ppr, reference_sce, ident) {
 
     ### Data extraction
 
-    # Extract values for boxplot from each PPR object
+    # Extract values for violin plot from each PPR object
     vioplot_data <- lapply(samples_ppr, function(ppr) {
         apply(ppr$cells_flat, 1, which_mid_max)
     })
