@@ -73,6 +73,8 @@ downsampled and filtered to only inlcude ebiblast cells.
     reference_seu <- readRDS("./reference.rds")
     # Load the sample data to the environment
     samples_seu <- lapply(c("./LW120.rds", "./LW122.rds"), readRDS)
+    # name the samples in the list
+    names(samples_seu) <- c("LW120", "LW122")
 
 #### View the reference UMAP plot
 
@@ -104,6 +106,8 @@ Seurat objects to SingleCellExperiment objects.
       # convert each sample to a SingleCellExperiment object & store in the list
       samples_sce[[i]] <- SingleCellExperiment(assays = list(expdata = samples_seu[[i]]@assays$RNA$counts))
     }
+    # carry over the sample names from the Seurat objects.
+    names(samples_sce) <- names(samples_seu)
 
 ## Run slingshot
 
