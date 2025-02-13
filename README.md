@@ -260,3 +260,10 @@ plot the predicted position of each sample on the reference trajectory.
     switching_times(c("TKTL1", "CYYR1", "KHDC1L"), switching_genes)
 
 <img src="./man/figures/README-sample1.png" width="100%" />
+
+A simpler plot of your results can be generated with the function
+ppr\_vioplot().
+
+    ppr_vioplot(samples_ppr, reference_sce, ident = "time")
+
+<img src="./man/figures/README-PPR-vioplot.png" width="100%" />
