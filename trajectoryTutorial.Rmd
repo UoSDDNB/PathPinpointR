@@ -1,4 +1,7 @@
 ---
+title: "Building a trajectory for use with PPR"
+author: "Moi Taiga Nicholas"
+date: "`r Sys.Date()`"
 output: github_document
 ---
 
@@ -15,8 +18,67 @@ knitr::opts_chunk$set(
 )
 ```
 
-# PathPinpointR
+# Building a trajectory for use with PPR
+## Introduction
+This tutorial covers how to build a trajectory for use with PPR. 
+We will use cellxgene to download single-cell RNA-seq data, 
+We will use Seurat to perform basic preprocessing and dimensionality reduction.
+We will use the `slingshot` package to infer the trajectory. 
+We will use GeneSwitches to identify switching genes.
 
-```{r}
+## activate the shared conda environment
+```bash
+conda activate /mainfs/ddnb/hack_days/mar25/conda/pprTraj
+```
 
+## Load the Required Packages
+```{r install_packages, eval=FALSE}
+library("Seurat")
+library("slingshot")
+library("GeneSwitches")
+library("PathPinpointR")
+```
+
+## Downloading Data from CellxGene
+Use `cellxgene` to retrieve data manually,
+Choose a dataset which represents a simple trajectory,
+download the data in the form of a Seurat object.
+
+## Basic Seurat Preprocessing
+Run standard Seurat preprocessing steps: (if neccecary)
+
+```{r preprocessing}
+seurat_obj <- NormalizeData(seurat_obj)
+seurat_obj <- FindVariableFeatures(seurat_obj, selection.method = "vst", nfeatures = 2000)
+seurat_obj <- ScaleData(seurat_obj)
+seurat_obj <- RunPCA(seurat_obj)
+```
+
+## Trajectory Inference with Slingshot
+
+```{r slingshot}
+slingshot_obj <- slingshot(seurat_obj, cluster_labels = "seurat_clusters")
+```
+
+## identify switching genes with GeneSwitches
+
+```{r geneSwitches}
+geneSwitches_obj <- GeneSwitches::binarize(seurat_obj, slingshot_obj)
+#find switching genes
+switching_genes <- GeneSwitches::find_switching_genes(geneSwitches_obj)
+# filter switching genes
+switching_genes <- GeneSwitches::filter_switching_genes(switching_genes, ppr_precision = 0.9)
+```
+
+## Filter switching genes further 
+```{r filter_switching_genes}
+#run PPR:precison
+precision(sce)
+switching_genes <- GeneSwitches::filter_switching_genes(switching_genes, ppr_precision = 0.9)
+```
+
+## Save the trajectory
+```{r save_trajectory}
+# the information we need for PPR can be contained in a single table, save as csv
+write.csv(switching_genes, "switching_genes.csv")
 ```
