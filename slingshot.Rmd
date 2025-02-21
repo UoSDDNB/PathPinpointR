@@ -17,10 +17,6 @@ knitr::opts_chunk$set(
 
 # PathPinpointR
 
-<!-- badges: start -->
-
-<!-- badges: end -->
-
 PathPinpointR identifies the position of a sample upon a trajectory.
 
 ##### *Assumptions:*

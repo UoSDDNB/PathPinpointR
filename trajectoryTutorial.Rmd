@@ -1,0 +1,22 @@
+---
+output: github_document
+---
+
+<!-- trajectoryTutorial.md is generated from trajectoryTutorial.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/TRAJ-",
+  out.width = "100%",
+  echo = TRUE,
+  eval = FALSE
+)
+```
+
+# PathPinpointR
+
+```{r}
+
+```
