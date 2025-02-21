@@ -2,13 +2,13 @@
 output: github_document
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- slingshot.md is generated from slingshot.Rmd. Please edit that file -->
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "man/figures/README-",
+  fig.path = "man/figures/SLING-",
   out.width = "100%",
   echo = TRUE,
   eval = FALSE
@@ -274,7 +274,7 @@ switching_times(c("G1172", "G1346", "G901"), switching_genes)
 ```
 
 ```{r eval = TRUE, echo = FALSE}
-knitr::include_graphics("./man/figures/Sling-PPR.png")
+knitr::include_graphics("./man/figures/SLING-PPR.png")
 ```
 
 A simpler plot of your results can be generated with the function ppr_vioplot().
@@ -283,7 +283,7 @@ ppr_vioplot(samples_ppr, reference_sce, ident = "clust_names")
 ```
 
 ```{r eval = TRUE, echo = FALSE}
-knitr::include_graphics("./man/figures/Sling-PPR-vioplot.png")
+knitr::include_graphics("./man/figures/SLING-PPR-vioplot.png")
 ```
 
 ### Conclusion
