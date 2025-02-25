@@ -253,7 +253,7 @@ get_synthetic_data <- function() {
 #' @title welcome_to_PPR
 #'
 #' @description prints a welcome message when the package is loaded
-#'
+#' 
 #' @return "Welcome to PathPinpointR!"
 #' @export
 .onAttach <- function(libname, pkgname) {
@@ -266,7 +266,7 @@ get_synthetic_data <- function() {
 #' cell from a ppr object and adds it to the metdata of a Seurat object.
 #'
 #' @param ppr A ppr object.
-#' @param seurat A Seurat object.
+#' @param seu A Seurat object.
 #' @param colname The name of the column to add to the Seurat object.
 #' 
 #' @return The Seurat object with the predicted position added to the metadata.

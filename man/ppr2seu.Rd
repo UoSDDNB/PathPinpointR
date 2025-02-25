@@ -9,9 +9,9 @@ ppr2seu(ppr, seu, colname = "PPR_pseudotime_idx")
 \arguments{
 \item{ppr}{A ppr object.}
 
-\item{colname}{The name of the column to add to the Seurat object.}
+\item{seu}{A Seurat object.}
 
-\item{seurat}{A Seurat object.}
+\item{colname}{The name of the column to add to the Seurat object.}
 }
 \value{
 The Seurat object with the predicted position added to the metadata.

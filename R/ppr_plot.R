@@ -228,7 +228,6 @@ switching_times <- function(genes, switching_genes) {
 #' @param sample_ppr A PPR_OBJECT containing the PPR data for the sample.
 #' Must include the calculated metrics: standard deviation (`sd`), z-score 
 #' (`z_score`), and p-value (`p_value`).
-#' @param y_vals A numeric vector of PPR scores for each pseudotime index.
 #' @param col A character specifying the color of the text.
 #' @param sample_flat
 #'

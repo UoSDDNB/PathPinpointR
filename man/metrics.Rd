@@ -14,8 +14,6 @@ Must include the calculated metrics: standard deviation (\code{sd}), z-score
 \item{col}{A character specifying the color of the text.}
 
 \item{sample_flat}{}
-
-\item{y_vals}{A numeric vector of PPR scores for each pseudotime index.}
 }
 \value{
 Overlays the PPR plot with statistical information
