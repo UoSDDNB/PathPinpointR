@@ -22,9 +22,9 @@ knitr::opts_chunk$set(
 ## Introduction
 This tutorial covers how to build a trajectory for use with PPR. 
 We will use cellxgene to download single-cell RNA-seq data, 
-We will use Seurat to perform basic preprocessing and dimensionality reduction.
+We will use `Seurat` to perform basic preprocessing and dimensionality reduction.
 We will use the `slingshot` package to infer the trajectory. 
-We will use GeneSwitches to identify switching genes.
+We will use `GeneSwitches` to identify switching genes.
 
 ## activate the shared conda environment
 ```bash
@@ -34,9 +34,12 @@ conda activate /mainfs/ddnb/hack_days/mar25/conda/pprTraj
 ## Load the Required Packages
 ```{r install_packages, eval=FALSE}
 library("Seurat")
+library("SingleCellExperiment")
 library("slingshot")
 library("GeneSwitches")
-library("PathPinpointR")
+#library("PathPinpointR")
+library(devtools)
+load_all()
 ```
 
 ## Downloading Data from CellxGene
@@ -44,41 +47,125 @@ Use `cellxgene` to retrieve data manually,
 Choose a dataset which represents a simple trajectory,
 download the data in the form of a Seurat object.
 
+## load data
+```{r load_data}
+# load the data
+seu <- readRDS("/mainfs/ddnb/hack_days/mar25/data/microgliaCSF1R.rds")
+
+
+# # set the identity class to Braak.stage
+# Idents(seu) <- "Braak.stage"
+# # downsample the data
+# seu <- subset(x = seu, downsample = 100)
+```
+
 ## Basic Seurat Preprocessing
 Run standard Seurat preprocessing steps: (if neccecary)
 
 ```{r preprocessing}
-seurat_obj <- NormalizeData(seurat_obj)
-seurat_obj <- FindVariableFeatures(seurat_obj, selection.method = "vst", nfeatures = 2000)
-seurat_obj <- ScaleData(seurat_obj)
-seurat_obj <- RunPCA(seurat_obj)
+# view the umap using seurat
+DimPlot(seu, reduction = "umap", group.by = "Braak.stage")
+
+# seu <- NormalizeData(seu)
+# seu <- FindVariableFeatures(seu, selection.method = "vst", nfeatures = 2000)
+# seu <- ScaleData(seu)
+# seu <- RunPCA(seu)
 ```
+
+## Convert Seurat object to SingleCellExperiment
+```{r convert_to_sce}
+sce    <- SingleCellExperiment(assays = list(expdata = seu@assays$RNA$counts))
+colData(sce) <- DataFrame(seu@meta.data)
+reducedDims(sce)$UMAP <- seu@reductions$umap@cell.embeddings
+```
+
 
 ## Trajectory Inference with Slingshot
 
 ```{r slingshot}
-slingshot_obj <- slingshot(seurat_obj, cluster_labels = "seurat_clusters")
+sce  <- slingshot(sce,
+                  clusterLabels = "Braak.stage",
+                  #start.clus  = "2",
+                  #end.clus = "1",
+                  reducedDim = "UMAP")
+
+#Rename the Pseudotime column to work with GeneSwitches
+colData(sce)$Pseudotime <- sce$slingPseudotime_1
+
+# plot the trajectory
+library("RColorBrewer")
+# Generate colors
+colors <- colorRampPalette(brewer.pal(11, "Spectral")[-6])(100)
+plotcol <- colors[cut(sce$slingPseudotime_1, breaks = 100)]
+# Plot the data
+plot(reducedDims(sce)$UMAP, col = plotcol, pch = 16, asp = 1)
+lines(SlingshotDataSet(sce), lwd = 2, col = "black")
 ```
 
-## identify switching genes with GeneSwitches
 
+## Identify switching genes with GeneSwitches
 ```{r geneSwitches}
-geneSwitches_obj <- GeneSwitches::binarize(seurat_obj, slingshot_obj)
-#find switching genes
-switching_genes <- GeneSwitches::find_switching_genes(geneSwitches_obj)
-# filter switching genes
-switching_genes <- GeneSwitches::filter_switching_genes(switching_genes, ppr_precision = 0.9)
+# Identify a cutoff for binarization, by plotting a histogram of gene expression
+hist(as.numeric(as.matrix(assays(sce)$expdata)),
+     freq = FALSE,
+     breaks = 1000,
+     main = "Histogram of expression values",
+     xlab = "Expression value",
+     ylab = "Density",
+     xlim = c(0, 6),
+     ylim = c(0, 1))
+# vertical line at 1
+abline(v = 0.5, col = "red")
+
+# using the cutoff of 0.5, binarize the expression data
+sce <- binarize_exp(sce,
+                    fix_cutoff = TRUE,
+                    binarize_cutoff = 0.5,
+                    ncores = 1)
+
+# Find the switching point of each gene in the sce
+sce <- find_switch_logistic_fastglm(sce,
+                                    downsample = FALSE,
+                                    show_warning = FALSE)
+
+
+# visualise the switching genes
+switching_genes <- filter_switchgenes(sce,
+                                      allgenes = TRUE,
+                                      r2cutoff = 0)
+
+# Plot the timeline using plot_timeline_ggplot
+plot_timeline_ggplot(switching_genes,
+                     timedata = colData(sce)$Pseudotime,
+                     txtsize = 3)
+
+# save as rds 
+saveRDS(sce, "/mainfs/ddnb/hack_days/mar25/data/TMPsce.rds")
+saveRDS(switching_genes, "/mainfs/ddnb/hack_days/mar25/data/TMPswitching_genes.rds")
+
+# load from rds
+sce <- readRDS("/mainfs/ddnb/hack_days/mar25/data/TMPsce.rds")
+switching_genes <- readRDS("/mainfs/ddnb/hack_days/mar25/data/TMPswitching_genes.rds")
+
 ```
 
 ## Filter switching genes further 
 ```{r filter_switching_genes}
 #run PPR:precison
-precision(sce)
-switching_genes <- GeneSwitches::filter_switching_genes(switching_genes, ppr_precision = 0.9)
+precision <- precision(sce, plot = FALSE)
+# zoom in
+precision <- precision(sce, n_sg_range = seq(50, 170, 10), plot = FALSE)
+#
+precision <- precision(sce, n_sg_range = seq(80, 120, 2), plot = FALSE)
+
+# visualise the switching genes
+switching_genes <- filter_switchgenes(sce,
+                                      allgenes = TRUE,
+                                      r2cutoff = 92)
 ```
 
 ## Save the trajectory
 ```{r save_trajectory}
 # the information we need for PPR can be contained in a single table, save as csv
-write.csv(switching_genes, "switching_genes.csv")
+write.csv(switching_genes, "/mainfs/ddnb/hack_days/mar25/switching_genes.csv")
 ```
