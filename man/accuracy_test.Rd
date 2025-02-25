@@ -23,7 +23,7 @@ random_inncauracy is the difference of true_time_idx to a random prediction.}
 }
 \value{
 If plot = FALSE, returns a data frame containing accuracy results.
-If plot = TRUE, returns a the accuracy data frame.
+If plot = TRUE, returns the accuracy data frame.
 }
 \description{
 Use this with "sample" cells taken from the reference.
