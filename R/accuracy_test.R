@@ -16,7 +16,7 @@
 #' random_inncauracy is the difference of true_time_idx to a random prediction.
 #'
 #' @return If plot = FALSE, returns a data frame containing accuracy results.
-#' If plot = TRUE, returns a the accuracy data frame.
+#' If plot = TRUE, returns the accuracy data frame.
 #' @importFrom graphics abline hist text
 #' @export
 accuracy_test <- function(ppr, reference_sce, plot = TRUE, random = FALSE) {
