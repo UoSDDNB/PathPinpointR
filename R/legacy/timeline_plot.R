@@ -1,4 +1,4 @@
-#' @title Identify and Visualise each cells position.
+#' @title Legacy Function: Identify and Visualise each cells position.
 #'
 #' @description Produces a plot for a given cell,
 #' this helps visualize predicted position of the selected cell.
@@ -21,6 +21,7 @@ timeline_plot <- function(switching_genes,
                           genomic_expression_traces = FALSE,
                           reduced_sce = NULL,
                           cell_id = 1) {
+  usethis::deprecated("This is a legacy function and will not be maintained actively.")
 
   # Convert switching_genes to a data frame
   switching_genes <- as.data.frame(switching_genes)

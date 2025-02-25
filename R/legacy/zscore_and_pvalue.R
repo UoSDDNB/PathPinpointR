@@ -1,4 +1,4 @@
-#' @title zscore_and_pvalue
+#' @title Legacy Function: zscore_and_pvalue
 #'
 #' @description
 #' Calculate the zscore and the p-value of the raw ppr score,
@@ -22,7 +22,8 @@
 #'
 
 zscore_and_pvalue <- function(sce, ppr, switching_genes, cpu = 1) {
-
+  usethis::deprecated("This is a legacy function and will not be maintained actively.")
+  
   ## checks
 
   # check that sce is a SingleCellExperiment object

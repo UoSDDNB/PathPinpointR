@@ -1,4 +1,4 @@
-#' PPR INDIVIDUAL CELL PLOT
+#' @title Legacy Function: PPR INDIVIDUAL CELL PLOT
 #'
 #' @description
 #' Plots the predicted position of a chosen cell.
@@ -24,6 +24,7 @@ cell_plot <- function(sample_ppr,
                           switching_genes = NULL,
                           true_position = FALSE,
                           accuracy_data = NULL) {
+ usethis::deprecated("This is a legacy function and will not be maintained actively.")
 
   # Extract data for the selected cell
   cell_data <- sample_ppr$cells_flat[cell_idx, ]

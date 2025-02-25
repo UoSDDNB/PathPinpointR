@@ -242,6 +242,7 @@ switching_times <- function(genes, switching_genes) {
 metrics <- function(sample_ppr,
                     col = "black",
                     sample_flat) {
+  usethis::deprecated("This is a legacy function and will not be maintained actively.")
 
   # Produce a warning if any metrics are not available
   if (is.null(sample_ppr$sd) ||
