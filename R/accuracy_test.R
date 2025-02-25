@@ -53,13 +53,10 @@ accuracy_test <- function(ppr, reference_sce, plot = TRUE, random = FALSE) {
   # Note:
   # This assumes that the names of cells in ppr$cells_flat match the,
   # cell names in reference_sce
-  accuracy$predicted_timeIDX[match(names(apply(ppr$cells_flat,
-                                               1,
-                                               which_mid_max)),
-                                   accuracy$cell_names)] <-
-    apply(ppr$cells_flat,
-          1,
-          which_mid_max)
+  accuracy$predicted_timeIDX[match(
+      names(apply(ppr$cells_flat, 1, which_mid_max)),
+      accuracy$cell_names
+    )] <- apply(ppr$cells_flat, 1, which_mid_max)
 
   # Calculate the accuracy
   # (the absolute difference between the true and predicted time indices)
