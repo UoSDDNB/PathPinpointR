@@ -2,9 +2,6 @@
 
 # PathPinpointR
 
-<!-- badges: start -->
-<!-- badges: end -->
-
 PathPinpointR identifies the position of a sample upon a trajectory.
 
 ##### *Assumptions:*
@@ -206,7 +203,18 @@ lower.
 
 <img src="./man/figures/SLING-timeline-plot2.png" width="100%" /> the
 least informative genes have been removed from the timeline. the number
-of uninformative genes would be greater with biological data.
+of uninformative genes would be greater with biological data. the
+accuracy can be visualised using `acuracy_test`.
+
+## Measure accuracy
+
+We can calculate the accuracy of PPR in the given trajectory by
+comparing the predicted position of the reference cells to their
+pseudotimes defined by slingshot.
+
+    accuracy_test(reference_ppr, reference_sce, plot = TRUE)
+
+<img src="./man/figures/SLING-accuracy_plot.png" width="100%" />
 
 ## Binarize the sample data
 
@@ -232,16 +240,6 @@ prediction is stored as a PPR\_OBJECT.
     # Iterate through each Seurat object in the predicting their positons,
     # on the reference trajectory, using PathPinpointR.
     samples_ppr <- lapply(samples_binarized, predict_position, switching_genes)
-
-## Measure accuracy
-
-We can calculate the accuracy of PPR in the given trajectory by
-comparing the predicted position of the reference cells to their
-pseudotimes defined by slingshot.
-
-    accuracy_test(reference_ppr, reference_sce, plot = TRUE)
-
-<img src="./man/figures/SLING-accuracy_plot.png" width="100%" />
 
 ## Plotting the predicted position of each sample:
 

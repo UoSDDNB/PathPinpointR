@@ -214,6 +214,20 @@ knitr::include_graphics("./man/figures/SLING-timeline-plot2.png")
 ```
 the least informative genes have been removed from the timeline.
 the number of uninformative genes would be greater with biological data.
+the accuracy can be visualised using `acuracy_test`.
+
+## Measure accuracy
+We can calculate the accuracy of PPR in the given trajectory by comparing the 
+predicted position of the reference cells to their pseudotimes defined by slingshot.
+
+```{r}
+accuracy_test(reference_ppr, reference_sce, plot = TRUE)
+```
+
+```{r, eval = TRUE, echo = FALSE}
+knitr::include_graphics("./man/figures/SLING-accuracy_plot.png")
+```
+
 
 ## Binarize the sample data
 Binarize the gene expression data of the samples.
@@ -238,18 +252,6 @@ reference_ppr <- predict_position(reference_sce, switching_genes)
 # Iterate through each Seurat object in the predicting their positons,
 # on the reference trajectory, using PathPinpointR.
 samples_ppr <- lapply(samples_binarized, predict_position, switching_genes)
-```
-
-## Measure accuracy
-We can calculate the accuracy of PPR in the given trajectory by comparing the 
-predicted position of the reference cells to their pseudotimes defined by slingshot.
-
-```{r}
-accuracy_test(reference_ppr, reference_sce, plot = TRUE)
-```
-
-```{r, eval = TRUE, echo = FALSE}
-knitr::include_graphics("./man/figures/SLING-accuracy_plot.png")
 ```
 
 
