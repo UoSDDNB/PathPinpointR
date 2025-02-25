@@ -27,7 +27,7 @@ We will use the `slingshot` package to infer the trajectory.
 We will use `GeneSwitches` to identify switching genes.
 
 ## activate the shared conda environment
-```bash
+```{bash}
 conda activate /mainfs/ddnb/hack_days/mar25/conda/pprTraj
 ```
 
@@ -161,11 +161,58 @@ precision <- precision(sce, n_sg_range = seq(80, 120, 2), plot = FALSE)
 # visualise the switching genes
 switching_genes <- filter_switchgenes(sce,
                                       allgenes = TRUE,
-                                      r2cutoff = 92)
+                                      r2cutoff = 0,
+                                      topnum = 92)
 ```
 
 ## Save the trajectory
 ```{r save_trajectory}
 # the information we need for PPR can be contained in a single table, save as csv
-write.csv(switching_genes, "/mainfs/ddnb/hack_days/mar25/switching_genes.csv")
+write.csv(switching_genes, "/mainfs/ddnb/hack_days/mar25/traj/microgliaCSF1R.csv")
+#
+switching_genes <- read.csv("/mainfs/ddnb/hack_days/mar25/traj/microgliaCSF1R.csv")
 ```
+
+
+## Make a proxy sample. 
+```{r load_data}
+# extract 50 samples from sce.
+```{r}
+# order the cell in sce by their pseudotime 
+sce <- sce[, order(colData(sce)$Pseudotime)]
+
+# extract 50 cells
+sce_proxy <- sce[, 50:100]
+
+```
+
+
+## run PPR
+```{r run_ppr}
+# First reduce the sample data to only include the switching genes.
+sample_sce <- reduce_counts_matrix(sce_proxy, switching_genes)
+
+# binarize the expression data of the samples
+sample_sce <- binarize_exp(sample_sce,
+                    fix_cutoff = TRUE,
+                    binarize_cutoff = 0.5,
+                    ncores = 1)
+
+ppr <- predict_position(sample_sce, switching_genes)
+
+
+## Plotting the predicted position of each sample:
+#plot the predicted position of each sample on the reference trajectory.
+
+# show the predicted position of the first sample
+# include the position of cells in the reference data, by a given label.
+ppr_plot() +
+  sample_prediction(ppr, label = "Sample 1", col = "red")
+
+#A simpler plot of your results can be generated with the function ppr_vioplot().
+ppr_vioplot(ppr, sce, ident = "Braak.stage")
+
+
+```
+
+# Reference Idents will need to be included in switching_genes.
