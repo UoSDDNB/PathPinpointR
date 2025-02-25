@@ -212,6 +212,10 @@ comparing the predicted position of the reference cells to their
 pseudotimes defined by slingshot. the accuracy can be visualised using
 `acuracy_test`.
 
+    # predict the position of cells in the reference trajectory.
+    reference_ppr <- predict_position(reference_sce, switching_genes)
+
+    # plot the accuracy of the prediction
     accuracy_test(reference_ppr, reference_sce, plot = TRUE)
 
 <img src="./man/figures/README-accuracy_plot.png" width="100%" />
@@ -234,8 +238,6 @@ Binarize the gene expression data of the samples.
 
 Produce an estimate for the position of each cell in each sample. The
 prediction is stored as a PPR\_OBJECT.
-
-    reference_ppr <- predict_position(reference_sce, switching_genes)
 
     # Iterate through each Seurat object in the predicting their positons,
     # on the reference trajectory, using PathPinpointR.
