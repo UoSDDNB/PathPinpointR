@@ -214,7 +214,7 @@ knitr::include_graphics("./man/figures/SLING-timeline-plot2.png")
 ```
 the least informative genes have been removed from the timeline.
 the number of uninformative genes would be greater with biological data.
-the accuracy can be visualised using `acuracy_test`.
+the accuracy can be visualised using `accuracy_test`.
 
 ## Measure accuracy
 We can calculate the accuracy of PPR in the given trajectory by comparing the 
