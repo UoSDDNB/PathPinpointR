@@ -1,4 +1,4 @@
-#' @title Legacy Function: precisionP
+#' @title precisionP
 #'
 #' @description
 #' This function computes the precision (mean inaccuracy) for different values of topnum (number of switching genes)
@@ -32,7 +32,6 @@ precisionP <- function(sce,
                       n_sg_range = seq(0, 500, 25),
                       plot = TRUE,
                       cpu = 1) {
-  usethis::deprecated("This is a legacy function and will not be maintained actively.")
 
   # Check if sce is a SingleCellExperiment object
   if (!is(sce, "SingleCellExperiment")) {
