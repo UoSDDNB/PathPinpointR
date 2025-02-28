@@ -32,45 +32,34 @@ predict_position <- function(sample_sce, switching_genes) {
     reduced_binary_counts_matrix <- sample_sce@assays@data@listData$binary
   }
 
-  ## The final output will be a ppr_obj (list) comprised of 3 objects.
-  # Make the list of length 3, and name the objects
+  ## Create final output
+  # TODO: change this to only be cells_flat.
   ppr_obj <- vector("list", 3)
   names(ppr_obj) <- c("genomic_expression_traces",
                       "cells_flat",
                       "sample_flat")
-
   # Assign the ppr_obj class attribute to the list
   class(ppr_obj) <- "PPR_OBJECT"
 
   ## Reorder switching_genes
   # because the code relies on the rownames and idicies of the genes in,
   # reduced_binary_counts_matrix and switching_genes matching.
+  # TODO: inlcude a check that reduce_counts_matrix() has been run.
+  # Something like setequal(rownames(reduced_binary_counts_matrix), rownames(switching_genes))
   switching_genes <- switching_genes[rownames(reduced_binary_counts_matrix),]
 
   ## Input values:
   number_of_cells <- dim(reduced_binary_counts_matrix)[2]
-  # Should we get the number of switching genes from here?
-  # or dim(reduced_binary_counts_matrix)[1]
-  # dim(reduced_binary_counts_matrix)[1] < dim(switching_genes)[1] is possible.
   number_of_switching_genes <- dim(switching_genes)[1]
-
-
-  # Different datasets store this information in different columns.. watch out.
-  # Maybe this should be an input to the function?
-  # as.numeric is needed/notneeded depending on dataset.
   switching_time <- as.numeric(switching_genes$switch_at_timeidx)
   switching_direction <- switching_genes$direction
 
-  # Building an empty genomic_expression_traces list of empty matrices.
-  # Pre-allocate a list of matrices.
-  all_patients_cells_scored <- lapply(1:number_of_cells, function(x) matrix(0,
-                                                                            nrow = number_of_switching_genes,
-                                                                            ncol = 100))
-  # set the names of the list to the cell names.
-  names(all_patients_cells_scored) <- colnames(reduced_binary_counts_matrix)
+  # pre allocate cells_flat
+  ppr_obj$cells_flat <- matrix(0, nrow = number_of_cells, ncol = 100)
+  rownames(ppr_obj$cells_flat) <- colnames(reduced_binary_counts_matrix)
 
-  # build genomic_expression_traces outside of loop for speed.
-  # Build the matrix of 0's
+
+  # build an empty genomic_expression_mat outside of loop for speed.
   # which has genes as rows and pseudotime indecies as columns.
   empty_genomic_expression_mat <- matrix(0,
                                          nrow = number_of_switching_genes, 
@@ -78,33 +67,45 @@ predict_position <- function(sample_sce, switching_genes) {
   # Set the rownames of the matrix to the gene names.
   rownames(empty_genomic_expression_mat) <- rownames(reduced_binary_counts_matrix)
 
+  # Print a message to the console
+  cat("Predicting position of cells... \n")
+
   # Loop through all cells,
-  # making matrices for each, which represent likely position of a cell (c),
-  # on a trajectory based on the expression of each gene.
-  # Loop through all cells, reusing the empty matrix for each cell
+  # Making a matrix for each cell, 
+  # the genomic_expression_mat represents the likely position of the cell on the trajectory.
+  # The colSums of the matrix is then used to create a row in the cells_flat matrix.
+  # cells_flat has cells as rows and pseudotime indecies as columns.
+  # the colSums of cells_flat represents the predicted position of the sample. (sample_flat)
   for (c in 1:number_of_cells) {
     # no need to rest the matrix to 0's, as it is done outside the loop.
     genomic_expression_mat <- empty_genomic_expression_mat
 
-    
+    # extract the binary expression of the cell
     bin_exp_c <- reduced_binary_counts_matrix[, c]
 
+    ## find the indices of the genes where the cell has passes their switching point.
+    # genes where they are expressed in the cell and switch up during the trajectory.
     up_indices <- which(bin_exp_c == 1 & switching_direction == "up")
-
+    # genes where they are not expressed in the cell and switch down during the trajectory.
     down_indices <- which(bin_exp_c == 0 & switching_direction == "down")
 
+    ## find the indices of the genes where the cell has Not yet passed their switching point.
+    # genes where they are not expressed in the cell and switch up during the trajectory.
     not_up_indices <- which(bin_exp_c == 0 & switching_direction == "up")
-
+    # genes where they are expressed in the cell and switch down during the trajectory.
     not_down_indices <- which(bin_exp_c == 1 & switching_direction == "down")
 
+    # set the values of the matrix to 1
+    # where the cell has passed the switching point, for the appropriate genes.
     for (i in up_indices) {
       genomic_expression_mat[i, switching_time[i]:100] <- 1
     }
-
     for (i in down_indices) {
       genomic_expression_mat[i, switching_time[i]:100] <- 1
     }
 
+    # set the values of the matrix to 1
+    # where the cell has Not yet passed the switching point, for the appropriate genes.
     for (i in not_up_indices) {
       genomic_expression_mat[i, 1:switching_time[i]] <- 1
     }
@@ -113,25 +114,33 @@ predict_position <- function(sample_sce, switching_genes) {
       genomic_expression_mat[i, 1:switching_time[i]] <- 1
     }
 
-    all_patients_cells_scored[[c]] <- genomic_expression_mat
+    # assign the colSums of genomic_expression_mat to ppr_obj$cells_flat
+    ppr_obj$cells_flat[c, ] <- colSums(genomic_expression_mat)
+
+    # print a message to the console
+    if (c %% 100 == 0) {
+      cat("\rPredicted ", c, "/", number_of_cells)
+       flush.console()  # Ensures output updates in buffered consoles
+    }
   }
 
-  ppr_obj$genomic_expression_traces <- all_patients_cells_scored
+  # print a message to the console
+  cat("\rPredicted ", c, "/", number_of_cells, "\n")
 
-  ### GENOMIC EXPRESSION TRACES CREATED
-  # Now flatten:
+  # dont assign the genomic_expression_traces to the ppr_obj
+  # doing so uses too much RAM.
+  # TODO: this should be removed from PPR_OBJECT, and this funcion.
+  ppr_obj$genomic_expression_traces <- NULL
 
-  # Use lapply to calculate column sums for each matrix
-  ppr_obj$cells_flat <- do.call(rbind,
-                                lapply(all_patients_cells_scored,
-                                       colSums))
-  rownames(ppr_obj$cells_flat) <- names(all_patients_cells_scored)
   # Combine each cells column sums into a single flat matrix.
+  # TODO: this can also be removed from the PPR_OBJECT, and this funcion.
   ppr_obj$sample_flat <- matrix(colSums(ppr_obj$cells_flat), nrow = 1)
 
   ## Calculate the standard deviation of the predicted position of cells.
   #ppr_obj$sd <- sd(apply(ppr_obj$cells_flat, 1, which_mid_max))
   # commented for computational efficiency
 
+  # print a message to the console
+  cat("Prediction complete \n") 
   return(ppr_obj)
 }
