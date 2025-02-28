@@ -234,8 +234,10 @@ predicted position of the reference cells to their pseudotimes defined by slings
 the accuracy can be visualised using `acuracy_test`.
 
 ```{r}
+# reduce the reference data to only include the switching genes.
+reference_reduced_sce <- reduce_counts_matrix(reference_sce, switching_genes)
 # predict the position of cells in the reference trajectory.
-reference_ppr <- predict_position(reference_sce, switching_genes)
+reference_ppr <- predict_position(reference_reduced_sce, switching_genes)
 
 # plot the accuracy of the prediction
 accuracy_test(reference_ppr, reference_sce, plot = TRUE)
