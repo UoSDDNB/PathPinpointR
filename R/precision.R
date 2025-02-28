@@ -46,6 +46,7 @@ precision <- function(sce,
   nrow_precision <- 1
 
   for (i in n_sg_range){
+
     ##Follow the GS and PPR steps.
 
     # Filter the switching genes
@@ -53,21 +54,27 @@ precision <- function(sce,
                                           allgenes = TRUE,
                                           r2cutoff = 0,
                                           topnum = i)
+    
+    # Store the number of switching genes
+    precision$n_sg[nrow_precision] <- dim(switching_genes)[1]
 
-    #
+    # Print status message
+    cat("Precision run", nrow_precision, "/", length(n_sg_range), "\n")                                     
+
+    # Predict the position of the reference (proxy sample)
     sample_ppr <- predict_position(sce, switching_genes)
 
-    #
+    # measure the accuracy of the prediction
     accuracy <- accuracy_test(ppr = sample_ppr,
                               reference_sce = sce,
                               plot = FALSE)
 
-    #
-    precision$n_sg[nrow_precision] <- dim(switching_genes)[1]
+    # store the inaccuracy
     precision$inaccuracy[nrow_precision] <- summary(accuracy$inaccuracy)[4]
 
-    #
-    cat(nrow_precision, " ", i, " done \n")
+    # Print status message
+    cat("Number of switching genes: ", precision$n_sg[nrow_precision],"\n")
+    cat("PPR inaccuracy: ", precision$inaccuracy[nrow_precision], "\n", "\n")
 
     #
     nrow_precision <- nrow_precision + 1
