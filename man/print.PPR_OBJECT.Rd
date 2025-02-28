@@ -4,7 +4,7 @@
 \alias{print.PPR_OBJECT}
 \title{Print method for PPR Object.}
 \usage{
-print.PPR_OBJECT(x)
+\method{print}{PPR_OBJECT}(x)
 }
 \arguments{
 \item{x}{An object of class 'PPR_OBJECT' to be summarized.}
