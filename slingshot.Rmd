@@ -58,7 +58,7 @@ You can download it here: https://cran.r-project.org/bin/windows/Rtools
 #### install PathPinpointR
 You can install the development version of PathPinpointR using:
 ```{r}
-devtools::install_github("moi-taiga/PathPinpointR")
+devtools::install_github("UoSDDNB/PathPinpointR")
 ```
 
 ### Load the required packages
