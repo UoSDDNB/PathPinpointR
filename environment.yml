@@ -1,0 +1,42 @@
+name: pathpinpointr
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  # R base
+  - r-base>=4.0
+  
+  # CRAN packages (via conda-forge)
+  - r-ggplot2
+  - r-ggrepel
+  - r-fastglm
+  - r-plyr
+  - r-rcolorbrewer
+  - r-ggridges
+  - r-gridextra
+  - r-mixtools
+  - r-vioplot
+  - r-devtools
+  - r-rmarkdown
+  - r-biocmanager
+  
+  # Bioconductor packages (via bioconda)
+  - bioconductor-biobase
+  - bioconductor-singlecellexperiment
+  - bioconductor-summarizedexperiment
+  - bioconductor-slingshot
+  - bioconductor-monocle
+  
+  # Seurat (available via conda-forge)
+  - r-seurat
+  
+  # Build tools (for installing packages from source)
+  - r-essentials
+  
+  # Additional system dependencies that may be needed
+  - gcc
+  - gfortran
+  - make
+  - openblas  # Required for r-seurat
+

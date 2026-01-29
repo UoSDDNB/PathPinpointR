@@ -18,6 +18,47 @@ used here is an integrated data-set of blastocyst data.
 
 ## Installation
 
+### Option 1: Install using Conda (Recommended)
+
+The easiest way to set up PathPinpointR is using conda, which automatically manages all dependencies.
+
+1. **Create the conda environment** from the provided `environment.yml` file:
+
+```bash
+conda env create -f environment.yml
+```
+
+2. **Activate the environment**:
+
+```bash
+conda activate pathpinpointr
+```
+
+3. **Install GeneSwitches** (not available via conda, must be installed from GitHub):
+
+```bash
+Rscript -e "devtools::install_github('SGDDNB/GeneSwitches')"
+```
+
+4. **Install PathPinpointR**:
+
+```bash
+# From GitHub (recommended)
+Rscript -e "devtools::install_github('UoSDDNB/PathPinpointR')"
+
+# Or from local directory if you have the source code
+Rscript -e "devtools::install('.')"
+```
+
+The conda environment includes:
+- R (version 4.0+)
+- All CRAN dependencies (ggplot2, ggrepel, fastglm, plyr, RColorBrewer, ggridges, gridExtra, mixtools, vioplot, devtools, rmarkdown, BiocManager)
+- All Bioconductor dependencies (Biobase, SingleCellExperiment, SummarizedExperiment, slingshot, monocle)
+- Seurat (via conda-forge)
+- Build tools (gcc, gfortran, make)
+
+### Option 2: Manual Installation
+
 #### Install required packages
 
 Run the following code to load all packages neccecary for PPR & this
