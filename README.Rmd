@@ -47,13 +47,19 @@ conda env create -f environment.yml
 conda activate pathpinpointr
 ```
 
-3. **Install GeneSwitches** (not available via conda, must be installed from GitHub):
+3. **Install additional Bioconductor packages** (not available via conda):
+
+```bash
+Rscript -e "BiocManager::install('DelayedMatrixStats')"
+```
+
+4. **Install GeneSwitches** (not available via conda, must be installed from GitHub):
 
 ```bash
 Rscript -e "devtools::install_github('SGDDNB/GeneSwitches')"
 ```
 
-4. **Install PathPinpointR**:
+5. **Install PathPinpointR**:
 
 ```bash
 # From GitHub (recommended)
