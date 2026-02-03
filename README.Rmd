@@ -237,6 +237,16 @@ plot_timeline_ggplot(switching_genes,
 knitr::include_graphics("./man/figures/README-timeline-plot1.png")
 ```
 
+Indervidual switching genes can be visualised using Seurat's FeaturePlot function.
+```{r}
+FeaturePlot(reference_seu, features = switching_genes$geneID[1], reduction = "umap", min.cutoff = "q10", max.cutoff = "q90") + ggtitle(switching_genes$geneID[1])
+```
+
+```{r, eval = TRUE, echo = FALSE}
+knitr::include_graphics("./man/figures/README-featureplot_top_SG_seurat.png")
+```
+
+
 ## Select a number of switching genes
 Using the PPR function precision():
 ```{r}
