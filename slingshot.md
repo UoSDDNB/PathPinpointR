@@ -46,7 +46,7 @@ vignette.
 
 You can install the development version of PathPinpointR using:
 
-    devtools::install_github("moi-taiga/PathPinpointR")
+    devtools::install_github("UoSDDNB/PathPinpointR")
 
 ### Load the required packages
 

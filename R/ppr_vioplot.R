@@ -64,7 +64,7 @@ ppr_vioplot <- function(samples_ppr, reference_sce, ident) {
         # True time indices
         true_timeIDX = NA,
         # Reference labels
-        idents = droplevels(colData(reference_sce)[, ident])
+        idents = droplevels(factor(colData(reference_sce)[, ident]))
     )
 
     ## Calculate the true time indices based on the pseudotime values

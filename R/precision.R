@@ -61,8 +61,11 @@ precision <- function(sce,
     # Print status message
     cat("Precision run", nrow_precision, "/", length(n_sg_range), "\n")                                     
 
+    # reduce the counts matrix of sce to the number of switching genes
+    sce_reduced <- reduce_counts_matrix(sce, switching_genes)
+
     # Predict the position of the reference (proxy sample)
-    sample_ppr <- predict_position(sce, switching_genes)
+    sample_ppr <- predict_position(sce_reduced, switching_genes)
 
     # measure the accuracy of the prediction
     accuracy <- accuracy_test(ppr = sample_ppr,

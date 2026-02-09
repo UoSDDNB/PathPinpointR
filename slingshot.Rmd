@@ -37,14 +37,14 @@ Run the following code to load all packages necessary for PPR & this vignette.
 required_packages <- c("SingleCellExperiment", "Biobase", "fastglm", "ggplot2",
                        "monocle", "plyr", "RColorBrewer", "ggrepel", "ggridges",
                        "gridExtra", "devtools", "mixtools", "Seurat",
-                       "parallel", "RColorBrewer", "mclust")
+                       "parallel", "RColorBrewer", "mclust", "slingshot",
+                       "DelayedMatrixStats")
 
-## for packages "fastglm", "ggplot2", "plyr", "RColorBrewer",
-# "ggrepel", "ggridges", "gridExtra", "mixtools"
+# for packages installed from CRAN
 new_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
 if(length(new_packages)) install.packages(new_packages)
 
-## for packages "SingleCellExperiment", "Biobase", "slingshot".
+# for packages installed from Bioconductor
 if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
 new_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
 if(length(new_packages)) BiocManager::install(new_packages)
@@ -52,12 +52,13 @@ if(length(new_packages)) BiocManager::install(new_packages)
 # for package "GeneSwitches"
 devtools::install_github("SGDDNB/GeneSwitches")
 ```
-
+Rtools is required to install PathPinpointR and [GeneSwitches](https://github.com/SGDDNB/GeneSwitches) from source on Windows.
+You can download it here: https://cran.r-project.org/bin/windows/Rtools
 
 #### install PathPinpointR
 You can install the development version of PathPinpointR using:
 ```{r}
-devtools::install_github("moi-taiga/PathPinpointR")
+devtools::install_github("UoSDDNB/PathPinpointR")
 ```
 
 ### Load the required packages

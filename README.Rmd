@@ -31,20 +31,68 @@ The data used here is an integrated data-set of blastocyst data.
 
 ## Installation
 
+### Option 1: Install using Conda (Recommended)
+
+The easiest way to set up PathPinpointR is using conda, which automatically manages all dependencies.
+
+1. **Create the conda environment** from the provided `environment.yml` file:
+
+```bash
+conda env create -f environment.yml
+```
+
+2. **Activate the environment**:
+
+```bash
+conda activate pathpinpointr
+```
+
+3. **Install additional Bioconductor packages** (not available via conda):
+
+```bash
+Rscript -e "BiocManager::install('DelayedMatrixStats')"
+```
+
+4. **Install GeneSwitches** (not available via conda, must be installed from GitHub):
+
+```bash
+Rscript -e "devtools::install_github('SGDDNB/GeneSwitches')"
+```
+
+5. **Install PathPinpointR**:
+
+```bash
+# From GitHub (recommended)
+Rscript -e "devtools::install_github('UoSDDNB/PathPinpointR')"
+
+# Or from local directory if you have the source code
+Rscript -e "devtools::install('.')"
+```
+
+The conda environment includes:
+- R (version 4.0+)
+- All CRAN dependencies (ggplot2, ggrepel, fastglm, plyr, RColorBrewer, ggridges, gridExtra, mixtools, vioplot, devtools, rmarkdown, BiocManager)
+- All Bioconductor dependencies (Biobase, SingleCellExperiment, SummarizedExperiment, slingshot, monocle)
+- Seurat (via conda-forge)
+- Build tools (gcc, gfortran, make)
+
+### Option 2: Manual Installation
+
 #### Install required packages
+
 Run the following code to load all packages neccecary for PPR & this vignette.
 ```{r}
 required_packages <- c("SingleCellExperiment", "Biobase", "fastglm", "ggplot2",
                        "monocle", "plyr", "RColorBrewer", "ggrepel", "ggridges",
                        "gridExtra", "devtools", "mixtools", "Seurat",
-                       "parallel", "RColorBrewer")
+                       "parallel", "RColorBrewer", "slingshot",
+                       "DelayedMatrixStats")
 
-## for packages "fastglm", "ggplot2", "plyr", "RColorBrewer",
-# "ggrepel", "ggridges", "gridExtra", "mixtools"
+# for packages installed from CRAN
 new_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
 if(length(new_packages)) install.packages(new_packages)
 
-## for packages "SingleCellExperiment", "Biobase", "slingshot".
+# for packages installed from Bioconductor
 if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
 new_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
 if(length(new_packages)) BiocManager::install(new_packages)
@@ -52,12 +100,14 @@ if(length(new_packages)) BiocManager::install(new_packages)
 # for package "GeneSwitches"
 devtools::install_github("SGDDNB/GeneSwitches")
 ```
+Rtools is required to install PathPinpointR and [GeneSwitches](https://github.com/SGDDNB/GeneSwitches) from source on Windows.
+You can download it here: https://cran.r-project.org/bin/windows/Rtools
 
 
 #### install PathPinpointR
 You can install the development version of PathPinpointR using:
 ```{r}
-devtools::install_github("moi-taiga/PathPinpointR")
+devtools::install_github("UoSDDNB/PathPinpointR")
 ```
 
 ### Load the required packages
@@ -186,6 +236,16 @@ plot_timeline_ggplot(switching_genes,
 ```{r, eval = TRUE, echo = FALSE}
 knitr::include_graphics("./man/figures/README-timeline-plot1.png")
 ```
+
+Indervidual switching genes can be visualised using Seurat's FeaturePlot function.
+```{r}
+FeaturePlot(reference_seu, features = switching_genes$geneID[1], reduction = "umap", min.cutoff = "q10", max.cutoff = "q90") + ggtitle(switching_genes$geneID[1])
+```
+
+```{r, eval = TRUE, echo = FALSE}
+knitr::include_graphics("./man/figures/README-featureplot_top_SG_seurat.png")
+```
+
 
 ## Select a number of switching genes
 Using the PPR function precision():
