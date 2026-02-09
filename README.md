@@ -76,7 +76,7 @@ required_packages <- c("SingleCellExperiment", "Biobase", "fastglm", "ggplot2",
                        "monocle", "plyr", "RColorBrewer", "ggrepel", "ggridges",
                        "gridExtra", "devtools", "mixtools", "Seurat",
                        "parallel", "RColorBrewer", "slingshot",
-                       "DelayedMatrixStats")
+                       "DelayedMatrixStats", "vioplot", "SummarizedExperiment")
 
 # for packages installed from CRAN
 new_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
