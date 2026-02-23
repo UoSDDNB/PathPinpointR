@@ -76,6 +76,50 @@ print.PPR_OBJECT <- function(x) {
 #' Set Default Print Method for PPR_OBJECT
 setMethod("print", "PPR_OBJECT", print.PPR_OBJECT)
 
+#' @title Print method for PPR ML Model Object.
+#'
+#' @description
+#' Make calling the PPR_ML_MODEL nicer by printing a summary of its contents.
+#'
+#' @param x An object of class 'PPR_ML_MODEL' to be summarized.
+#'
+#' @return A summary of the contents of the model object.
+#' @export
+print.PPR_ML_MODEL <- function(x) {
+  if (!inherits(x, "PPR_ML_MODEL")) {
+    stop("Input is not of class 'PPR_ML_MODEL'")
+  }
+  
+  cat("This is a PPR_ML_MODEL object\n")
+  cat("Method:", x$method, "\n")
+  cat("Genes used:", x$genes_used, "\n")
+  cat("Number of features:", length(x$gene_features), "genes\n")
+  cat("Pseudotime range:", 
+      paste(round(x$pseudotime_range, 2), collapse = " to "), "\n")
+  
+  # Method-specific information
+  if (x$method == "ridge_regression") {
+    cat("Optimal lambda:", 
+        round(x$model$lambda.min, 6), "\n")
+    cat("CV error (min):", 
+        round(min(x$model$cvm), 4), "\n")
+  } else if (x$method == "random_forest") {
+    cat("Number of trees:", x$model$num.trees, "\n")
+    if (!is.null(x$model$prediction.error)) {
+      cat("OOB prediction error:", 
+          round(x$model$prediction.error, 4), "\n")
+    }
+  } else if (x$method == "xgboost") {
+    # XGBoost doesn't store nrounds directly, but we can check attributes
+    nrounds <- x$model$niter
+    if (!is.null(nrounds)) {
+      cat("Number of rounds:", nrounds, "\n")
+    }
+    # XGBoost doesn't have a simple error metric stored
+    # We could extract from best_iteration if available
+  }
+}
+
 
 #' @title Select the mid index among multiple occurrences of the max value.
 #'

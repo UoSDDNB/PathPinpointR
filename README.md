@@ -341,6 +341,74 @@ prediction is stored as a PPR_OBJECT.
 samples_ppr <- lapply(samples_binarized, predict_position, switching_genes)
 ```
 
+### Alternative: Machine Learning Approach
+
+PathPinpointR also provides a machine learning-based alternative using Ridge
+regression. This approach can capture complex gene interactions and may provide
+improved accuracy in some cases.
+
+**Install glmnet** (required for ML approach):
+
+``` r
+install.packages("glmnet")
+```
+
+**Train ML model on reference data**:
+
+``` r
+# Train model using switching genes (recommended)
+trained_model <- train_ml_model(reference_sce,
+                                switching_genes = switching_genes,
+                                genes = "switching",
+                                alpha = 0,  # Ridge regression
+                                cv_folds = 5)
+
+# Or train using all genes
+trained_model_all <- train_ml_model(reference_sce,
+                                    genes = "all",
+                                    alpha = 0,
+                                    cv_folds = 5)
+```
+
+**Predict using ML model**:
+
+``` r
+# Predict position of sample cells using trained model
+samples_ppr_ml <- lapply(samples_binarized, 
+                        predict_position_ml, 
+                        trained_model = trained_model)
+```
+
+**Compare ML vs current method**:
+
+``` r
+# Compare accuracy on test set (if using reference cells)
+test_ppr_ml <- predict_position_ml(test_sce, trained_model)
+test_ppr_current <- predict_position(test_reduced_sce, switching_genes)
+
+ml_accuracy <- accuracy_test(test_ppr_ml, test_sce, plot = TRUE)
+current_accuracy <- accuracy_test(test_ppr_current, test_sce, plot = TRUE)
+
+cat("ML approach mean inaccuracy:", 
+    mean(ml_accuracy$inaccuracy, na.rm = TRUE), "\n")
+cat("Current method mean inaccuracy:", 
+    mean(current_accuracy$inaccuracy, na.rm = TRUE), "\n")
+```
+
+**Save/load trained models**:
+
+``` r
+# Save trained model
+saveRDS(trained_model, "trained_model.rds")
+
+# Load saved model
+trained_model <- readRDS("trained_model.rds")
+```
+
+The ML approach outputs the same `PPR_OBJECT` format, so it's fully compatible
+with all existing plotting and evaluation functions (`ppr_plot()`, `ppr_vioplot()`,
+`accuracy_test()`, etc.).
+
 ## Plotting the predicted position of each sample:
 
 plot the predicted position of each sample on the reference trajectory.

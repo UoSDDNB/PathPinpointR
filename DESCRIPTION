@@ -15,7 +15,11 @@ Suggests:
     rmarkdown,
     devtools,
     monocle,
-    slingshot
+    slingshot,
+    glmnet,
+    Matrix,
+    ranger,
+    xgboost
 Roxygen: list(markdown = TRUE)
 Imports: 
     Seurat,

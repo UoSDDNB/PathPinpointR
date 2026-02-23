@@ -20,6 +20,8 @@ dependencies:
   - r-devtools
   - r-rmarkdown
   - r-biocmanager
+  - r-ranger
+  - r-xgboost
   
   # Bioconductor packages (via bioconda)
   - bioconductor-biobase
