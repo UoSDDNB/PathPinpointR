@@ -3,6 +3,9 @@
 
 # PathPinpointR
 
+[![GitHub R package
+version](https://img.shields.io/github/r-package/v/UoSDDNB/PathPinpointR)](https://github.com/UoSDDNB/PathPinpointR)
+
 PathPinpointR identifies the position of a sample upon a trajectory.
 
 ##### *Assumptions:*
@@ -21,35 +24,39 @@ used here is an integrated data-set of blastocyst data.
 
 ### Option 1: Install using Conda (Recommended)
 
-The easiest way to set up PathPinpointR is using conda, which automatically manages all dependencies.
+The easiest way to set up PathPinpointR is using conda, which
+automatically manages all dependencies.
 
-1. **Create the conda environment** from the provided `environment.yml` file:
+1.  **Create the conda environment** from the provided `environment.yml`
+    file:
 
-```bash
+``` bash
 conda env create -f environment.yml
 ```
 
-2. **Activate the environment**:
+2.  **Activate the environment**:
 
-```bash
+``` bash
 conda activate pathpinpointr
 ```
 
-3. **Install additional Bioconductor packages** (not available via conda):
+3.  **Install additional Bioconductor packages** (not available via
+    conda):
 
-```bash
+``` bash
 Rscript -e "BiocManager::install('DelayedMatrixStats')"
 ```
 
-4. **Install GeneSwitches** (not available via conda, must be installed from GitHub):
+4.  **Install GeneSwitches** (not available via conda, must be installed
+    from GitHub):
 
-```bash
+``` bash
 Rscript -e "devtools::install_github('SGDDNB/GeneSwitches')"
 ```
 
-5. **Install PathPinpointR**:
+5.  **Install PathPinpointR**:
 
-```bash
+``` bash
 # From GitHub (recommended)
 Rscript -e "devtools::install_github('UoSDDNB/PathPinpointR')"
 
@@ -57,12 +64,12 @@ Rscript -e "devtools::install_github('UoSDDNB/PathPinpointR')"
 Rscript -e "devtools::install('.')"
 ```
 
-The conda environment includes:
-- R (version 4.0+)
-- All CRAN dependencies (ggplot2, ggrepel, fastglm, plyr, RColorBrewer, ggridges, gridExtra, mixtools, vioplot, devtools, rmarkdown, BiocManager)
-- All Bioconductor dependencies (Biobase, SingleCellExperiment, SummarizedExperiment, slingshot, monocle)
-- Seurat (via conda-forge)
-- Build tools (gcc, gfortran, make)
+The conda environment includes: - R (version 4.0+) - All CRAN
+dependencies (ggplot2, ggrepel, fastglm, plyr, RColorBrewer, ggridges,
+gridExtra, mixtools, vioplot, devtools, rmarkdown, BiocManager) - All
+Bioconductor dependencies (Biobase, SingleCellExperiment,
+SummarizedExperiment, slingshot, monocle) - Seurat (via conda-forge) -
+Build tools (gcc, gfortran, make)
 
 ### Option 2: Manual Installation
 
@@ -76,7 +83,7 @@ required_packages <- c("SingleCellExperiment", "Biobase", "fastglm", "ggplot2",
                        "monocle", "plyr", "RColorBrewer", "ggrepel", "ggridges",
                        "gridExtra", "devtools", "mixtools", "Seurat",
                        "parallel", "RColorBrewer", "slingshot",
-                       "DelayedMatrixStats", "vioplot", "SummarizedExperiment")
+                       "DelayedMatrixStats")
 
 # for packages installed from CRAN
 new_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
