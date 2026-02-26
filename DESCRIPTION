@@ -1,6 +1,6 @@
 Package: PathPinpointR
 Title: Identifies Progression of a Sample on a Trajectory
-Version: 0.1.0
+Version: 1.0.0
 Authors@R:
     person("Moi", "Taiga Nicholas", , "mtn1n22@soton.ac.uk", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5609-868X"))
