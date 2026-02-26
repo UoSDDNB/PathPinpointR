@@ -17,6 +17,8 @@ knitr::opts_chunk$set(
 
 # PathPinpointR
 
+[![GitHub R package version](https://img.shields.io/github/r-package/v/UoSDDNB/PathPinpointR)](https://github.com/UoSDDNB/PathPinpointR)
+
 PathPinpointR identifies the position of a sample upon a trajectory.
 
 ##### *Assumptions:*
