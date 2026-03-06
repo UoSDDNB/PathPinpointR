@@ -257,7 +257,7 @@ get_synthetic_data <- function() {
 #' @return "Welcome to PathPinpointR!"
 #' @export
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage("Welcome to PathPinpointR!")
+  packageStartupMessage("Welcome to PathPinpointR! \n Version:", utils::packageVersion("PathPinpointR"))
 }
 
 #' @title ppr2seu
