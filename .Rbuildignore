@@ -11,3 +11,11 @@
 ^\data$
 ^.*\.Rhistory$
 ^.*\.RData$
+^LW120\.rds$
+^LW122\.rds$
+^environment\.yml$
+^reference\.rds$
+^slingshot\.Rmd$
+^slingshot\.md$
+^test$
+^trajectoryTutorial\.Rmd$
