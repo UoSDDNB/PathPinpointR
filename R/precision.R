@@ -15,6 +15,7 @@
 #' @importFrom GeneSwitches filter_switchgenes
 #' @importFrom graphics points grid legend
 #' @importFrom methods is
+#' @importFrom grDevices recordPlot
 #'
 #' @export
 precision <- function(sce,

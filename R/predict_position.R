@@ -17,6 +17,7 @@
 #' based on that gene's binarized expression.
 #' 
 #' @importFrom stats sd
+#' @importFrom utils flush.console
 #' 
 #' @export
 #'

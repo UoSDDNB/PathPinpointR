@@ -15,6 +15,7 @@
 #' @importFrom SummarizedExperiment colData
 #' @importFrom vioplot vioplot
 #' @importFrom RColorBrewer brewer.pal
+#' @importFrom graphics par
 #' @export
 #'
 
@@ -23,16 +24,16 @@ ppr_vioplot <- function(samples_ppr, reference_sce, ident) {
     ### CHECKS
 
     # Check if samples_ppr is a single PPR object or a list of them
-    if (class(samples_ppr) == "PPR_OBJECT") {
+    if (inherits(samples_ppr, "PPR_OBJECT")) {
         samples_ppr <- list(samples_ppr)  # Wrap single object in a list
         # name the single object 
         names(samples_ppr) <- "Sample"
-    } else if (!all(sapply(samples_ppr, function(x) class(x) == "PPR_OBJECT"))) {
+    } else if (!all(sapply(samples_ppr, function(x) inherits(x, "PPR_OBJECT")))) {
         stop("All elements in samples_ppr must be of class 'PPR_OBJECT'.")
     }
 
     # check that reference_sce is a SingleCellExperiment object
-    if (class(reference_sce) != "SingleCellExperiment") {
+    if (!inherits(reference_sce, "SingleCellExperiment")) {
         stop("reference_sce must be a SingleCellExperiment object")
     }
 

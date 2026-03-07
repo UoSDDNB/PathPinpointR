@@ -18,6 +18,7 @@
 #' @return If plot = FALSE, returns a data frame containing accuracy results.
 #' If plot = TRUE, returns the accuracy data frame.
 #' @importFrom graphics abline hist text
+#' @importFrom grDevices rgb
 #' @export
 accuracy_test <- function(ppr, reference_sce, plot = TRUE, random = FALSE) {
 
