@@ -35,7 +35,7 @@ sample_prediction <- function(sample_ppr,
                               label = "sample name") {
 
   # check that sample_ppr is a PPR_OBJECT
-  if (class(sample_ppr) != "PPR_OBJECT") {
+  if (!inherits(sample_ppr, "PPR_OBJECT")) {
     stop("sample_ppr must be a PPR_OBJECT")
   }
 
@@ -82,6 +82,8 @@ sample_prediction <- function(sample_ppr,
 #' @return overlay for the plot_position function with reference idents.
 #'
 #' @importFrom SummarizedExperiment colData
+#' @importFrom grDevices gray
+#' @importFrom graphics axis
 #' @export
 
 reference_idents <- function(reference_sce, ident) {
@@ -89,7 +91,7 @@ reference_idents <- function(reference_sce, ident) {
   ## checks
 
   # check that reference_sce is a SingleCellExperiment object
-  if (class(reference_sce) != "SingleCellExperiment") {
+  if (!inherits(reference_sce, "SingleCellExperiment")) {
     stop("reference_sce must be a SingleCellExperiment object")
   }
 
@@ -229,7 +231,7 @@ switching_times <- function(genes, switching_genes) {
 #' Must include the calculated metrics: standard deviation (`sd`), z-score 
 #' (`z_score`), and p-value (`p_value`).
 #' @param col A character specifying the color of the text.
-#' @param sample_flat
+#' @param sample_flat PPR score for each cell pseudotime idx in a sample.
 #'
 #' @return Overlays the PPR plot with statistical information 
 #' (SD, Z-score, p-value) for the sample, displayed near the predicted 
@@ -241,7 +243,7 @@ switching_times <- function(genes, switching_genes) {
 metrics <- function(sample_ppr,
                     col = "black",
                     sample_flat) {
-  usethis::deprecated("This is a legacy function and will not be maintained actively.")
+  .Deprecated(msg = "This is a legacy function and will not be maintained actively.")
 
   # Produce a warning if any metrics are not available
   if (is.null(sample_ppr$sd) ||
