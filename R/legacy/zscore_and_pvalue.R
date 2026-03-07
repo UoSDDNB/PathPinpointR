@@ -22,7 +22,7 @@
 #'
 
 zscore_and_pvalue <- function(sce, ppr, switching_genes, cpu = 1) {
-  usethis::deprecated("This is a legacy function and will not be maintained actively.")
+  .Deprecated(msg = "This is a legacy function and will not be maintained actively.")
   
   ## checks
 

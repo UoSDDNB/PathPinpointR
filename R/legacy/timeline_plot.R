@@ -21,7 +21,7 @@ timeline_plot <- function(switching_genes,
                           genomic_expression_traces = FALSE,
                           reduced_sce = NULL,
                           cell_id = 1) {
-  usethis::deprecated("This is a legacy function and will not be maintained actively.")
+  .Deprecated(msg = "This is a legacy function and will not be maintained actively.")
 
   # Convert switching_genes to a data frame
   switching_genes <- as.data.frame(switching_genes)
