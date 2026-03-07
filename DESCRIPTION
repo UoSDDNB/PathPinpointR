@@ -1,4 +1,5 @@
 Package: PathPinpointR
+Type: Package
 Title: Identifies Progression of a Sample on a Trajectory
 Version: 1.0.0
 Authors@R:
@@ -17,20 +18,14 @@ Suggests:
     monocle,
     slingshot
 Roxygen: list(markdown = TRUE)
-Imports: 
-    Seurat,
+Imports: Seurat,
     ggplot2,
-    ggrepel,
-    fastglm,
     parallel,
-    Biobase,
     SingleCellExperiment,
-    plyr,
     RColorBrewer,
-    ggridges,
-    gridExtra,
-    mixtools,
     GeneSwitches,
     methods,
     SummarizedExperiment,
-    vioplot
+    vioplot,
+    S4Vectors,
+    mclust
