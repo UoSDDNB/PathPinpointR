@@ -20,9 +20,6 @@ This object should contain:
 \value{
 A ggplot object showing a scatter plot of predicted vs. true pseudotime indices,
 with a reference line indicating perfect prediction.
-These elements should originate from the reference data.
-
-returns a ggplot object showing the bias of PPR predictions across pseudo-time.
 }
 \description{
 This function plots the accuracy of PPR predictions across pseudo-time.

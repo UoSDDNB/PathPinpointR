@@ -11,10 +11,7 @@
 #' - `Binarized`: A matrix or data frame indicating the binary expression status of genes.
 #' @return A ggplot object showing a scatter plot of predicted vs. true pseudotime indices, 
 #' with a reference line indicating perfect prediction.
-#' These elements should originate from the reference data.
-#'
-#' @return returns a ggplot object showing the bias of PPR predictions across pseudo-time.
-#' @importFrom ggplot2 ggplot aes geom_point labs geom_abline xlim ylim theme
+#' 
 #' @importFrom ggplot2 ggplot aes geom_point labs geom_abline xlim ylim theme margin
 #' @export
 #' 
