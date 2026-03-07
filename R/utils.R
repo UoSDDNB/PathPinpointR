@@ -13,10 +13,12 @@ setClass("PPR_OBJECT")
 #' This function can be used to quickly inspect the structure of your results.
 #'
 #' @param x An object of class 'PPR_OBJECT' to be summarized.
+#' @param ... Additional arguments passed to print (unused).
 #'
-#' @return A summary of the contents of the object.
+#' @return Invisibly returns the input object. Called for its side effect of printing a summary.
+#' @method print PPR_OBJECT
 #' @export
-print.PPR_OBJECT <- function(x) {
+print.PPR_OBJECT <- function(x, ...) {
   if (!inherits(x, "PPR_OBJECT")) {
     stop("Input is not of class 'PPR_OBJECT'")
   }
@@ -71,10 +73,12 @@ print.PPR_OBJECT <- function(x) {
           "\n\n")
     }
   }
+  invisible(x)
 }
 
-#' Set Default Print Method for PPR_OBJECT
-setMethod("print", "PPR_OBJECT", print.PPR_OBJECT)
+# Set Default Print Method for PPR_OBJECT
+# setMethod("print", "PPR_OBJECT", print.PPR_OBJECT)
+# this isn't needed because the print method is already defined for the class
 
 
 #' @title Select the mid index among multiple occurrences of the max value.
@@ -131,6 +135,11 @@ get_example_data <- function() {
 #' @return A list of three SingleCellExperiment objects: one reference and two samples.
 #' 
 #' @importFrom SingleCellExperiment SingleCellExperiment
+#' @importFrom stats rnbinom rmultinom prcomp median setNames
+#' @importFrom S4Vectors SimpleList
+#' @importFrom SummarizedExperiment assays assays<- colData<-
+#' @importFrom SingleCellExperiment reducedDims<- 
+#' @importFrom mclust Mclust
 #'
 #' @export
 get_synthetic_data <- function() {
@@ -205,7 +214,7 @@ get_synthetic_data <- function() {
   colnames(counts) <- paste0('c',1:n_cells )
 
   # assign the counts to a SingleCellExperiment object
-  reference_sce <- SingleCellExperiment(assays = List(counts = counts))
+  reference_sce <- SingleCellExperiment(assays = list(counts = counts))
 
   # filter out lowly expressed genes 
   geneFilter <- apply(assays(reference_sce)$counts,1,function(x){
@@ -254,6 +263,9 @@ get_synthetic_data <- function() {
 #'
 #' @description prints a welcome message when the package is loaded
 #' 
+#' @param libname The name of the package library.
+#' @param pkgname The name of the package.
+#' 
 #' @return "Welcome to PathPinpointR!"
 #' @export
 .onAttach <- function(libname, pkgname) {
@@ -289,3 +301,8 @@ ppr2seu <- function(ppr, seu, colname = "PPR_pseudotime_idx") {
 
     return(seu)
 }
+
+
+# set global variables to avoid R CMD check notes about undefined global variables
+# these are the variables that are used in ggplot2 aesthetics when plotting.
+utils::globalVariables(c("true_timeIDX", "predicted_timeIDX"))

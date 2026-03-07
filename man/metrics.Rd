@@ -13,7 +13,7 @@ Must include the calculated metrics: standard deviation (\code{sd}), z-score
 
 \item{col}{A character specifying the color of the text.}
 
-\item{sample_flat}{}
+\item{sample_flat}{PPR score for each cell pseudotime idx in a sample.}
 }
 \value{
 Overlays the PPR plot with statistical information
