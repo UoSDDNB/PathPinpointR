@@ -51,7 +51,6 @@ precisionP <- function(sce,
   }
 
   # Set up a parallel cluster
-  library(parallel)
   cl <- makeCluster(cpu)
 
   # Export necessary objects and functions to each worker
