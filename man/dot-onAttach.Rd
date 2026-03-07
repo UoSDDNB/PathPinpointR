@@ -6,6 +6,11 @@
 \usage{
 .onAttach(libname, pkgname)
 }
+\arguments{
+\item{libname}{The name of the package library.}
+
+\item{pkgname}{The name of the package.}
+}
 \value{
 "Welcome to PathPinpointR!"
 }
