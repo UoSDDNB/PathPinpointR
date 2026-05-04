@@ -81,7 +81,7 @@ accuracy_test <- function(ppr, reference_sce, plot = TRUE, random = FALSE) {
   if (plot) {
     invisible({
       hist_plot <- hist(accuracy$inaccuracy,
-                        breaks = seq(0, 100, by = 1),
+                        breaks = seq(-0.5, 100.5, by = 1),
                         col = rgb(1, 0 ,0 , 0.5),
                         main = "Histogram of Accuracy",
                         xlab = "Distance from True Time Index")
@@ -96,7 +96,7 @@ accuracy_test <- function(ppr, reference_sce, plot = TRUE, random = FALSE) {
       if (random) {
         hist(accuracy$random_inaccuracy,
              col = rgb(0, 0, 1, 0.4),
-             breaks = seq(0, 100, by = 1),
+             breaks = seq(-0.5, 100.5, by = 1),
              add = TRUE)
         legend_colors <- c(rgb(1, 0, 0, 1), rgb(0, 0, 1, 0.4))
         legend_labels <- c("PathPinpointR predicitons", "Random predictions")
